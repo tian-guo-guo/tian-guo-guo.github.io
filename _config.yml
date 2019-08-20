@@ -62,8 +62,8 @@ disqus_username: tianguoguo
 # Gitalk
 gitalk:
   enable: true    #是否开启Gitalk评论
-  clientID: f2c84e7629bb1446c1a4                            #生成的clientID
-  clientSecret: ca6d6139d1e1b8c43f8b2e19492ddcac8b322d0d    #生成的clientSecret
+  clientID: b070bb95e57a3650e202                            #生成的clientID
+  clientSecret: 8420656a991994ea4aa65c2249b6583d6a4c4c54    #生成的clientSecret
   repo: tian-guo-guo.github.io    #仓库名称
   owner: tian-guo-guo    #github用户名
   admin: tian-guo-guo
