@@ -5,7 +5,7 @@ header-img: https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/post-bg-
 email: tianguoguo15@163.com
 description: "Stay hungry. Stay foolish."
 keyword: "ST, ST Blog, 甜果果的博客, 人工智能, 自然语言处理, 机器翻译, 吉他, 钢琴, 阅读, 游泳"
-url: "http://tianguoguo15.github.io"          # your host, for absolute URL
+url: "http://tian-guo-guo.github.io"          # your host, for absolute URL
 baseurl: ""      # for example, '/blog' if your blog hosted on 'host/blog'
 github_repo: "https://github.com/tian-guo-guo/tian-guo-guo.github.io.git" # you code repository
 
@@ -18,12 +18,12 @@ cdn: https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/
 
 # SNS settings
 RSS: false
-# weibo_username:     qiubaiying
-zhihu_username:     tiaguoguo
+# weibo_username:     xxx
+jianshu_username:   cba210cef915
+zhihu_username:     tianguoguo15
 github_username:    tian-guo-guo
-facebook_username:  tianguoguo
-jianshu_username:   tianguoguo
-#twitter_username:   qiubaiying
+facebook_username:  TianTian
+# twitter_username:   xxx
 
 
 
@@ -74,11 +74,11 @@ gitalk:
 
 # Analytics settings
 # Baidu Analytics
-ba_track_id: b50bf2b12b5338a1845e33832976fd68
+ba_track_id: 04d319e645e9c995375b2f463d6c8926             
 
 # Google Analytics
-ga_track_id: 'UA-90855596-1'            # Format: UA-xxxxxx-xx
-ga_domain: qiubaiying.top               # 默认的是 auto, 这里我是自定义了的域名，你如果没有自己的域名，需要改成auto
+ga_track_id: 'UA-146086699-1'            # Format: UA-xxxxxx-xx
+ga_domain: tianguoguo.fun               # 默认的是 auto, 这里我是自定义了的域名，你如果没有自己的域名，需要改成auto
 
 
 
@@ -86,7 +86,7 @@ ga_domain: qiubaiying.top               # 默认的是 auto, 这里我是自定�
 
 # Featured Tags
 featured-tags: true                     # 是否使用首页标签
-featured-condition-size: 1              # 相同标签数量大于这个数，才会出现在首页
+featured-condition-size: 0              # 相同标签数量大于这个数，才会出现在首页
 
 
 
@@ -99,11 +99,11 @@ service-worker: true
 # Friends
 friends: [
     {
-        title: "WY",
-        href: "http://zhengwuyang.com"
+        title: "燕云长风",
+        href: "http://yanyunchangfeng.com"
     },{
-        title: "简书·BY",
-        href: "http://www.jianshu.com/u/e71990ada2fd"
+        title: "美拍·甜果果2333",
+        href: "http://www.meipai.com/user/1088601139?client_id=1089857299&gid=1119354961&uid=1088601139&utm_user_id=1088601139&utm_content=test&utm_source=meipai_share&utm_term=meipai_ios"
     },{
         title: "Apple",
         href: "https://apple.com"
