@@ -7,7 +7,7 @@ description: "Stay hungry. Stay foolish."
 keyword: "ST, ST Blog, 甜果果的博客, 人工智能, 自然语言处理, 机器翻译, 吉他, 钢琴, 阅读, 游泳"
 url: "http://tianguoguo15.github.io"          # your host, for absolute URL
 baseurl: ""      # for example, '/blog' if your blog hosted on 'host/blog'
-github_repo: "https://github.com/tianguoguo15/tianguoguo15.github.io.git" # you code repository
+github_repo: "https://github.com/tian-guo-guo/tian-guo-guo.github.io.git" # you code repository
 
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
@@ -20,7 +20,7 @@ cdn: https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/
 RSS: false
 # weibo_username:     qiubaiying
 zhihu_username:     tiaguoguo
-github_username:    tianguoguo15
+github_username:    tian-guo-guo
 facebook_username:  tianguoguo
 jianshu_username:   tianguoguo
 #twitter_username:   qiubaiying
@@ -64,9 +64,9 @@ gitalk:
   enable: true    #是否开启Gitalk评论
   clientID: f2c84e7629bb1446c1a4                            #生成的clientID
   clientSecret: ca6d6139d1e1b8c43f8b2e19492ddcac8b322d0d    #生成的clientSecret
-  repo: tianguoguo15.github.io    #仓库名称
-  owner: tianguoguo15    #github用户名
-  admin: tianguoguo15
+  repo: tian-guo-guo.github.io    #仓库名称
+  owner: tian-guo-guo    #github用户名
+  admin: tian-guo-guo
   distractionFreeMode: true #是否启用类似FB的阴影遮罩
 
 
