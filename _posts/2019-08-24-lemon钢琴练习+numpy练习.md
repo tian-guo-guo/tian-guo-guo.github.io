@@ -25,7 +25,47 @@ tags:                               #标签
 ```
 若想要该视频自适应屏幕的大小：将width的值修改为100%即可：width=100%
 
-### 3. numpy 34-50 练习
+### 3. [如何在Jekyll中使用MathJax](https://pkuwwt.github.io/linux/2013-12-03-jekyll-using-mathjax/)
+第一步，将_config.yml中的markdown修改为
+
+```markdown: kramdown```
+
+本地使用jekyll时可能需要额外安装kramdown
+
+```gem install kramdown```
+
+kramdown是一个Markdown解析器，它能够正确解释公式内部的符号，不会与Markdown语法冲突，比如不会将^符号变成<sup></sup>标签。
+
+第二步，在header中添加引用和设置代码。也就是_include/header.html中。
+
+```
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+                  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+                          });
+</script>
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+```
+
+第三步，在Markdown中使用Latex数学公式
+
+比如行内公式：$$E=mc^2$$ is a inline formula
+
+比如行间公式(Lorentz方程)：
+
+$$ 
+\begin{aligned} \dot{x} &= \sigma(y-x) \\ 
+\dot{y} &= \rho x - y - xz \\ 
+\dot{z} &= -\beta z + xy \end{aligned} 
+$$
+
+注意，行间公式前后应该都留空行，使得公式能够居中显示。
+
+另外，kramdown的latex语法行内和行间公式都是$$符号作为分隔符。虽然和一般的使用习惯不同，但是可以保证_, ^, \之类符号能够正确解析。
+
+### 4. numpy 34-50 练习
 #### 34. How to get all the dates corresponding to the month of July 2016? (★★☆)
 
 ```python
