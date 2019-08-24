@@ -1,6 +1,6 @@
 ---
 layout:     post                    # 使用的布局（不需要改）
-title:      Attention is all you need论文翻译               # 标题 
+title:      2019-08-22-Attention is all you need论文翻译               # 标题 
 subtitle:   Transformer模型的学习 #副标题
 date:       2019-08-22              # 时间
 author:     甜果果                      # 作者
