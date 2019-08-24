@@ -14,11 +14,18 @@ tags:                               #标签
 ---
 
 ### 1. lemon钢琴教学
-<iframe height="500" width="700" src="//player.bilibili.com/player.html?aid=64554127&cid=112065047&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+<iframe height="500" width="100%" src="//player.bilibili.com/player.html?aid=64554127&cid=112065047&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
 
 ![lemon](https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/blog/2019-08-24-lemon.png)
 
-### 2. numpy 34-50 练习
+### 2. 如何让页面中插入的视频自适应手机屏幕的大小
+一般内嵌的代码是以下的样式：
+```
+<iframe height="500" width="100%" src="//player.bilibili.com/player.html?aid=64554127&cid=112065047&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+```
+若想要该视频自适应屏幕的大小：将width的值修改为100%即可：width=100%
+
+### 3. numpy 34-50 练习
 #### 34. How to get all the dates corresponding to the month of July 2016? (★★☆)
 
 ```python
