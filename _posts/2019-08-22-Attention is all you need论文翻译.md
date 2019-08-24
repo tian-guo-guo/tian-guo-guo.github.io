@@ -93,6 +93,7 @@ Para 1：缩放版点积attention的计算
 
 Para 2：输出矩阵的计算公式
 1. 在实践中，我们同时计算一组query的attention函数，并将它们组合成一个矩阵Q。 key和value也一起打包成矩阵 K 和 V 。 我们计算输出矩阵为：
+
 $$
 Attention(Q,K,V)=softmax(\frac{QK^T}{\sqrt{d_k}})V
 $$
@@ -115,7 +116,9 @@ Para 1：对Figure 2的解释。
 
 Para 2：Multi-head的计算
 1. Multi-head attention允许模型的不同表示子空间联合关注不同位置的信息。 如果只有一个attention head，它的平均值会削弱这个信息。
+
 $$MultiHead(Q,K,V)=Concat(head_1,...,head_h)W^o where head_1=Attention(QW_i^Q,KW_i^K,VW_i^V)$$
+
 2. 其中，映射为参数矩阵$W_i^Q ∈ℝ^d_{model×d_k}$, $W_i^K ∈ℝ^d_{model×d_k}$, $W_i^V ∈ℝ^d_{model×d_v}$及$W^O ∈ℝ^{hd_v×d_{model}}$。
    
 Para 3：about head
@@ -132,6 +135,7 @@ Para 3：about head
 ### 3.3 基于位置的前馈网络
 Para 1：前馈网络
 1. 除了attention子层之外，我们的编码器和解码器中的每个层都包含一个完全连接的前馈网络，该前馈网络单独且相同地应用于每个位置。 它由两个线性变换组成，之间有一个ReLU激活。
+
 $$FFN(x)=max(0,xW_1+b_1)W_2+b_2$$
 
 Para 2:
@@ -151,12 +155,15 @@ Para 1:位置信息由位置编码习得
 
 Para 2:
 1. 在这项工作中，我们使用不同频率的正弦和余弦函数：
+
 $$
 PE_{pos,2i}=sin(pos/1000^{2i/d_{model}})
 $$
+
 $$
 PE_{pos,2i+1}=cos(pos/1000^{2i/d_{model}})
 $$
+
 其中pos 是位置，i 是维度。 也就是说，位置编码的每个维度对应于一个正弦曲线。 这些波长形成一个几何级数，从2π 到10000 ⋅ 2π。 我们选择这个函数是因为我们假设它允许模型很容易学习对相对位置的关注，因为对任意确定的偏移k, $PE_{pos+k}$可以表示为$PE_{pos}$的线性函数。
 
 Para 3: 选择了正弦曲线
