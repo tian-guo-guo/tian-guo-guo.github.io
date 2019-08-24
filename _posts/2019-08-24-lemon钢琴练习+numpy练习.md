@@ -1,0 +1,322 @@
+---
+layout:     post                    # 使用的布局（不需要改）
+title:      lemon钢琴练习 + numpy练习               # 标题 
+subtitle:   lemon 1-17小节 + numpy 34-50 #副标题
+date:       2019-08-24              # 时间
+author:     甜果果                      # 作者
+header-img: https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/post-bg-2015.jpg    #这篇文章标题背景图片
+catalog: true                       # 是否归档
+tags:                               #标签
+    - 学习日记
+    - python
+    - numpy
+    - 娱乐
+---
+
+### 1. lemon钢琴教学
+<iframe height="500" width="700" src="//player.bilibili.com/player.html?aid=64554127&cid=112065047&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+![lemon](https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/blog/2019-08-24-lemon.png)
+
+### 2. numpy 34-50 练习
+#### 34. How to get all the dates corresponding to the month of July 2016? (★★☆)
+
+```python
+Z = np.arange('2016-07', '2016-08', dtype='datetime64[D]')
+print(Z)
+```
+
+```
+['2016-07-01' '2016-07-02' '2016-07-03' '2016-07-04' '2016-07-05'
+ '2016-07-06' '2016-07-07' '2016-07-08' '2016-07-09' '2016-07-10'
+ '2016-07-11' '2016-07-12' '2016-07-13' '2016-07-14' '2016-07-15'
+ '2016-07-16' '2016-07-17' '2016-07-18' '2016-07-19' '2016-07-20'
+ '2016-07-21' '2016-07-22' '2016-07-23' '2016-07-24' '2016-07-25'
+ '2016-07-26' '2016-07-27' '2016-07-28' '2016-07-29' '2016-07-30'
+ '2016-07-31']
+```
+
+#### 35. How to compute ((A+B)\*(-A/2)) in place (without copy)? (★★☆)
+
+```python
+A = np.ones(3)*1
+B = np.ones(3)*2
+C = np.ones(3)*3
+np.add(A,B,out=B)
+np.divide(A,2,out=A)
+np.negative(A,out=A)
+np.multiply(A,B,out=A)
+```
+
+
+
+```
+array([-1.5, -1.5, -1.5])
+```
+
+
+
+#### 36. Extract the integer part of a random array using 5 different methods (★★☆)
+
+```python
+Z = np.random.uniform(0,10,10)
+
+print (Z - Z%1)
+print (np.floor(Z))
+print (np.ceil(Z)-1)
+print (Z.astype(int))
+print (np.trunc(Z))
+```
+
+```
+[1. 6. 8. 8. 8. 3. 2. 7. 1. 5.]
+[1. 6. 8. 8. 8. 3. 2. 7. 1. 5.]
+[1. 6. 8. 8. 8. 3. 2. 7. 1. 5.]
+[1 6 8 8 8 3 2 7 1 5]
+[1. 6. 8. 8. 8. 3. 2. 7. 1. 5.]
+```
+
+#### 37. Create a 5x5 matrix with row values ranging from 0 to 4 (★★☆)
+
+```python
+Z = np.zeros((5,5))
+Z += np.arange(5)
+print(Z)
+```
+
+```
+[[0. 1. 2. 3. 4.]
+ [0. 1. 2. 3. 4.]
+ [0. 1. 2. 3. 4.]
+ [0. 1. 2. 3. 4.]
+ [0. 1. 2. 3. 4.]]
+```
+
+#### 38. Consider a generator function that generates 10 integers and use it to build an array (★☆☆)
+
+```python
+def generate():
+    for x in range(10):
+        yield x
+Z = np.fromiter(generate(),dtype=float,count=-1)
+print(Z)
+```
+
+```
+[0. 1. 2. 3. 4. 5. 6. 7. 8. 9.]
+```
+
+#### 39. Create a vector of size 10 with values ranging from 0 to 1, both excluded (★★☆)
+
+```python
+Z = np.linspace(0,1,11,endpoint=False)[1:]
+print(Z)
+```
+
+```
+[0.09090909 0.18181818 0.27272727 0.36363636 0.45454545 0.54545455
+ 0.63636364 0.72727273 0.81818182 0.90909091]
+```
+
+#### 40. Create a random vector of size 10 and sort it (★★☆)
+
+```python
+Z = np.random.random(10)
+Z.sort()
+print(Z)
+```
+
+```
+[0.03196654 0.09431246 0.13893494 0.15147866 0.2236255  0.27663303
+ 0.32933076 0.55351975 0.58898618 0.95276539]
+```
+
+#### 41. How to sum a small array faster than np.sum? (★★☆)
+
+```python
+# Author: Evgeni Burovski
+
+Z = np.arange(10)
+np.add.reduce(Z)
+```
+
+
+
+```
+45
+```
+
+
+
+#### 42. Consider two random array A and B, check if they are equal (★★☆)
+
+```python
+A = np.random.randint(0,2,5)
+B = np.random.randint(0,2,5)
+
+# Assuming identical shape of the arrays and a tolerance for the comparison of values
+equal = np.allclose(A,B)
+print(equal)
+
+# Checking both the shape and the element values, no tolerance (values have to be exactly equal)
+equal = np.array_equal(A,B)
+print(equal)
+```
+
+```
+False
+False
+```
+
+#### 43. Make an array immutable (read-only) (★★☆)
+
+```python
+Z = np.zeros(10)
+Z.flags.writeable = False
+Z[0] = 1
+```
+
+```
+---------------------------------------------------------------------------
+
+ValueError                                Traceback (most recent call last)
+
+<ipython-input-44-dcc5e7f145b5> in <module>
+      1 Z = np.zeros(10)
+      2 Z.flags.writeable = False
+----> 3 Z[0] = 1
+```
+
+```
+ValueError: assignment destination is read-only
+```
+
+#### 44. Consider a random 10x2 matrix representing cartesian coordinates, convert them to polar coordinates (★★☆)
+
+```python
+Z = np.random.random((10,2))
+X,Y = Z[:,0], Z[:,1]
+R = np.sqrt(X**2+Y**2)
+T = np.arctan2(Y,X)
+print(R)
+print(T)
+```
+
+```
+[1.19765673 0.79161213 0.85189734 0.85262628 1.08524822 0.31548887
+ 1.06104117 0.62811983 0.88433014 0.94899774]
+[0.66630471 1.14774457 0.74347861 1.39384511 0.59577543 1.52950198
+ 1.1765668  0.96226275 0.3678655  1.28233548]
+```
+
+#### 45. Create random vector of size 10 and replace the maximum value by 0 (★★☆)
+
+```python
+Z = np.random.random(10)
+Z[Z.argmax()] = 0
+print(Z)
+```
+
+```
+[0.95310443 0.62180389 0.         0.36998626 0.9276865  0.32792638
+ 0.45271474 0.9238892  0.49063636 0.43790766]
+```
+
+#### 46. Create a structured array with `x` and `y` coordinates covering the \[0,1\]x\[0,1\] area (★★☆)
+
+```python
+Z = np.zeros((5,5), [('x',float),('y',float)])
+Z['x'], Z['y'] = np.meshgrid(np.linspace(0,1,5),
+                             np.linspace(0,1,5))
+print(Z)
+```
+
+```
+[[(0.  , 0.  ) (0.25, 0.  ) (0.5 , 0.  ) (0.75, 0.  ) (1.  , 0.  )]
+ [(0.  , 0.25) (0.25, 0.25) (0.5 , 0.25) (0.75, 0.25) (1.  , 0.25)]
+ [(0.  , 0.5 ) (0.25, 0.5 ) (0.5 , 0.5 ) (0.75, 0.5 ) (1.  , 0.5 )]
+ [(0.  , 0.75) (0.25, 0.75) (0.5 , 0.75) (0.75, 0.75) (1.  , 0.75)]
+ [(0.  , 1.  ) (0.25, 1.  ) (0.5 , 1.  ) (0.75, 1.  ) (1.  , 1.  )]]
+```
+
+#### 47. Given two arrays, X and Y, construct the Cauchy matrix C (Cij =1/(xi - yj))
+
+```python
+# Author: Evgeni Burovski
+
+X = np.arange(8)
+Y = X + 0.5
+C = 1.0 / np.subtract.outer(X, Y)
+print(np.linalg.det(C))
+```
+
+```
+3638.163637117973
+```
+
+#### 48. Print the minimum and maximum representable value for each numpy scalar type (★★☆)
+
+```python
+for dtype in [np.int8, np.int32, np.int64]:
+   print(np.iinfo(dtype).min)
+   print(np.iinfo(dtype).max)
+for dtype in [np.float32, np.float64]:
+   print(np.finfo(dtype).min)
+   print(np.finfo(dtype).max)
+   print(np.finfo(dtype).eps)
+```
+
+```
+-128
+127
+-2147483648
+2147483647
+-9223372036854775808
+9223372036854775807
+-3.4028235e+38
+3.4028235e+38
+1.1920929e-07
+-1.7976931348623157e+308
+1.7976931348623157e+308
+2.220446049250313e-16
+```
+
+#### 49. How to print all the values of an array? (★★☆)
+
+```python
+np.set_printoptions(threshold=np.nan)
+Z = np.zeros((16,16))
+print(Z)
+```
+
+```
+[[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]]
+```
+
+#### 50. How to find the closest value (to a given scalar) in a vector? (★★☆)
+
+```python
+Z = np.arange(100)
+v = np.random.uniform(0,100)
+index = (np.abs(Z-v)).argmin()
+print(Z[index])
+```
+
+```
+93
+```

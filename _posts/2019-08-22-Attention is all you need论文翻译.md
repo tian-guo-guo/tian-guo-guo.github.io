@@ -1,6 +1,6 @@
 ---
 layout:     post                    # 使用的布局（不需要改）
-title:      2019-08-22-Attention is all you need论文翻译               # 标题 
+title:      Attention is all you need论文翻译               # 标题 
 subtitle:   Transformer模型的学习 #副标题
 date:       2019-08-22              # 时间
 author:     甜果果                      # 作者
@@ -12,11 +12,13 @@ tags:                               #标签
 ---
 
 # Attention Is All You Need论文翻译
+
 A. Vaswani et al., “Attention Is All You Need,” no. Nips, 2017.
 
 论文地址：[Attention is all you need.](https://arxiv.org/abs/1706.03762)
 
 原文翻译地址：[yiyibooks](https://www.yiyibooks.cn/yiyibooks/Attention_Is_All_You_Need/index.html)
+
 ## 摘要
 Para 1: Transformer architecture is better than主流转导序列
 1. 主流序列转导模型基于复杂的循环神经网络或卷积神经网络，这些神经网络包含一个编码器和一个解码器。 性能最好的模型还通过attention机制将编码器和解码器连接起来。 
@@ -62,7 +64,7 @@ Para 1：介绍大部分神经序列转导模型的工作流程
 
 Para 2: Transformer也是。见图1.
 1. Transformer遵循这种整体架构，编码器和解码器都使用self-attention堆叠和point-wise、完全连接的层，分别显示在图1的左边和右边。
-![The Transformer-model architecture](https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/img/20190822090616.png)
+![The Transformer-model architecture](https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/blog/2019-08-22-transformer.png)
 
 ### 3.1 编码器和解码器Stacks
 **编码器：**
@@ -106,7 +108,7 @@ Para 4：对较优结果的推测
 2. 我们怀疑，对于很大的$d_k$值，点积大幅度增长，将softmax函数推向具有极小梯度的区域4。 为了抵消这种影响，我们缩小点积$\frac{1}{\sqrt{d_k}}$倍。
    
 #### 3.2.2 Multi-Head Attention
-![Figure 2:(left)Scaled Dot-Product Attention. (right)Multi-Head Attention consists of several attention layers running in paralle.](https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/img/20190822093654.png)
+![Figure 2:(left)Scaled Dot-Product Attention. (right)Multi-Head Attention consists of several attention layers running in paralle.](https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/blog/2019-08-22-muti-head-attention.png)
 Para 1：对Figure 2的解释。
 1. 我们发现将query、key和value分别用不同的、学到的线性映射h倍到dk、dk和dv维效果更好，而不是用d model维的query、key和value执行单个attention函数。 
 2. 基于每个映射版本的query、key和value，我们并行执行attention函数，产生dv 维输出值。 将它们连接并再次映射，产生最终值，如图所示 2。
@@ -175,7 +177,7 @@ Para 3：
 3. 输入和输出序列中任意位置组合之间的这些路径越短，学习远距离依赖性就越容易[12]。
 4. 因此，我们还比较了由不同图层类型组成的网络中任意两个输入和输出位置之间的最大路径长度。
 5. 表1： 不同图层类型的最大路径长度、每层复杂度和最少顺序操作数。 n 为序列的长度，d 为表示的维度，k 为卷积的核的大小，r 为受限self-attention中邻域的大小。
-![Tabel 1: Maximum path lengths, per-layer complexity and minimum nuber of sequential operations for different layer types.](https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/img/20190822101720.png)
+![Tabel 1: Maximum path lengths, per-layer complexity and minimum nuber of sequential operations for different layer types.](https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/blog/2019-08-22-table1.png)
 
 Para 4：
 1. 图层类型每层复杂度顺序最大路径长度操作如表1所示，self-attention层将所有位置连接到恒定数量的顺序执行的操作，而循环层需要O(n) 顺序操作。 
@@ -214,7 +216,7 @@ Para 6:
 ## 6 结果
 
 ### 6.1 机器翻译
-![表2： Transformer在英语-德语和英语-法语1newstest2014测试中获得的BLEU分数比以前的最新模型的分数更好，且训练成本只是它们的一小部分](https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/img/20190822103053.png)
+![表2： Transformer在英语-德语和英语-法语1newstest2014测试中获得的BLEU分数比以前的最新模型的分数更好，且训练成本只是它们的一小部分](https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/blog/2019-08-22-table2.png)
 Para 1:
 1. 在WMT 2014英语-德语翻译任务中，大型transformer模型（表2中的Transformer (big)）比以前报道的最佳模型（包括整合模型）高出2.0个BLEU以上，确立了一个全新的最高BLEU分数为28.4。 该模型的配置列在表3的底部。 
 2. 训练在8 个P100 GPU上花费3.5 天。 即使我们的基础模型也超过了以前发布的所有模型和整合模型，且训练成本只是这些模型的一小部分。
@@ -228,7 +230,7 @@ Para 3:
 1. 表2总结了我们的结果，并将我们的翻译质量和训练成本与文献中的其他模型体系结构进行了比较。 我们通过将训练时间、所使用的GPU的数量以及每个GPU的持续单精度浮点能力的估计相乘来估计用于训练模型的浮点运算的数量5。
 
 ### 6.2 模型的变体
-![表3： Transformer架构的变体。 未列出的值与基本模型的值相同。 所有指标都基于英文到德文翻译开发集newstest2013。 Listed perplexities are per-wordpiece, according to our byte-pair encoding, and should not be compared to per-word perplexities.](https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/img/20190822103610.png)
+![表3： Transformer架构的变体。 未列出的值与基本模型的值相同。 所有指标都基于英文到德文翻译开发集newstest2013。 Listed perplexities are per-wordpiece, according to our byte-pair encoding, and should not be compared to per-word perplexities.](https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/blog/2019-08-22-table3.png)
 Para 1：
 1. 为了评估Transformer不同组件的重要性，我们以不同的方式改变我们的基础模型，测量开发集newstest2013上英文-德文翻译的性能变化。我们使用前一节所述的beam搜索，但没有平均检查点。 我们在表中列出这些结果 3.
 
