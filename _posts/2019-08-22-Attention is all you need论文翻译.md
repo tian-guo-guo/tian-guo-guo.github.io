@@ -9,6 +9,8 @@ catalog: true                       # 是否归档
 tags:                               #标签
     - 学习日记
     - paper
+    - nlp
+    - 机器翻译
 ---
 
 # Attention Is All You Need论文翻译
