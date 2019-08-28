@@ -13,18 +13,18 @@ tags:                               #标签
 
 ## Transformer模型详解
 
-原论文地址：[https://arxiv.org/abs/1706.03762](https://arxiv.org/abs/1706.03762)
+原论文地址：[Attention is all you need](https://arxiv.org/abs/1706.03762)
 
-论文翻译中英文对照：[https://www.yiyibooks.cn/yiyibooks/Attention_Is_All_You_Need/index.html](https://www.yiyibooks.cn/yiyibooks/Attention_Is_All_You_Need/index.html)
+论文翻译中英文对照：[Attention is all you need中英文对照翻译](https://www.yiyibooks.cn/yiyibooks/Attention_Is_All_You_Need/index.html)
 
-中文笔记参考：[https://zhuanlan.zhihu.com/p/48508221](https://zhuanlan.zhihu.com/p/48508221)
-            [https://fancyerii.github.io/2019/03/09/transformer-illustrated/](https://fancyerii.github.io/2019/03/09/transformer-illustrated/)
+中文笔记参考：[详解Transformer](https://zhuanlan.zhihu.com/p/48508221)
+            [Transformer图解](https://fancyerii.github.io/2019/03/09/transformer-illustrated/)
 
-英文笔记参考：[http://jalammar.github.io/illustrated-transformer/](http://jalammar.github.io/illustrated-transformer/)
+英文笔记参考：[The Illustrated Transformer](http://jalammar.github.io/illustrated-transformer/)
 
-PyTorch复现代码：[http://nlp.seas.harvard.edu/2018/04/03/attention.html#](http://nlp.seas.harvard.edu/2018/04/03/attention.html#)
+PyTorch复现代码：[The Annotated Transformer](http://nlp.seas.harvard.edu/2018/04/03/attention.html#)
 
-TensorFlow复现代码：[https://github.com/tensorflow/tensor2tensor](https://github.com/tensorflow/tensor2tensor)
+TensorFlow复现代码：[tensorflow/tensor2tensor](https://github.com/tensorflow/tensor2tensor)
 
 学习笔记：
 ![Transformer_script_1.jpg](https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/blog/190827-Transformer_script_1.jpg)
