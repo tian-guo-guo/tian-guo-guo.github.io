@@ -4,7 +4,7 @@ title:      Attention is all you need论文翻译               # 标题
 subtitle:   Transformer模型的学习 #副标题
 date:       2019-08-22              # 时间
 author:     甜果果                      # 作者
-header-img: https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/post-bg-2015.jpg    #这篇文章标题背景图片
+header-img: https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/post-bg-coffee.jpeg    #这篇文章标题背景图片
 catalog: true                       # 是否归档
 tags:                               #标签
     - 学习日记
