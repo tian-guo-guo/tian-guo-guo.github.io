@@ -1,0 +1,141 @@
+I"'<h1 id="scikit-learn">Scikit-learn</h1>
+
+<p><strong>Scikit-learn</strong> is a library in Python that provides many unsupervised and supervised learning algorithms. It’s built upon some of the technology you might already be familiar with, like NumPy, pandas, and Matplotlib!</p>
+
+<p>As you build robust Machine Learning programs, it’s helpful to have all the sklearn commands all in one place in case you forget.</p>
+
+<h2 id="linear-regression">Linear Regression</h2>
+
+<p>Import and create the model:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LinearRegression</span>
+
+<span class="n">your_model</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>Fit:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">your_model</span><span class="p">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_training_data</span><span class="p">,</span> <span class="n">y_training_data</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>.coef_: contains the coefficients</li>
+  <li>.intercept_: contains the intercept</li>
+</ul>
+
+<p>Predict:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">predictions</span> <span class="o">=</span> <span class="n">your_model</span><span class="p">.</span><span class="n">predict</span><span class="p">(</span><span class="n">your_x_data</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>.score(): returns the coefficient of determination R²</li>
+</ul>
+
+<h2 id="naive-bayes">Naive Bayes</h2>
+
+<p>Import and create the model:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">sklearn.naive_bayes</span> <span class="kn">import</span> <span class="n">MultinomialNB</span>
+
+<span class="n">your_model</span> <span class="o">=</span> <span class="n">MultinomialNB</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>Fit:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">your_model</span><span class="p">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_training_data</span><span class="p">,</span> <span class="n">y_training_data</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Predict:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Returns a list of predicted classes - one prediction for every data point
+</span><span class="n">predictions</span> <span class="o">=</span> <span class="n">your_model</span><span class="p">.</span><span class="n">predict</span><span class="p">(</span><span class="n">your_x_data</span><span class="p">)</span>
+
+<span class="c1"># For every data point, returns a list of probabilities of each class
+</span><span class="n">probabilities</span> <span class="o">=</span> <span class="n">your_model</span><span class="p">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">your_x_data</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="k-nearest-neighbors">K-Nearest Neighbors</h2>
+
+<p>Import and create the model:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">sklearn.neigbors</span> <span class="kn">import</span> <span class="n">KNeighborsClassifier</span>
+
+<span class="n">your_model</span> <span class="o">=</span> <span class="n">KNeighborsClassifier</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>Fit:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">your_model</span><span class="p">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_training_data</span><span class="p">,</span> <span class="n">y_training_data</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Predict:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Returns a list of predicted classes - one prediction for every data point
+</span><span class="n">predictions</span> <span class="o">=</span> <span class="n">your_model</span><span class="p">.</span><span class="n">predict</span><span class="p">(</span><span class="n">your_x_data</span><span class="p">)</span>
+
+<span class="c1"># For every data point, returns a list of probabilities of each class
+</span><span class="n">probabilities</span> <span class="o">=</span> <span class="n">your_model</span><span class="p">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">your_x_data</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="k-means">K-Means</h2>
+
+<p>Import and create the model:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">KMeans</span>
+
+<span class="n">your_model</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="s">'random'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>n_clusters: number of clusters to form and number of centroids to generate</li>
+  <li>init: method for initialization
+    <ul>
+      <li>k-means++: K-Means++ [default]</li>
+      <li>random: K-Means</li>
+    </ul>
+  </li>
+  <li>random_state: the seed used by the random number generator [optional]
+Fit:</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">your_model</span><span class="p">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_training_data</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Predict:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">predictions</span> <span class="o">=</span> <span class="n">your_model</span><span class="p">.</span><span class="n">predict</span><span class="p">(</span><span class="n">your_x_data</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="validating-the-model">Validating the Model</h2>
+
+<p>Import and print accuracy, recall, precision, and F1 score:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">recall_score</span><span class="p">,</span> <span class="n">precision_score</span><span class="p">,</span> <span class="n">f1_score</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">true_labels</span><span class="p">,</span> <span class="n">guesses</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="n">recall_score</span><span class="p">(</span><span class="n">true_labels</span><span class="p">,</span> <span class="n">guesses</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="n">precision_score</span><span class="p">(</span><span class="n">true_labels</span><span class="p">,</span> <span class="n">guesses</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="n">f1_score</span><span class="p">(</span><span class="n">true_labels</span><span class="p">,</span> <span class="n">guesses</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>Import and print the confusion matrix:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">confusion_matrix</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">confusion_matrix</span><span class="p">(</span><span class="n">true_labels</span><span class="p">,</span> <span class="n">guesses</span><span class="p">))</span>
+</code></pre></div></div>
+
+<h2 id="training-sets-and-test-sets">Training Sets and Test Sets</h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+
+<span class="n">x_train</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">train_size</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>train_size: the proportion of the dataset to include in the train split</li>
+  <li>test_size: the proportion of the dataset to include in the test split</li>
+  <li>random_state: the seed used by the random number generator [optional]</li>
+</ul>
+:ET
