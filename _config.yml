@@ -4,7 +4,7 @@ SEOTitle: 甜果果的博客 | ST Blog
 header-img: https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/home-bg-o.jpg
 email: tianguoguo15@163.com
 description: "Stay hungry. Stay foolish."
-keyword: "ST, ST Blog, 甜果果的博客, 人工智能, 自然语言处理, 机器翻译, 吉他, 钢琴, 阅读, 游泳"
+keyword: "ST, ST Blog, ST Blog, 甜果果的博客, 人工智能, 自然语言处理, 机器翻译, 吉他, 钢琴, 阅读, 游泳"
 url: "http://tian-guo-guo.github.io"          # your host, for absolute URL
 baseurl: ""      # for example, '/blog' if your blog hosted on 'host/blog'
 github_repo: "https://github.com/tian-guo-guo/tian-guo-guo.github.io.git" # you code repository
@@ -99,22 +99,22 @@ service-worker: true
 
 # Friends
 friends: [
-    # {
-    #     title: "Timing·甜果果",
-    #     href: "http://www.timing360.com/shareWeb/feedDetail.html?userID=3930154&feedID=6528456&from=timeline&isappinstalled=0"
-    # },
     {
-        title: 'AI_flollower',
-        href: "https://weibo.com/5516859712/profile?topnav=1&wvr=6&is_all=1&display=0&retcode=6102"
+        title: "CSDN·甜果果2333",
+        href: "https://i.csdn.net/#/uc/profile"
     },
     {
         title: "美拍·甜果果2333",
         href: "http://www.meipai.com/user/1088601139?client_id=1089857299&gid=1119354961&uid=1088601139&utm_user_id=1088601139&utm_content=test&utm_source=meipai_share&utm_term=meipai_ios"
     },{
-        title: "Apple",
-        href: "https://apple.com"
+        title: "Keep·甜果果2333",
+        href: "https://show.gotokeep.com/users/573d84f646054cc85d430037?utm_source=wechat&utm_medium=web&utm_campaign=client_share&utm_term=&utm_content=users"
     },{
-        title: "Apple Developer",
-        href: "https://developer.apple.com/"
+        title: "豆瓣·甜果果2333",
+        href: "https://www.douban.com/people/102650670/"
     }
+    # {
+    #     title: 'AI_flollower',
+    #     href: "https://weibo.com/5516859712/profile?topnav=1&wvr=6&is_all=1&display=0&retcode=6102"
+    # }
 ]
