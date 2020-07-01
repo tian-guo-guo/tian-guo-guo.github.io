@@ -1,0 +1,226 @@
+I"�w<h1 id="基于领域特征的神经机器翻译领域适应方法">基于领域特征的神经机器翻译领域适应方法</h1>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gf5tzzyucpj30fu034jrn.jpg" alt="image-20200526142315814" /></p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gf5u1qd2xjj31nw0hojzi.jpg" alt="image-20200526142455773" /></p>
+
+<h1 id="总结">总结</h1>
+
+<p>生成器判别，领域敏感模型，领域不敏感模型，看起来好高大上，但是完全看不懂，而且也没有给代码库，完全无从下手，实验因为原理不懂，实验也没懂🤷‍♀️。</p>
+
+<h1 id="摘--要">摘 　 要：</h1>
+
+<p>​		神经机器翻译在资源丰富领域上训练的翻译模型往往在其他资源稀缺领域中表现较差，领域适应是利用资源丰富的领域帮助资源稀少的领域提升翻译质量的一种方法。 该文提出<strong>基于领域特征的领域适应方法以提升资源稀缺领域的神经机器翻译质量</strong>。 具体而言，<strong>该文尝试构建领域敏感网络以获得领域特有特征，构建领域不敏感网络以获得领域间的共有特征</strong>。 <u>一个领域判别器被用于区分领域。 该文通过训练领域敏感网络使得该领域判别器更易做出准确判断，同时引入对抗机制，使得领域不敏感网络欺骗该领域判别器</u>。 <strong>最后，提出一种系统集成机制，融合基准神经翻译网络、领域敏感网络、领域不敏感网络以完成神经机器翻译的领域适应</strong>。 实验结果显示，该 方法在中英广播对话领域上和英德口语领域上的翻译效果均有显著提升。</p>
+
+<h1 id="关键词">关键词：</h1>
+
+<p>​		领域适应；判别器；系统集成</p>
+
+<h1 id="0-引言">0 引言</h1>
+
+<p>​		近年來,基于编码器—解码器结构的神经机器翻译系统( neural machine translation,NMT)l3的提出,显著提升了传统统计机器翻译( statisticalmachine translation,SMT)的性能。NMT基于平行语料来训练,语料的质量、数量、领域对翻译效果都有很大的影响。NMT对于训练的语料很敏感,每个领域都有自己的语言风格、句子结构、专业术语等,例如“bank”这个英文单词,在金融领域通常被翻译为“银行”,而在计算机领域,一般被解释为“库”“存储体”等。如果用基于计算机领域语料训练出的NMT模型来翻译金融领域的句子,就会导致翻译效果不理想。NMT系统大多利用大规模新闻领域的平行语料,其他领域如对话、专利、科技等领域可获得的平行语料规模较小。<strong>利用资源丰富的领域语料来帮助语料稀少的领域提升翻译质量,称为机器翻译的领域适应。资源丰富的领域被称为外领域( out-domain),资源稀缺的领域被称为内领域( in-domain)。</strong></p>
+
+<p>​		<strong>本文提岀基于领域特征的神经机器翻译领域适应方法以提升内领域的翻译质量</strong>。<u>在机器翻译的语料中,有一些单词只是某个领域特有的,而另外一些单词在内领域和外领域通用,不需要对这些单词区分领域,学习单词的领域特性有助于提升译文质量</u>。<strong>为获得和应用这些领域特性,我们首先基于目标端隐藏层信息训练一个领域判别器,使其能够区分当前词属于外领域还是內领域,从而学习到领域特征;继而基于这个领域判别器,提出领域敏感网络(domain sensitive network,DSN),可以使得领域判别器更加准确;并提出领域不敏感网络( domain insensitive network,DIN),可以欺骗领域判别器做出错误判断。通过DSN可以识别各个领域的特征,通过DIN可以识别领域间的共有特征。最后,一个系统集成机制被提岀,以融合基准神经翻译网络、DSN、DIN,得到最终的翻译系统</strong>。实验结果显示,融合领域特征的网络,在资源稀缺的中英广播对话领域、英德口语领域,均有显著的翻译质量提升。</p>
+
+<p>​		本文的主要贡献如下：</p>
+
+<p>​		<strong>①提出基于领域判别器的领域敏感网络和领域不敏感网络,以分别对领域特有特征和领域共有特征进行建模</strong></p>
+
+<p>​		<strong>②通过系统集成方法,融合领域特有特征和领域共有特征,共同进行训练,以实现神经机器翻译的领域适应;</strong></p>
+
+<p>​		<strong>③本文提出的领域适应方法,在中英数据和英德数据上均显著提升了基准系统的领域适应能力,并优于相关研究的翻译质量。</strong></p>
+
+<p>​		本文的结构如下:第1节介绍相关工作,包括机器翻译的领域适应研究和系统集成研究;第2节介绍基准神经翻译系统;第3节阐述领域敏感网络和领域不敏感网络以及融合二者的系统集成方法;第4节阐述实验结果,并进行实验分析;第5节给出总结。</p>
+
+<h1 id="1-相关工作">1 相关工作</h1>
+
+<p>​		领域适应方法首先在SMT上进行研究,主要方法包括两种:模型适应和数据选择。<strong>模型适应</strong><u>主要是将內领域的模型和外领域的模型修改到同一模型级别上;数据选择主要是通过语言模型从外领域的语料里挑选平行语句对来扩充内领域的语料</u>。借鉴SMT的领域适应方法,NMT的领域适应方法也可分为基于数据的方法和基于模型的方法。</p>
+
+<p>​		<strong>基于数据的方法主要是通过训练模型来对外领域的数据进行打分并挑选出得分高的句子来扩充内领域的语料</strong>。<u>Wang等提出计算源端词嵌入向量( word embedding)的中心点,通过词嵌入向量来模拟句子的相似性,对比内领域和外领域句子的词嵌入向量挑选出词嵌入向量相似的句子Van der wees等η提出动态数据选择方法,在系统的训练过程中,不同的训练轮数选择不同的训练语料</u>。</p>
+
+<p>​		<strong>基于模型的方法主要是在训练过程中改变训练方法从而得到最优的领域训练目标</strong>。Wang等使用调整实例权重的方法,在计算损失函数时增加内领域的实例损失比重。Wang同时还提出了一种调整领域权重的方法,在训练过程中将內领域和外领域的数据一起训练,调整每一批(mini- batch)训练里内领域句子和外领域句子的比重。 Kobus等提出在词嵌入向量层加入词级别的领域特征,给每个词加上了领域标签。 <strong>Luong等提出“两步训练”的领域适应方法:第一步,用外领域的数据训练出翻译模型;第二步,在第一步训练好的模型的基础上,加上内领域的数据继续训练</strong>。</p>
+
+<p>​		区别于上述相关工作,本文的方法着重于学习领域特征,其中领域共有特征的训练借鉴了生成对抗网络( generative adversarial Networks,GAN)。GAN最先由 Goodfellow等1提出,随后,Wu12Yang13等将其应用于机器翻译中,他们使用卷积神经网络( convolutional neural network,CNN)<strong>训练判别器,来区分人类专家的翻译和机器生成的翻译,与此同时,改善生成器让机器生成的译文骗过判别器,在互搏中让生成器和判别器变得更强</strong>。本文的判别器用于区分语料的所属领域,DIN基于领域判别器,通过对抗训练学习到领域共有特征,让生成的译文欺骗判别器,使其判别不出译文的领域。DSN学习到领域特有特征,增强判别器性能,让神经机器翻译模型在翻译时携带领域信息。</p>
+
+<p>​		本文学习到的领域特有特征和领域共有特征属于不同的系统,提出一个系统集成机制让翻译系统在翻译时融合两种特征,充分利用领域特性。神经机器翻译里最常用的系统集成方法是Jean等4提出的集成方法( ensemble),在解码时集成多个模型的预测结果并得到最优翻译。 Garmash等1提出两种融合方法,一种是使用固定的权重向量集成多个目标端的预测概率,另一种是在训练时用门机制动态地控制每个模型对预测概率的贡献,集成的每个模型的源端语言不一样,目标端语言相同。</p>
+
+<h1 id="2基准系统">2基准系统</h1>
+
+<p>​		本文使用基于循环神经网络的RNMT[1-2]作为基准系统,具体结构如图1所示。</p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gf5u9vw6x7j30fi0cswga.jpg" alt="image-20200526143246058" /></p>
+
+<p>​		图1基准神经机器翻译模型</p>
+
+<h2 id="21-编码器">2.1 编码器</h2>
+
+<p>​		编码器用双向循环神经网络对源端输入建模:源端词汇被映射成词嵌入向量序列,得到编码的输入向量序列:X=x1,x2,…,xn,n是源端句子的长度。编码器将输入序列编码成隐藏层h=h,h2,…,hn的向量序列表示,每个词的隐藏层向量由双向RNN的结果拼接得到,如式(1~2)所示。</p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gf5uamvua4j30ek024wei.jpg" alt="image-20200526143329310" /></p>
+
+<p>​		其中,[;为向量拼接,f()为RNN,本文中使用LSTM,是正向编码,左,是反向编码。,的计算与h,类似,将源端输入序列以相反的顺序送入f()。</p>
+
+<h2 id="22-解码器">2.2 解码器</h2>
+
+<p>​		解码器通过注意力向量、目标端隐藏层来预测目标端词汇的生成。图1中的“ Attention layer”用来计算上下文向量c,本文用 Luong等提出的全局注意力方法,具体公式如式(3~5)所示。</p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gf5ucxwmgfj30es05yaac.jpg" alt="image-20200526143542174" /></p>
+
+<p>​		其中,W∈R,p是源端隐藏层维度,q是目标端状态隐藏层维度,α表示注意力信息。目标端状态隐藏层s,由LSTM得到,上下文向量c,和目标端状态隐藏层s:拼接得到注意力隐藏层s,最终的目标端词的概率分布y,由s进行 softmax操作得到,如式(6~7)所示。</p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gf5udc0vhsj30ew032mxd.jpg" alt="image-20200526143605068" /></p>
+
+<p>其中,f()为LSTM,W∈R+o,W∈Rˇx,l是注意力隐藏层维度,V是目标端词表大小。源端最终的隐藏层状态初始化目标端隐藏层</p>
+
+<h2 id="23损失函数">2.3损失函数</h2>
+
+<p>​		RNMT中,每句话的损失函数定义如式(9示</p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gf5udxuaaij30e001sjre.jpg" alt="image-20200526143640281" /></p>
+
+<p>​		其中,m是目标端译文长度,在RNMT的训练过程中，最终目标是最小化损失函数,使得翻译模型越来越准确。</p>
+<h1 id="3-基于领域特征的nmt领域适应">3 基于领域特征的NMT领域适应</h1>
+<p>​		本文提出的系统框架如图2所示。<strong>首先,翻译生成器G是基准系统RNMT的翻译模型,生成器G的训练语料是混合了内领域语料和外领域语料的综合语料。其次,在生成器G的基础上固定其网络参数,加入领域判别器,基于注意力隐藏层s;和多层感知机MLP识别当前词所属领域。然后,生成器与领域判别器一起训练，既学习领域特有特征得到领域敏感网络DSN,又通过对抗训练得到具有领域共有特征的领域不敏感网络DIN。最后使用系统集成方法，融合G、DSN、DIN得到最终领域适应系统</strong>。</p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gf5ufqhnjbj30og096ab3.jpg" alt="image-20200526143823751" /></p>
+
+<h2 id="31-领域判别器">3.1 领域判别器</h2>
+<p>​		本文使用生成器中目标端的注意力隐藏层信息Sr,通过多层感知机训练判别器。注意力隐藏层信息s;包含了源端的输入信息和目标端t时刻之前的译文信息,基于此来预测当前词的所属领域，如式(10~11)所示。</p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gf5ugpqx0ej30fa026mxc.jpg" alt="image-20200526143919840" /></p>
+
+<p>​		其中,d,表示t时刻单词的领域类别,本文中领域类别只有两种:内领域和外领域。VT∈R×,W,∈R,本文中,v为2,o设置为250,l为注意力隐藏层维度。判别器的损失函数设计如式(12)所示。</p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gf5uh02e0yj30es01o3yi.jpg" alt="image-20200526143936274" /></p>
+
+<p>​		其中,m为当前目标端译文的长度。整个网络在训练领域判别器时固定生成器网络参数,只更新领域判别器参数</p>
+
+<h2 id="32领域敏感网络dsn">3.2领域敏感网络DSN</h2>
+
+<p>​		判别器训练完成后已经具有区分领域的能力,为了利用判别器的领域特征,我们将判别器和生成器起训练。领域敏感网络借助判別器,训练岀携带领域信息的目标端注意力隐藏层向量s,系统通过s预测目标端单词概率。DSN的损失函数设计如式(13)所示</p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gf5uhh6ou8j30e403a0sv.jpg" alt="image-20200526144004414" /></p>
+
+<p>​		生成器在训练时学习到携带领域特征的注意力隐藏层向量s,判别器通过s来预测当前训练语句的领域,最小化生成器和判别器的损失,不仅能增强判别器领域判别的能力,还能使生成器通过判别器学习到领域特征,改善翻译效果,让判别器和生成器同时达到最优。</p>
+
+<h2 id="33领域不敏感网络din">3.3领域不敏感网络DIN</h2>
+
+<p>​		与领域敏感网络不同,领域不敏感网络的损失函数是最大化判别器的损失,如式(14)所示。</p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gf5ui1y37bj30eq0383yn.jpg" alt="image-20200526144036808" /></p>
+
+<p>​		最大化判别器的损失目的是让判别器区分不出句子的领域类别。在内领域和外领域的语料中,一些词是内领域特有的,很少出现在其他领域;还有一些共有词汇,比如一些功能词,是内领域和外领域的语料中都存在的词汇,具有不因为领域不同,翻译就不同的特性,此时不需要判别器具有准确的判别能力。生成器学习出具有领域共有特征的注意力隐藏层向量S,使其能够欺骗到判别器,让判别器分辨不出当前语句的领域,最终训练出领域不敏感网络。</p>
+
+<h2 id="34-融合gdsndin">3.4 融合G、DSN、DIN</h2>
+
+<p>​		为了利用DSN的领域特有特征和DIN的领域共有特征,本文构建一个集成系统,将G、DSN、DIN融合训练。对于领域专有词汇,需要借助领域特有特征,生成其对应领域的正确译文;对于通用词汇,需要借助领域共有特征,避免错误的翻译。G、DSN、DIN具有不同的特性,预测出的目标端词汇概率分布也不一样,本文的集成系统将不同网络预测出的目标端词汇概率融合在一起,来得到一个综合预测y,如式(15~16)所示</p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gf5uiljgh3j30ec02874f.jpg" alt="image-20200526144108657" /></p>
+
+<p>​		其中,y1°、y、y,N分别是生成器预测的目标端词概率分布、领域敏感网络预测的目标端词概率分布和领域不敏感网络预测的目标端词概率分布。W∈R是权重向量,参与网络训练和更新。集成系统中网络的损失计算与基准系统相同。 Garmash等1使用固定的参数来融合模型,以0.1的步长调试岀最优的权重分布,但此方法并不适用于领域适应。领域适应需要在不同的语言、不同的领域进行融合,若采用固定的参数来融合,则需要花费很长的时间去寻找最佳的匹配参数。本文对W4进行随机初始化,通过神经网络训练,来找到最佳的权重组合。使用 softmax函数是为了确保综合预测概率ym的概率分布和为1</p>
+
+<h1 id="4实验结果和分析">4实验结果和分析</h1>
+
+<h2 id="41数据集">4.1数据集</h2>
+
+<p>​		本文分别在中英和英德两种语言翻译上验证本文领域适应方法的有效性。语料统计信息如表1所示。</p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gf5ujiafaij30fe0h0jtj.jpg" alt="image-20200526144201416" /></p>
+
+<p>​		中英数据的内领域语料使用LDC( LinguistiData consortium)中文广播对话平行语料LDC2016T09),外领域语料是从LDC语料里抽取的125万句平行语句对,语料包括LDC2002E18、LDC2003E07、LDC2003E14以及LDC2004T07、LDC2004T08、LDC2005T06。本文从内领域分别抽取了1千句作为验证集和测试集(表1中的test1和test2),抽取的验证集、测试集与训练集没有交集。</p>
+
+<p>​		英德数据上采用 IWSLT2015( The interna-I Workshop on Spoken Language Translatio英语到德语的数据集6作为内领域的训练语料,该语料所对应的领域是口语领域。外领域语料采用的RE WMT2015( Workshop on Machine Translation英语到德语的数据集。本文把 IWSLT2015中的TED tst2012作为验证集, TED tst2013(test1)、TED tst.2014(test2)作为测试集。</p>
+
+<h2 id="42实验设置">4.2实验设置</h2>
+
+<p>​		本文的基准系统是基于 Pytorch的神经机器翻译系统 <a href="https://github.com/pytorch/fairseq/tree/v0.4.0">Fairseq</a>。在中英数据上,首先对中文做分词,对英文做 tokenization等预处理工作;其次分别对中文、英文实施 Byte Pair Encoding(BPE)操作,该方法将训练语料中单词拆分成更为常见的子部分。做BPE处理时,词汇表大小设置为3万。对于英德数据,本文做了 tokenization、BPE等处理,做BPE处理时将英文和德文语料混合在一起,生成3万的BPE词表。训练时,<strong>中英数据不区分大小写,并且不限制句长</strong>,英德数据区分大小写且设置最大句长为50。本文使用 multi-bleu.perl评测脚本,<strong>评测BLEU值时,中英数据大小写不敏感,</strong>英德数据大小写敏感</p>
+
+<p>​		<strong>实验首先训练岀内领域和外领域语料的基准模型,训练这两个模型时源端和目标端使用同一个字典,该字典是混合内领域和外领域语料生成的,也就是公有字典</strong>。 Fairseq训练参数设置如下: max-token设置为4000,词嵌入向量维度设为512,源端和目标端隐藏层维度设为512,使用Nag优化方法,初始学习率是0.25, dropout设置为0.2。解码时,使用 beam-search方法,beam的大小设置为10,其他参数使用 Fairseq的默认参数设置。</p>
+
+<h2 id="43实验结果">4.3实验结果</h2>
+
+<p>​		本文分别在中英数据和英德数据上实现了基于领域特征的神经机器翻译领域适应,实验结果如表2、表3所示。表2是中英广播对话的领域适应结果,表3是英德的 IWSLT15口语领域适应结果表中 Baseline-in为内领域的基准模型, Baseline-out为外领域的基准模型, Baseline-mixed是在混合内领域语料和外领域语料后训练生成的模型,也就是混合领域的基准模型,该模型同时也是生成器G。DSN-mixed和 DIN-mixed分别对应领域敏感网络和领域不敏感网络在混合语料上训练的模型,Comb-G-DSN- DINin为融合G、DSN、DIN模型后在内领域语料上继续训练的结果, Comb-G-DSNDIN-mixed为融合G、DSN、DIN模型后在混合语料上继续训练的结果。</p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gf5uxaridrj30vc0qm0ww.jpg" alt="image-20200526145516183" />		本文比较了 Luong等和Jean等14提出的系统集成方法。 Luong-out-miκed复现了 Luong等人提出的先在外领域语料上训练,再继续在混合语料上训练的方法。 Ensemble-G-DSN-DIN-mixed是在测试时融合G、DSN、DIN的预测结果141。</p>
+
+<p>​		本节表中 testl列为模型在测试集 test1上的BLEU值,test2列为模型在测试集test2上的BLEU值,avg为平均BLEU值。</p>
+
+<p>​		中英领域适应结果</p>
+
+<p>​		①从表2可以看出,外领域的基准模型(Baseline-out)在测试集上的表现优于内领域的基准模型,混合领域的基准模型( Baseline-mixed)翻译效果在基准模型中最优;</p>
+
+<p>​		②学习到领域特有特征的DSN( DSN-mixed)和领域共有特征的DIN( DIN-mixed),各自的翻译性能均有提升,与混合领域的基准模型相比,在测试集上平均提升了0.70和1.13个BLEU值;</p>
+
+<p>​		③本文提出的集成G、DSN、DIN的翻译结果,均好于 Luong等提出的“两步训练”法( Luongout-mixed)和Jean14等提出的“ ensemble’方法( Ensemble-c- DSN-DIN-mixed)的翻译结果,其中在混合领域上的集成训练模型( Comb-G-DSN-DINmixed),与混合领域的基准模型相比,平均提升了2.93个BLEU值。</p>
+
+<p>​		英德领域适应结果</p>
+
+<p>​		①从表3可以看出,外领域的基准模型在测试集上的翻译性能没有优于内领域的基准模型(Baseline-in),混合领域的基准模型在 testl上的BLEU值低于內领域基准模型;</p>
+
+<p>​		②DSN和DIN的翻译效果均好于内、外领域基准模型的翻译效果,与混合领域的基准模型相比,平均提升了0.46和0.39个BLEU值;③本文的系统集成方法在英德数据上,内领域上的实验结果( Comb-G-DSN-DIN- in)好于混合领域( Comb-C-DSN- DIN-mixed)的实验结果,与混合领域基准模型相比,提升了2.95个BLEU值。同时,我们的方法也显著优于 luong10等的方法和Jean等的方法。</p>
+
+<p>​		本文提岀的领域适应方法,在中英数据和英德数据上的实验结果,与基准系统翻译效果相比均有显著的提升。因此,基于领域特征的神经机器翻译领域适应方法能有效地提升资源稀缺领域的翻译质量。</p>
+
+<h2 id="44实验对比分析">4.4实验对比分析</h2>
+
+<h3 id="441中英与英德实验结果对比">4.4.1中英与英德实验结果对比</h3>
+
+<p>​		对比表2、表3各实验结果,在中英数据与英德数据上表现有一些不同。中英数据的基准模型中外领域的翻译模型表现好于内领域的翻译模型,而英德数据中外领域基准模型的翻译效果没有內领域表现得好。本文分析,中英数据內领域的数据量较小,外领域的数据量是內领域的数据量的60倍左右,而机器学习对样本的数据量要求较高,因此内领域的基准模型翻译质量较差,外领域充足的语料有助于内领域翻译效果的提升。这也是系统集成时中英数据在混合语料上的翻译结果比內领域效果好的原因。英徳数据上,内领域的语料量较为充分,所以內领域的基准模型翻译效果较好。同理,结合领域特征,集成系统在內领域翻译效果优于混合领域。</p>
+
+<h3 id="442领域判别准确率对比">4.4.2领域判别准确率对比</h3>
+
+<p>​		本文对比了混合语料中,内领域数据占比不同对领域判别准确率的影响。本文进行了4组对比实验,从表4可以看出,无论内领域数据占比多大,判别器和领域敏感网络的领域判别准确率都在0.99左右,可以准确地判别实例所属领域,领域不敏感网络训练时使判别器区分不清句子所属领域,所以准确率很低。当内领域语料所占比例提高时,判别器的acin有所提升, acc out略微下降, acc mixed总体呈下降趋势,这表明增加内领域数据的比例,会使判别器过拟合外领域的领域特征。将判别器和生成器一起训练时,无论内领域语料的所占比例是多少,领域敏感网络的 admixed都维持在0.999左右,具有准确的领域判别能力。test1和test2列对应内领域占比不同的中英混合语料在领域敏感网络和领域不敏感网络的实验结果,avg列为平均BLEU值。从表中可以看出,对于领域敏感网络,当内领域与外领域占比为3:1时,在 testl上取得最好结果;当内领域与外领域占比为1:1时,在test2上取得最好结果;当内领域与外领域占比增加到6:1时,平均BLEU值开始下降,且下降明显。对于领域不敏感网络,内领域与外领域占比为1:1时在 testl和test2上均得到最好翻译效果,随着內领域与外领域占比增加,平均BLEU值小幅度波动。由此可见,将一份内领域语料和外领域语料混合在起,已能充分训练判别器性能,提升翻译质量。</p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gf5v33fy29j30vs0i4whf.jpg" alt="image-20200526150050816" />### 4.4.3 与“两步训练”法对比</p>
+
+<p>​		与 Luong等0提出的“两步训练”法( Luongout-mixed)相比,本文在中英数据上最好结果( CombG-DSN-DIN-mixed)比其高1.34个BLEU值,英德数据上的最好结果( Comb-G-DSN-DIN-in)比其高2.45个BLEU值。 Luong等人使用预训练的外领域翻译模型在内领域上再训练,导致內、外领域中领域特有单词信息被覆盖,同时缺乏领域特征引导领域共有词汇的翻译,而本文用判别器训练出内外领域的领域特有特征和共有特征,再通过系统集成融合领域信息,指导模型翻译。</p>
+
+<h3 id="444系统集成方法对比">4.4.4系统集成方法对比</h3>
+
+<p>​		Jean等人的系统集成方法是在测试时融合翻译模型,本文的集成方法则是在训练时融合各翻译系统。表5是这两种系统集成方法在多个基准系统和领域网络系统上的融合实验对比,表中的模型均是在中英混合语料上训练,其中 Baseline-1-mixed、Baseline2 mixed、 Baseline3 mixed是三个初始化不同的基准模型。从表中可以看出,融合三个基准模型时,本文提出的集成方法 Comb-Baselines-mixed的实验结果比采取Jean方法的 Ensemble-Baselines-mixed平均提高了1.39个BLEU值,这表明本文的系统集成方法更能充分融合各模型的预测结果,提高模型泛化能力,这也是 Comb GDSN-DIN-mixed比 EnsembleG-DSN-DIN-mixed效果好的原因。此外,用Jean的方法融合领域网络的 Ensemble-G-DSN-DIN-mixed在测试集上的平均得分比融合基准系统的 Ensemble-Baselines-mixed提高了1.22个点,这也从侧面证明了本文的领域网络DSN、DIN学习到的领域特征确实能帮助翻译模型提升译文质量。</p>
+
+<p>​		综上所述,不论是中英数据还是英德数据,通过领域敏感网络和领域不敏感网络提取岀领域特有特征和领域共有特征,均能有效地提升翻译质量。并且,在特殊领域的翻译任务上,领域的特有特征能帮助专有词汇的翻译,领域的共有特征能表示通过词汇信息,融合二者可以更有效地提升翻译质量。</p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gf5v40o18kj30uo0akgne.jpg" alt="image-20200526150143695" /># 5总结</p>
+
+<p>​		本文提岀了基于领域特征的神经机器翻译领域适应方法,通过判别器训练领域特征,基于判别器的领域特征分别得到领域敏感网络和领域不敏感网络,使其分别携带领域特有特征和领域共有特征最后构建集成系统,融合领域特有特征和领域共有特征。实验在中英数据上和英德数据上的翻译效果均显著提升了神经机器翻译的领域适应能力,并优于相关研究的翻译效果。</p>
+
+<h1 id="参考文献">参考文献</h1>
+
+<p>[1 Dzmitry Bahdanau, Kyunghyun Cho, Yoshua Bengio Neural machine translation by jointly learning to alignand translate[J]. ar Xiv preprint ar Xiv: 1409.04732014.</p>
+
+<p>[2] Minh-Thang Luong, Hieu Pham, Christopher Dning. Effective approaches to attention-based neuralmachine translation[C]// Proceedings of the 2015 Con-erence onEmpirical Methods in Natural LanguageProcessing. Lisbon, Portugal, 2015: 1412-1421</p>
+
+<p>[3]李亚超,熊德意,张民.神经机器翻译综述[J].计算机学报,2018,41(12):100-121.</p>
+
+<p>[4] Rui Wang, Hai Zhao, Bao-Liang Lu, et al. Connecting phrase based statistical machine translation adapta-tion[C]//Proceedings of the 26th International Conference on Computational Linguistics. Osaka, japan,2016:3135-3145</p>
+
+<p>[5] Shafiq Joty, Hassan Sajjad, Nadir Durrani, et al.How to avoid unwanted pregnancies Domain adapta-
+tion using neural network models[C]//Proceedings ofthe 2015 Conference on Empirical Methods in NaturalLanguage processing. Lisbon, Portugal, 2015: 1259-1270</p>
+
+<p>[6] Rui Wang, Andrew Finch, Masao Utiyama, et alSentence embedding for neural machine translation do-main adaptation[C]//Proceedings of the 55th AnnualMeeting of the Association for Computational Linguis-tics. Vancouver, Canada, 2017: 560-566</p>
+
+<p>[7] Marlies van der Wees, Arianna Bisazza, ChristofMonz. dynamic data selection for neural machinetranslation [J]. arXiv preprint ar Xiv: 1708. 007122017.</p>
+
+<p>[8] Rui Wang, Masao Utiyama, Lemao Liu, et al. In-stance weighting for neural machine translation domainadaptation[C]//Proceedings of the 2017 Conference onEmpirical Methods in Natural Language ProcessingCopenhagen, Denmark, 2017: 1482-1488</p>
+
+<p>[9] Catherine Kobus, Josep Crego, Jean Senellart. Domaincontrol for neural machine translation [J]. arXiv pre-print arXiv: 1612., 2016.</p>
+
+<p>[10] Minh-Thang Luong, Christopher D Manning. Stan-ford neural machine translation systems for spokenlanguage domains [C]//Proceedings of the Interna-tional Workshop on Spoken Language Translation.Da Nang, Vietnam, 2015: 76-79</p>
+
+<p>[11] Ian J Goodfellow, Jonathon Shlens, ChristianSzegedy. Generative adversarial nets [C//Proceed-ings of the Advances in Neural Information Process-ing Systems,2014:2672-2680</p>
+
+<p>[12] Lijun Wu, Yingce Xia, Li Zhao, et al. Adversarialneural machine translation[J]. ar Xiv preprint ar Xiv1704.06933,2017.</p>
+
+<p>[13] Zhen Yang, Wei Chen, Feng Wang, et al. Improvingneural machine translation with conditional sequencegenerative adversarial nets[J]. arXiv preprint ar Xiv:1703.04887,2017</p>
+
+<p>[14] Sebastien Jean, Kyunghyun Cho, Roland MemisevicOn using very large target vocabulary for neural ma-chine translation[ C]//Proceedings of the 53rd AntMeeting of the Association for Computationalguistics(ACL). Beijing, China, 2015: 1-10.</p>
+
+<p>[15] Ekaterina Garmash, Christof Monz. Ensemble learn-ing for multi-source neural machine translation[C]//Proceedings of the 26th International Conference onComputational Linguistics. Osaka, Japan, 2016:1409-1418</p>
+
+<p>[16] Mauro Cettolo, Jan Niehues, et al. Report on the11th IWSLT evaluation campaign [C]//Proceedingsof the International Workshop on Spoken LanguageTranslation. Hanoi, Vietnam, 2014:2-17</p>
+
+<p>[17] Sennrich R, Haddow B, Birch A. Neural machinetranslation of rare words with subword units [J]ar Xiv preprint arXiv: 1508.07909, 2015.</p>
+
+<p>[18] Kishore Papineni, Salim Roukos, Todd Ward. et alblEU,A method for automatic evaluation of machinetranslation[C / Proceedings of the 40th AnnualMeeting on Association for Computational Linguis-tics. Philadelphia, Pennsylvania, 2002: 311-318</p>
+:ET

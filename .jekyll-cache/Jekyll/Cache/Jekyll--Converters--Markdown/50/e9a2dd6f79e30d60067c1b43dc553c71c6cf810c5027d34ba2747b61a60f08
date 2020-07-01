@@ -1,0 +1,22 @@
+I"H<h2 id="1-如何下载优酷视频不用优酷播放器">1. <a href="https://www.zhihu.com/question/48914419">如何下载优酷视频（不用优酷播放器）</a></h2>
+<ol>
+  <li>使用you-get
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>you-get '视频链接地址'
+</code></pre></div>    </div>
+  </li>
+  <li>使用ffmpeg下载m3u8直播流
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffmpeg -i http://play2.kandian.360.cn/vod_xinwen/vod-media/1160007_3029687_20160725140508.m3u8 "文件名.mp4"
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h2 id="2-刘洋基于深度学习的机器翻译">2. <a href="https://cloud.tencent.com/developer/article/1106695">刘洋——基于深度学习的机器翻译</a></h2>
+<p>基于深度学习的机器翻译（PPT、视频下载）：
+链接: https://pan.baidu.com/s/1cCpgU1t9tBT1pabfBvXWVg 提取码: u6j7</p>
+
+<center><embed src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/file/blog/190826-刘洋-基于深度学习的机器翻译.pdf" width="100%" height="500" /></center>
+
+<h2 id="3-如何在blog中内嵌pdf">3. <a href="https://gohom.win/2015/06/07/EmbedHtmlPDF/">如何在blog中内嵌pdf</a></h2>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;center&gt;&lt;embed src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/file/blog/190826-刘洋-基于深度学习的机器翻译.pdf" width="100%" height="500"&gt;&lt;/center&gt;
+</code></pre></div></div>
+:ET

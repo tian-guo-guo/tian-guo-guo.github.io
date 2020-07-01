@@ -1,0 +1,308 @@
+I"�u<h3 id="1-lemon钢琴教学">1. lemon钢琴教学</h3>
+<iframe height="400" width="100%" src="//player.bilibili.com/player.html?aid=64554127&amp;cid=112065047&amp;page=1" scrolling="yes" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/blog/2019-08-24-lemon.png" alt="lemon" /></p>
+
+<h3 id="2-如何让页面中插入的视频自适应手机屏幕的大小">2. 如何让页面中插入的视频自适应手机屏幕的大小</h3>
+<p>一般内嵌的代码是以下的样式：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;iframe height="500" width="100%" src="//player.bilibili.com/player.html?aid=64554127&amp;cid=112065047&amp;page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"&gt; &lt;/iframe&gt;
+</code></pre></div></div>
+<p>若想要该视频自适应屏幕的大小：将width的值修改为100%即可：width=100%</p>
+
+<h3 id="3-如何在jekyll中使用mathjax">3. <a href="https://pkuwwt.github.io/linux/2013-12-03-jekyll-using-mathjax/">如何在Jekyll中使用MathJax</a></h3>
+<p>第一步，将_config.yml中的markdown修改为</p>
+
+<p><code class="language-plaintext highlighter-rouge">markdown: kramdown</code></p>
+
+<p>本地使用jekyll时可能需要额外安装kramdown</p>
+
+<p><code class="language-plaintext highlighter-rouge">gem install kramdown</code></p>
+
+<p>kramdown是一个Markdown解析器，它能够正确解释公式内部的符号，不会与Markdown语法冲突，比如不会将^符号变成<sup></sup>标签。</p>
+
+<p>第二步，在header中添加引用和设置代码。也就是_include/header.html中。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;script type="text/x-mathjax-config"&gt;
+MathJax.Hub.Config({
+                  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+                          });
+&lt;/script&gt;
+&lt;script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"&gt;
+&lt;/script&gt;
+</code></pre></div></div>
+
+<p>第三步，在Markdown中使用Latex数学公式</p>
+
+<p>比如行内公式：\(E=mc^2\) is a inline formula</p>
+
+<p>比如行间公式(Lorentz方程)：</p>
+
+\[\begin{aligned} \dot{x} &amp;= \sigma(y-x) \\ 
+\dot{y} &amp;= \rho x - y - xz \\ 
+\dot{z} &amp;= -\beta z + xy \end{aligned}\]
+
+<p>注意，行间公式前后应该都留空行，使得公式能够居中显示。</p>
+
+<p>另外，kramdown的latex语法行内和行间公式都是$$符号作为分隔符。虽然和一般的使用习惯不同，但是可以保证_, ^, \之类符号能够正确解析。</p>
+
+<h3 id="4-numpy-34-50-练习">4. numpy 34-50 练习</h3>
+<h4 id="34-how-to-get-all-the-dates-corresponding-to-the-month-of-july-2016-">34. How to get all the dates corresponding to the month of July 2016? (★★☆)</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">arange</span><span class="p">(</span><span class="s">'2016-07'</span><span class="p">,</span> <span class="s">'2016-08'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s">'datetime64[D]'</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">Z</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>['2016-07-01' '2016-07-02' '2016-07-03' '2016-07-04' '2016-07-05'
+ '2016-07-06' '2016-07-07' '2016-07-08' '2016-07-09' '2016-07-10'
+ '2016-07-11' '2016-07-12' '2016-07-13' '2016-07-14' '2016-07-15'
+ '2016-07-16' '2016-07-17' '2016-07-18' '2016-07-19' '2016-07-20'
+ '2016-07-21' '2016-07-22' '2016-07-23' '2016-07-24' '2016-07-25'
+ '2016-07-26' '2016-07-27' '2016-07-28' '2016-07-29' '2016-07-30'
+ '2016-07-31']
+</code></pre></div></div>
+
+<h4 id="35-how-to-compute-ab-a2-in-place-without-copy-">35. How to compute ((A+B)*(-A/2)) in place (without copy)? (★★☆)</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">*</span><span class="mi">3</span>
+<span class="n">np</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">out</span><span class="o">=</span><span class="n">B</span><span class="p">)</span>
+<span class="n">np</span><span class="p">.</span><span class="n">divide</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">out</span><span class="o">=</span><span class="n">A</span><span class="p">)</span>
+<span class="n">np</span><span class="p">.</span><span class="n">negative</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">out</span><span class="o">=</span><span class="n">A</span><span class="p">)</span>
+<span class="n">np</span><span class="p">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">out</span><span class="o">=</span><span class="n">A</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>array([-1.5, -1.5, -1.5])
+</code></pre></div></div>
+
+<h4 id="36-extract-the-integer-part-of-a-random-array-using-5-different-methods-">36. Extract the integer part of a random array using 5 different methods (★★☆)</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="p">(</span><span class="n">Z</span> <span class="o">-</span> <span class="n">Z</span><span class="o">%</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">print</span> <span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">floor</span><span class="p">(</span><span class="n">Z</span><span class="p">))</span>
+<span class="k">print</span> <span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">Z</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">print</span> <span class="p">(</span><span class="n">Z</span><span class="p">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span>
+<span class="k">print</span> <span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">trunc</span><span class="p">(</span><span class="n">Z</span><span class="p">))</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[1. 6. 8. 8. 8. 3. 2. 7. 1. 5.]
+[1. 6. 8. 8. 8. 3. 2. 7. 1. 5.]
+[1. 6. 8. 8. 8. 3. 2. 7. 1. 5.]
+[1 6 8 8 8 3 2 7 1 5]
+[1. 6. 8. 8. 8. 3. 2. 7. 1. 5.]
+</code></pre></div></div>
+
+<h4 id="37-create-a-5x5-matrix-with-row-values-ranging-from-0-to-4-">37. Create a 5x5 matrix with row values ranging from 0 to 4 (★★☆)</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">Z</span> <span class="o">+=</span> <span class="n">np</span><span class="p">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">Z</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[[0. 1. 2. 3. 4.]
+ [0. 1. 2. 3. 4.]
+ [0. 1. 2. 3. 4.]
+ [0. 1. 2. 3. 4.]
+ [0. 1. 2. 3. 4.]]
+</code></pre></div></div>
+
+<h4 id="38-consider-a-generator-function-that-generates-10-integers-and-use-it-to-build-an-array-">38. Consider a generator function that generates 10 integers and use it to build an array (★☆☆)</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">generate</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">x</span>
+<span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">fromiter</span><span class="p">(</span><span class="n">generate</span><span class="p">(),</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span><span class="n">count</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">Z</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[0. 1. 2. 3. 4. 5. 6. 7. 8. 9.]
+</code></pre></div></div>
+
+<h4 id="39-create-a-vector-of-size-10-with-values-ranging-from-0-to-1-both-excluded-">39. Create a vector of size 10 with values ranging from 0 to 1, both excluded (★★☆)</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="n">endpoint</span><span class="o">=</span><span class="bp">False</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+<span class="k">print</span><span class="p">(</span><span class="n">Z</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[0.09090909 0.18181818 0.27272727 0.36363636 0.45454545 0.54545455
+ 0.63636364 0.72727273 0.81818182 0.90909091]
+</code></pre></div></div>
+
+<h4 id="40-create-a-random-vector-of-size-10-and-sort-it-">40. Create a random vector of size 10 and sort it (★★☆)</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">random</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">Z</span><span class="p">.</span><span class="n">sort</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="n">Z</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[0.03196654 0.09431246 0.13893494 0.15147866 0.2236255  0.27663303
+ 0.32933076 0.55351975 0.58898618 0.95276539]
+</code></pre></div></div>
+
+<h4 id="41-how-to-sum-a-small-array-faster-than-npsum-">41. How to sum a small array faster than np.sum? (★★☆)</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Author: Evgeni Burovski
+</span>
+<span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">np</span><span class="p">.</span><span class="n">add</span><span class="p">.</span><span class="nb">reduce</span><span class="p">(</span><span class="n">Z</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>45
+</code></pre></div></div>
+
+<h4 id="42-consider-two-random-array-a-and-b-check-if-they-are-equal-">42. Consider two random array A and B, check if they are equal (★★☆)</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="c1"># Assuming identical shape of the arrays and a tolerance for the comparison of values
+</span><span class="n">equal</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">equal</span><span class="p">)</span>
+
+<span class="c1"># Checking both the shape and the element values, no tolerance (values have to be exactly equal)
+</span><span class="n">equal</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">equal</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>False
+False
+</code></pre></div></div>
+
+<h4 id="43-make-an-array-immutable-read-only-">43. Make an array immutable (read-only) (★★☆)</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">Z</span><span class="p">.</span><span class="n">flags</span><span class="p">.</span><span class="n">writeable</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">Z</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+ValueError                                Traceback (most recent call last)
+
+&lt;ipython-input-44-dcc5e7f145b5&gt; in &lt;module&gt;
+      1 Z = np.zeros(10)
+      2 Z.flags.writeable = False
+----&gt; 3 Z[0] = 1
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ValueError: assignment destination is read-only
+</code></pre></div></div>
+
+<h4 id="44-consider-a-random-10x2-matrix-representing-cartesian-coordinates-convert-them-to-polar-coordinates-">44. Consider a random 10x2 matrix representing cartesian coordinates, convert them to polar coordinates (★★☆)</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">random</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">X</span><span class="p">,</span><span class="n">Y</span> <span class="o">=</span> <span class="n">Z</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">Z</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">X</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">Y</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span><span class="n">X</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[1.19765673 0.79161213 0.85189734 0.85262628 1.08524822 0.31548887
+ 1.06104117 0.62811983 0.88433014 0.94899774]
+[0.66630471 1.14774457 0.74347861 1.39384511 0.59577543 1.52950198
+ 1.1765668  0.96226275 0.3678655  1.28233548]
+</code></pre></div></div>
+
+<h4 id="45-create-random-vector-of-size-10-and-replace-the-maximum-value-by-0-">45. Create random vector of size 10 and replace the maximum value by 0 (★★☆)</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">random</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">Z</span><span class="p">[</span><span class="n">Z</span><span class="p">.</span><span class="n">argmax</span><span class="p">()]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">print</span><span class="p">(</span><span class="n">Z</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[0.95310443 0.62180389 0.         0.36998626 0.9276865  0.32792638
+ 0.45271474 0.9238892  0.49063636 0.43790766]
+</code></pre></div></div>
+
+<h4 id="46-create-a-structured-array-with-x-and-y-coordinates-covering-the-01x01-area-">46. Create a structured array with <code class="language-plaintext highlighter-rouge">x</code> and <code class="language-plaintext highlighter-rouge">y</code> coordinates covering the [0,1]x[0,1] area (★★☆)</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span> <span class="p">[(</span><span class="s">'x'</span><span class="p">,</span><span class="nb">float</span><span class="p">),(</span><span class="s">'y'</span><span class="p">,</span><span class="nb">float</span><span class="p">)])</span>
+<span class="n">Z</span><span class="p">[</span><span class="s">'x'</span><span class="p">],</span> <span class="n">Z</span><span class="p">[</span><span class="s">'y'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span>
+                             <span class="n">np</span><span class="p">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="n">Z</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[[(0.  , 0.  ) (0.25, 0.  ) (0.5 , 0.  ) (0.75, 0.  ) (1.  , 0.  )]
+ [(0.  , 0.25) (0.25, 0.25) (0.5 , 0.25) (0.75, 0.25) (1.  , 0.25)]
+ [(0.  , 0.5 ) (0.25, 0.5 ) (0.5 , 0.5 ) (0.75, 0.5 ) (1.  , 0.5 )]
+ [(0.  , 0.75) (0.25, 0.75) (0.5 , 0.75) (0.75, 0.75) (1.  , 0.75)]
+ [(0.  , 1.  ) (0.25, 1.  ) (0.5 , 1.  ) (0.75, 1.  ) (1.  , 1.  )]]
+</code></pre></div></div>
+
+<h4 id="47-given-two-arrays-x-and-y-construct-the-cauchy-matrix-c-cij-1xi---yj">47. Given two arrays, X and Y, construct the Cauchy matrix C (Cij =1/(xi - yj))</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Author: Evgeni Burovski
+</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">Y</span> <span class="o">=</span> <span class="n">X</span> <span class="o">+</span> <span class="mf">0.5</span>
+<span class="n">C</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">np</span><span class="p">.</span><span class="n">subtract</span><span class="p">.</span><span class="n">outer</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">linalg</span><span class="p">.</span><span class="n">det</span><span class="p">(</span><span class="n">C</span><span class="p">))</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>3638.163637117973
+</code></pre></div></div>
+
+<h4 id="48-print-the-minimum-and-maximum-representable-value-for-each-numpy-scalar-type-">48. Print the minimum and maximum representable value for each numpy scalar type (★★☆)</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="n">np</span><span class="p">.</span><span class="n">int8</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">int64</span><span class="p">]:</span>
+   <span class="k">print</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">).</span><span class="nb">min</span><span class="p">)</span>
+   <span class="k">print</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">).</span><span class="nb">max</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="n">np</span><span class="p">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">float64</span><span class="p">]:</span>
+   <span class="k">print</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">).</span><span class="nb">min</span><span class="p">)</span>
+   <span class="k">print</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">).</span><span class="nb">max</span><span class="p">)</span>
+   <span class="k">print</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">).</span><span class="n">eps</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-128
+127
+-2147483648
+2147483647
+-9223372036854775808
+9223372036854775807
+-3.4028235e+38
+3.4028235e+38
+1.1920929e-07
+-1.7976931348623157e+308
+1.7976931348623157e+308
+2.220446049250313e-16
+</code></pre></div></div>
+
+<h4 id="49-how-to-print-all-the-values-of-an-array-">49. How to print all the values of an array? (★★☆)</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">np</span><span class="p">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="n">np</span><span class="p">.</span><span class="n">nan</span><span class="p">)</span>
+<span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">16</span><span class="p">,</span><span class="mi">16</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="n">Z</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]]
+</code></pre></div></div>
+
+<h4 id="50-how-to-find-the-closest-value-to-a-given-scalar-in-a-vector-">50. How to find the closest value (to a given scalar) in a vector? (★★☆)</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">index</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nb">abs</span><span class="p">(</span><span class="n">Z</span><span class="o">-</span><span class="n">v</span><span class="p">)).</span><span class="n">argmin</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="n">Z</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>93
+</code></pre></div></div>
+:ET
