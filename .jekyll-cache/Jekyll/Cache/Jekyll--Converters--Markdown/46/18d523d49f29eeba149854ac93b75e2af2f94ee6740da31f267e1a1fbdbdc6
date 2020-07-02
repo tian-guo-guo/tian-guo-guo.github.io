@@ -1,0 +1,74 @@
+I"�<h1 id="leetcode-01-两数之和">LeetCode-<a href="https://leetcode-cn.com/problems/two-sum">01-两数之和</a></h1>
+
+<p>tag: 数组，easy</p>
+
+<p>给定一个整数数组 nums 和一个目标值 target，请你在该数组中找出和为目标值的那 两个 整数，并返回他们的数组下标。</p>
+
+<p>你可以假设每种输入只会对应一个答案。但是，数组中同一个元素不能使用两遍。</p>
+
+<p><strong>示例 1：</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>给定 nums = [2, 7, 11, 15], target = 9
+
+因为 nums[0] + nums[1] = 2 + 7 = 9
+所以返回 [0, 1]
+</code></pre></div></div>
+
+<h2 id="方法一">方法一：</h2>
+
+<p>比较直白的想法：</p>
+
+<p>先遍历array里面所有的值，那么另一个数就是target-i</p>
+
+<p>start_index是i所在的位置，next_index是下一个数的位置</p>
+
+<p>那下一个位置是不是我们要找的值呢？需要做一个判断，新建一个从下一个位置到截止的新数组nums[next_index: ]，然后看看j是不是在temp_nums里</p>
+
+<p>如果是的话，返回两个值，一个是开始的index(nums.index(i))，一个是结束的index(next_index+temp.index(j))</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">twoSum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nums</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">nums</span><span class="p">:</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="n">target</span> <span class="o">-</span> <span class="n">i</span>
+            <span class="n">start_index</span> <span class="o">=</span> <span class="n">nums</span><span class="p">.</span><span class="n">index</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">next_index</span> <span class="o">=</span> <span class="n">start_index</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">temp_nums</span> <span class="o">=</span> <span class="n">nums</span><span class="p">[</span><span class="n">next_index</span><span class="p">:</span> <span class="p">]</span>
+            <span class="k">if</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">temp_nums</span><span class="p">:</span>
+                <span class="k">return</span><span class="p">(</span><span class="n">nums</span><span class="p">.</span><span class="n">index</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">next_index</span><span class="o">+</span><span class="n">temp_nums</span><span class="p">.</span><span class="n">index</span><span class="p">(</span><span class="n">j</span><span class="p">))</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>执行用时：1392 ms, 在所有 Python3 提交中击败了27.56%的用户</p>
+
+  <p>内存消耗：14.7 MB, 在所有 Python3 提交中击败了13.41%的用户</p>
+</blockquote>
+
+<h2 id="方法二">方法二：</h2>
+
+<p>优化一些的方法</p>
+
+<p>hashtable, dict ={}</p>
+
+<p>先初始化一个空的字典，然后循环遍历，看看另一个数target-nums[i]是不是在这个dict里面，</p>
+
+<p>如果是，那么直接return position i和dict[nums[i]]就好了</p>
+
+<p>如果不是，那么i所在的数，加到dict里。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">twoSum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nums</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nums</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">target</span> <span class="o">-</span> <span class="n">nums</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">:</span>
+                <span class="nb">dict</span><span class="p">[</span><span class="n">nums</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="n">target</span><span class="o">-</span><span class="n">nums</span><span class="p">[</span><span class="n">i</span><span class="p">]],</span> <span class="n">i</span><span class="p">]</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>执行用时：60 ms, 在所有 Python3 提交中击败了80.81%的用户</p>
+
+  <p>内存消耗：15 MB, 在所有 Python3 提交中击败了5.48%的用户</p>
+</blockquote>
+
+:ET

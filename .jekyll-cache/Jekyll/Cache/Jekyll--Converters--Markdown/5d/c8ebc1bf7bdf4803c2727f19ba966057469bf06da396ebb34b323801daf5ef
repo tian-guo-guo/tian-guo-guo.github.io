@@ -1,0 +1,29 @@
+I"�<h1 id="leetcode-01-两数之和">LeetCode-<a href="https://leetcode-cn.com/problems/two-sum">01-两数之和</a></h1>
+
+<p>给定一个整数数组 nums 和一个目标值 target，请你在该数组中找出和为目标值的那 两个 整数，并返回他们的数组下标。</p>
+
+<p>你可以假设每种输入只会对应一个答案。但是，数组中同一个元素不能使用两遍。</p>
+
+<p><strong>示例 1：</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>给定 nums = [2, 7, 11, 15], target = 9
+
+因为 nums[0] + nums[1] = 2 + 7 = 9
+所以返回 [0, 1]
+</code></pre></div></div>
+
+<h2 id="方法一">方法一：</h2>
+
+<p>比较直白的想法</p>
+
+<p>先遍历array里面所有的值，那么另一个数就是target-i</p>
+
+<p>start_index是i所在的位置，next_index是下一个数的位置</p>
+
+<p>那下一个位置是不是我们要找的值呢？需要做一个判断，</p>
+
+<p>新建一个从下一个位置到截止的新数组nums[next_index: ]</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+</code></pre></div></div>
+:ET
