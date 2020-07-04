@@ -1,0 +1,66 @@
+I"�<h1 id="leetcode-66-加一httpsleetcode-cncomproblemsmaximum-subarray">LeetCode-<a href="https://leetcode-cn.com/problems/plus-one/">66. 加一</a>https://leetcode-cn.com/problems/maximum-subarray/)</h1>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/6A-DTVB9HT8" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+
+<p>tag: easy，数组</p>
+
+<p><strong>题目：</strong></p>
+
+<p>给定一个由整数组成的非空数组所表示的非负整数，在该数的基础上加一。</p>
+
+<p>最高位数字存放在数组的首位， 数组中每个元素只存储单个数字。</p>
+
+<p>你可以假设除了整数 0 之外，这个整数不会以零开头。</p>
+
+<p><strong>示例 1：</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>输入: [1,2,3]
+输出: [1,2,4]
+解释: 输入数组表示数字 123。
+</code></pre></div></div>
+
+<p><strong>示例 2:</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>输入: [4,3,2,1]
+输出: [4,3,2,2]
+解释: 输入数组表示数字 4321。
+</code></pre></div></div>
+
+<h1 id="方法一">方法一：</h1>
+
+<p>如果一个数组全是负数，最大的subarray就是在里面找到的最小的负数，返回的就是连续的最大字串，if max(nums)&lt;0: return max(nums)</p>
+
+<p>如果有正数有负数，就得go over这个数组，找到最好的subarray。</p>
+
+<p>需要两个变量，一个是最大的subarray，另一个是中间变量，local max 的subarray，找到了就可以直接return它。</p>
+
+<p>local_max = max(0, local_max + num)</p>
+
+<p>global_max = max(global_max, local_max)</p>
+
+<p>return global_max</p>
+
+<p>重点就是在global_max和local_max中间找到最大的值。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">maxSubArray</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nums</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">max</span><span class="p">(</span><span class="n">nums</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">nums</span><span class="p">)</span>
+        <span class="n">local_max</span><span class="p">,</span> <span class="n">global_max</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">nums</span><span class="p">:</span>
+            <span class="n">local_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">local_max</span> <span class="o">+</span> <span class="n">num</span><span class="p">)</span>
+            <span class="n">global_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">global_max</span><span class="p">,</span> <span class="n">local_max</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">global_max</span>
+    
+<span class="n">nums</span>        <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span>
+<span class="n">local_max</span>   <span class="mi">0</span>  <span class="mi">0</span>  <span class="mi">1</span>  <span class="mi">0</span>  <span class="mi">4</span>  <span class="mi">3</span>  <span class="mi">5</span>  <span class="mi">6</span>  <span class="mi">1</span>  <span class="mi">6</span>
+<span class="n">global_max</span>  <span class="mi">0</span>  <span class="mi">0</span>  <span class="mi">1</span>  <span class="mi">1</span>  <span class="mi">4</span>  <span class="mi">4</span>  <span class="mi">5</span>  <span class="mi">6</span>  <span class="mi">6</span>  <span class="mi">5</span>
+<span class="n">num</span>         <span class="o">-</span><span class="mi">2</span> <span class="mi">1</span>  <span class="o">-</span><span class="mi">3</span> <span class="mi">4</span>  <span class="o">-</span><span class="mi">1</span> <span class="mi">2</span>  <span class="mi">1</span>  <span class="o">-</span><span class="mi">5</span> <span class="mi">4</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>执行用时：52 ms, 在所有 Python3 提交中击败了56.68%的用户</p>
+
+  <p>内存消耗：14.4 MB, 在所有 Python3 提交中击败了6.35%的用户</p>
+</blockquote>
+:ET
