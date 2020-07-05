@@ -1,0 +1,61 @@
+I"=<h1 id="leetcode-118-杨辉三角">LeetCode-<a href="https://leetcode-cn.com/problems/pascals-triangle/">118. 杨辉三角</a></h1>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/gq4t3cwMQbs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+
+<p>tag: easy，数组</p>
+
+<p><strong>题目：</strong></p>
+
+<p>给定一个非负整数 <em>numRows，</em>生成杨辉三角的前 <em>numRows</em> 行。</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20200705222659.gif" alt="img" /></p>
+
+<p>在杨辉三角中，每个数是它左上方和右上方的数的和。</p>
+
+<p><strong>示例:</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>输入: 5
+输出:
+[
+     [1],
+    [1,1],
+   [1,2,1],
+  [1,3,3,1],
+ [1,4,6,4,1]
+]
+</code></pre></div></div>
+
+<h1 id="方法一">方法一：</h1>
+
+<p>因为要把nums2 merge到nums1里面，所以最后的返回值就是nums1，</p>
+
+<p>从头开始比较好，还是从尾开始比较好？从尾开始比较好，直接比较m-1位的数和n-1位的数，然后放到nums1空余的位置，第二大的值放在m-2的位置上，以此类推</p>
+
+<p>去做while loop nums1和nums2，只要还有数字就一直做循环，把较大的数放到nums的后面，每次结尾的时候都要把这个数字往前移一位，</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nums1</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">nums2</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="k">while</span> <span class="n">m</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span> <span class="c1"># 只要nums1和nums2中有数的时候：
+</span>
+            <span class="k">if</span> <span class="n">nums1</span><span class="p">[</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">nums2</span><span class="p">[</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span> <span class="c1"># 如果num2的最后一个数更大时
+</span>
+                <span class="n">nums1</span><span class="p">[</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="o">+</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">nums2</span><span class="p">[</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># 就把它放在nums1结尾+n处
+</span>
+                <span class="n">n</span> <span class="o">-=</span> <span class="mi">1</span> <span class="c1"># 然后n要往前移一位
+</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">nums1</span><span class="p">[</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="o">+</span><span class="n">n</span><span class="p">],</span> <span class="n">nums1</span><span class="p">[</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">nums1</span><span class="p">[</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">nums1</span><span class="p">[</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="o">+</span><span class="n">n</span><span class="p">]</span> <span class="c1"># nums1当前的数要和+n的那个数换一下
+</span>
+                <span class="n">m</span> <span class="o">-=</span> <span class="mi">1</span> <span class="c1"># m往前移一位
+</span>
+        <span class="k">if</span> <span class="n">m</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span> <span class="c1"># 假设nums2的长度长于nums1
+</span>
+            <span class="n">nums1</span><span class="p">[:</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">nums2</span><span class="p">[:</span><span class="n">n</span><span class="p">]</span> <span class="c1"># 把num2前n个数放到nums1的前n个位置
+</span></code></pre></div></div>
+
+<blockquote>
+  <p>执行用时：52 ms, 在所有 Python3 提交中击败了14.56%的用户</p>
+
+  <p>内存消耗：13.7 MB, 在所有 Python3 提交中击败了6.90%的用户</p>
+</blockquote>
+:ET

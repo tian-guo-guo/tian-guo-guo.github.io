@@ -1,0 +1,33 @@
+I"!<h1 id="leetcode-118-杨辉三角">LeetCode-<a href="https://leetcode-cn.com/problems/pascals-triangle/">118. 杨辉三角</a></h1>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/gq4t3cwMQbs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+
+<p>tag: easy，数组</p>
+
+<p><strong>题目：</strong></p>
+
+<p>给定一个非负整数 <em>numRows，</em>生成杨辉三角的前 <em>numRows</em> 行。</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20200705222659.gif" alt="img" /></p>
+
+<p>在杨辉三角中，每个数是它左上方和右上方的数的和。</p>
+
+<p><strong>示例:</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>输入: 5
+输出:
+[
+     [1],
+    [1,1],
+   [1,2,1],
+  [1,3,3,1],
+ [1,4,6,4,1]
+]
+</code></pre></div></div>
+
+<h1 id="方法一">方法一：</h1>
+
+<p>最简单的方法就是把每一行的数都generate出来，进行重复的套路，如果是首尾，那就是1，如果不是，那第i个数就是i-1行j-1的值和j的值相加之和</p>
+
+<p>首先是一个空的result，然后每一行把生成的结果append到result里面去，要有多少行呢？就是numRows</p>
+:ET
