@@ -1,0 +1,77 @@
+I"�<h1 id="leetcode-13-罗马数字转整数">LeetCode-<a href="https://leetcode-cn.com/problems/roman-to-integer/">13. 罗马数字转整数</a></h1>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/MBfPfAH6jdE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+
+<p>tag: easy，字符串</p>
+
+<p><strong>题目：</strong></p>
+
+<p>罗马数字包含以下七种字符: I， V， X， L，C，D 和 M。</p>
+
+<p>字符          数值
+I             1
+V             5
+X             10
+L             50
+C             100
+D             500
+M             1000
+例如， 罗马数字 2 写做 II ，即为两个并列的 1。12 写做 XII ，即为 X + II 。 27 写做  XXVII, 即为 XX + V + II 。</p>
+
+<p>通常情况下，罗马数字中小的数字在大的数字的右边。但也存在特例，例如 4 不写做 IIII，而是 IV。数字 1 在数字 5 的左边，所表示的数等于大数 5 减小数 1 得到的数值 4 。同样地，数字 9 表示为 IX。这个特殊的规则只适用于以下六种情况：</p>
+
+<p>I 可以放在 V (5) 和 X (10) 的左边，来表示 4 和 9。
+X 可以放在 L (50) 和 C (100) 的左边，来表示 40 和 90。 
+C 可以放在 D (500) 和 M (1000) 的左边，来表示 400 和 900。
+给定一个罗马数字，将其转换成整数。输入确保在 1 到 3999 的范围内。</p>
+
+<p><strong>示例 3:</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>输入: "IX"
+输出: 9
+</code></pre></div></div>
+
+<p><strong>示例 4:</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>输入: "LVIII"
+输出: 58
+解释: L = 50, V= 5, III = 3.
+</code></pre></div></div>
+
+<p><strong>示例 5:</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>输入: "MCMXCIV"
+输出: 1994
+解释: M = 1000, CM = 900, XC = 90, IV = 4.
+</code></pre></div></div>
+
+<h1 id="方法一">方法一：</h1>
+
+<p>跟上一道题有什么区别？上一道题只需要找到一个最小的买入点，一个最好的卖出点就可以了，而这道题需要找到多个最好的买进卖出点。</p>
+
+<p>后面的数要是比前面的数大，那就加到total里</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">maxProfit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prices</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">prices</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">prices</span><span class="p">)):</span> <span class="c1"># 为什么要从1开始呢？因为要从第二个减第一个算起
+</span>
+            <span class="k">if</span> <span class="n">prices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">prices</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">total</span> <span class="o">+=</span> <span class="n">prices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">prices</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">total</span>
+   
+<span class="c1"># 为什么代码可以写的这么简洁?所以不需要local和gloal的方式.
+</span>
+<span class="c1"># total = prices[1] - prices[0] + prices[2] - prices[1] + prices[3] -prices[2] + prices[4] - prices[3]
+</span>
+<span class="c1"># total = - prices[0] + prices[4]
+</span></code></pre></div></div>
+
+<blockquote>
+  <p>执行用时：80 ms, 在所有 Python3 提交中击败了59.65%的用户</p>
+
+  <p>内存消耗：15 MB, 在所有 Python3 提交中击败了5.00%的用户</p>
+</blockquote>
+:ET

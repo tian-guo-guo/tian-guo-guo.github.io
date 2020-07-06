@@ -1,0 +1,28 @@
+I"[<h1 id="leetcode-14-最长公共前缀">LeetCode-<a href="https://leetcode-cn.com/problems/longest-common-prefix/">14. 最长公共前缀</a></h1>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/cGQez9SiScw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+
+<p>tag: easy，字符串</p>
+
+<p><strong>题目：</strong></p>
+
+<p>编写一个函数来查找字符串数组中的最长公共前缀。</p>
+
+<p>如果不存在公共前缀，返回空字符串 <code class="language-plaintext highlighter-rouge">""</code>。</p>
+
+<p><strong>示例 1:</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>输入: ["flower","flow","flight"]
+输出: "fl"
+</code></pre></div></div>
+
+<p><strong>示例 2:</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>输入: ["dog","racecar","car"]
+输出: ""
+解释: 输入不存在公共前缀。
+</code></pre></div></div>
+
+<h1 id="方法一">方法一：</h1>
+
+:ET
