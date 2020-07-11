@@ -1,0 +1,27 @@
+I"F<h1 id="leetcode-125-验证回文串">LeetCode-<a href="https://leetcode-cn.com/problems/valid-palindrome/">125. 验证回文串</a></h1>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/RYOT5VSLjc4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+
+<p>tag: easy，字符串</p>
+
+<p><strong>题目：</strong></p>
+
+<p>给定一个字符串，验证它是否是回文串，只考虑字母和数字字符，可以忽略字母的大小写。</p>
+
+<p><strong>说明：</strong>本题中，我们将空字符串定义为有效的回文串。</p>
+
+<p><strong>示例1：</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>输入: "A man, a plan, a canal: Panama"
+输出: true
+</code></pre></div></div>
+
+<p><strong>示例 2:</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>输入: "race a car"
+输出: false
+</code></pre></div></div>
+
+<h1 id="方法一">方法一：</h1>
+
+:ET
