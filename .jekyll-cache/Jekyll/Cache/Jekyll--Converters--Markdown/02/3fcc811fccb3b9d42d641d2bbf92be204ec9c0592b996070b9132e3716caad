@@ -1,0 +1,15 @@
+I"<h1 id="anaconda创建环境删除环境激活环境退出环境">Anaconda创建环境、删除环境、激活环境、退出环境</h1>
+
+<h1 id="创建环境">创建环境</h1>
+
+<p>下面是创建python=3.6版本的环境，取名叫py36</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>conda create -n py36 python=3.6 
+</code></pre></div></div>
+
+<h1 id="激活环境">激活环境</h1>
+
+<h1 id="退出环境">退出环境</h1>
+
+<h1 id="删除环境">删除环境</h1>
+:ET
