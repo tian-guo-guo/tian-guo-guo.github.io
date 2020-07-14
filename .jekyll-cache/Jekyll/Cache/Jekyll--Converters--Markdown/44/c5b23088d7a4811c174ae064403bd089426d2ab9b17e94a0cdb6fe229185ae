@@ -1,0 +1,147 @@
+I"�M<h1 id="fairseq新能源机器翻译实验">Fairseq新能源机器翻译实验</h1>
+
+<h1 id="一数据介绍">一、数据介绍</h1>
+
+<p>新能源领域的专利文本，句子经过WIPO翻译，长度控制在100个词以内，经过初步的数据清洗（非中英句对、首末符号等），去重后，有中英句对116095条。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>一种风电出力仿真模拟模型，其特征在于，首先根据多风电场历史实测风速数据或者风电场历史出力数据转化，拟合风速Weibull分布的尺度参数c与形状参数k、风电场风速序列自相关系数、多风电场之间风速相关系数矩阵
+The wind power output simulation model is characterized by comprising the following steps: firstly, converting historical actually measured wind speed data or wind power field historical output data of a wind power plant, fitting a scale parameter C of the wind speed Weibull distribution with a shape parameter K, a wind power plant wind speed sequence self-correlation coefficient and a wind speed correlation coefficient matrix between the wind power plants
+</code></pre></div></div>
+
+<ol>
+  <li>
+    <p>数据准备</p>
+  </li>
+  <li>
+    <p>准备中英双语文本 116095 pairs [2]ne_zh_ok_clean.txt和[2]ne_en_ok_clean.txt</p>
+  </li>
+  <li>
+    <p>中文分词、英文Moses</p>
+
+    <ol>
+      <li>中文（哈工大语言云pyltp，未加术语表）</li>
+      <li><a href="https://blog.csdn.net/Elenore1997/article/details/89483681">英文</a></li>
+    </ol>
+  </li>
+</ol>
+
+<p>Normalize punctuation</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>perl /root/tian/fairseq/examples/ne_WIPO_MT/mosesdecoder/scripts/tokenizer/normalize-punctuation.perl -l en &lt; /root/tian/fairseq/examples/ne_WIPO_MT/data/[2]ne_en_ok_clean.txt &gt; /root/tian/fairseq/examples/ne_WIPO_MT/data/[2]ne_en_ok_clean.norm.en
+</code></pre></div></div>
+
+<p>Tokenizer</p>
+
+<div class="language-perl highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">perl</span> <span class="sr">/root/</span><span class="nv">tian</span><span class="sr">/fairseq/</span><span class="nv">examples</span><span class="sr">/ne_WIPO_MT/mos</span><span class="nv">esdecoder</span><span class="sr">/scripts/</span><span class="nv">tokenizer</span><span class="sr">/tokenizer.perl -a -l en &lt; /</span><span class="nv">root</span><span class="sr">/tian/</span><span class="nv">fairseq</span><span class="sr">/examples/n</span><span class="nv">e_WIPO_MT</span><span class="sr">/data/</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="nv">ne_en_ok_clean</span><span class="o">.</span><span class="nv">norm</span><span class="o">.</span><span class="nv">en</span> <span class="o">&gt;</span> <span class="sr">/root/</span><span class="nv">tian</span><span class="sr">/fairseq/</span><span class="nv">examples</span><span class="sr">/ne_WIPO_MT/da</span><span class="nv">ta</span><span class="o">/</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="nv">ne_en_ok_clean</span><span class="o">.</span><span class="nv">norm</span><span class="o">.</span><span class="nv">tok</span><span class="o">.</span><span class="nv">en</span>
+</code></pre></div></div>
+
+<ol>
+  <li>
+    <p>分成6个文件</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>1</th>
+          <th>2</th>
+          <th>3</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>train.zh</td>
+          <td>valid.zh</td>
+          <td>test.zh</td>
+        </tr>
+        <tr>
+          <td>train.en</td>
+          <td>valid.en</td>
+          <td>test.en</td>
+        </tr>
+        <tr>
+          <td>112095</td>
+          <td>2000</td>
+          <td>2000</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>运行prepare_6_files.py脚本</p>
+  </li>
+  <li>
+    <p>sub-BPE处理</p>
+
+    <p>把subword-nmt和apply_bpe粘过来，并且将位置导出（是在data文件夹的外面）</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>export PYTHONPATH=$(pwd)/subword-nmt:$PYTHONPATH
+</code></pre></div>    </div>
+
+    <p>打开ne_test文件夹，然后6个文件放在ne_test下，然后导出位置，接下来</p>
+
+    <p>创建词汇表</p>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">learn_joint_bpe_and_vocab</span> <span class="o">--</span><span class="nb">input</span> <span class="n">train</span><span class="p">.</span><span class="n">zh</span> <span class="n">train</span><span class="p">.</span><span class="n">en</span> <span class="o">-</span><span class="n">s</span> <span class="mi">32000</span> <span class="o">-</span><span class="n">o</span> <span class="n">bpe</span><span class="p">.</span><span class="n">codes</span> <span class="o">--</span><span class="n">write</span><span class="o">-</span><span class="n">vocabulary</span> <span class="n">bpe</span><span class="p">.</span><span class="n">vocab</span><span class="p">.</span><span class="n">zh</span> <span class="n">bpe</span><span class="p">.</span><span class="n">vocab</span><span class="p">.</span><span class="n">en</span>
+</code></pre></div>    </div>
+
+    <p>将字节对编码应用于我们的训练、开发和测试数据</p>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mkdir</span> <span class="n">ne_WIPO_BPE_zh_en</span>
+<span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">apply_bpe</span> <span class="o">-</span><span class="n">c</span> <span class="n">bpe</span><span class="p">.</span><span class="n">codes</span> <span class="o">--</span><span class="n">vocabulary</span> <span class="n">bpe</span><span class="p">.</span><span class="n">vocab</span><span class="p">.</span><span class="n">zh</span> <span class="o">--</span><span class="n">vocabulary</span><span class="o">-</span><span class="n">threshold</span> <span class="mi">50</span> <span class="o">&lt;</span> <span class="n">train</span><span class="p">.</span><span class="n">zh</span> <span class="o">&gt;</span> <span class="n">ne_WIPO_BPE_zh_en</span><span class="o">/</span><span class="n">train</span><span class="p">.</span><span class="n">zh</span>
+<span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">apply_bpe</span> <span class="o">-</span><span class="n">c</span> <span class="n">bpe</span><span class="p">.</span><span class="n">codes</span> <span class="o">--</span><span class="n">vocabulary</span> <span class="n">bpe</span><span class="p">.</span><span class="n">vocab</span><span class="p">.</span><span class="n">en</span> <span class="o">--</span><span class="n">vocabulary</span><span class="o">-</span><span class="n">threshold</span> <span class="mi">50</span> <span class="o">&lt;</span> <span class="n">train</span><span class="p">.</span><span class="n">en</span> <span class="o">&gt;</span> <span class="n">ne_WIPO_BPE_zh_en</span><span class="o">/</span><span class="n">train</span><span class="p">.</span><span class="n">en</span>
+<span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">apply_bpe</span> <span class="o">-</span><span class="n">c</span> <span class="n">bpe</span><span class="p">.</span><span class="n">codes</span> <span class="o">--</span><span class="n">vocabulary</span> <span class="n">bpe</span><span class="p">.</span><span class="n">vocab</span><span class="p">.</span><span class="n">zh</span> <span class="o">--</span><span class="n">vocabulary</span><span class="o">-</span><span class="n">threshold</span> <span class="mi">50</span> <span class="o">&lt;</span> <span class="n">valid</span><span class="p">.</span><span class="n">zh</span> <span class="o">&gt;</span> <span class="n">ne_WIPO_BPE_zh_en</span><span class="o">/</span><span class="n">valid</span><span class="p">.</span><span class="n">zh</span>
+<span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">apply_bpe</span> <span class="o">-</span><span class="n">c</span> <span class="n">bpe</span><span class="p">.</span><span class="n">codes</span> <span class="o">--</span><span class="n">vocabulary</span> <span class="n">bpe</span><span class="p">.</span><span class="n">vocab</span><span class="p">.</span><span class="n">en</span> <span class="o">--</span><span class="n">vocabulary</span><span class="o">-</span><span class="n">threshold</span> <span class="mi">50</span> <span class="o">&lt;</span> <span class="n">valid</span><span class="p">.</span><span class="n">en</span> <span class="o">&gt;</span> <span class="n">ne_WIPO_BPE_zh_en</span><span class="o">/</span><span class="n">valid</span><span class="p">.</span><span class="n">en</span>
+<span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">apply_bpe</span> <span class="o">-</span><span class="n">c</span> <span class="n">bpe</span><span class="p">.</span><span class="n">codes</span> <span class="o">--</span><span class="n">vocabulary</span> <span class="n">bpe</span><span class="p">.</span><span class="n">vocab</span><span class="p">.</span><span class="n">zh</span> <span class="o">--</span><span class="n">vocabulary</span><span class="o">-</span><span class="n">threshold</span> <span class="mi">50</span> <span class="o">&lt;</span> <span class="n">test</span><span class="p">.</span><span class="n">zh</span> <span class="o">&gt;</span> <span class="n">ne_WIPO_BPE_zh_en</span><span class="o">/</span><span class="n">test</span><span class="p">.</span><span class="n">zh</span>
+<span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">apply_bpe</span> <span class="o">-</span><span class="n">c</span> <span class="n">bpe</span><span class="p">.</span><span class="n">codes</span> <span class="o">--</span><span class="n">vocabulary</span> <span class="n">bpe</span><span class="p">.</span><span class="n">vocab</span><span class="p">.</span><span class="n">en</span> <span class="o">--</span><span class="n">vocabulary</span><span class="o">-</span><span class="n">threshold</span> <span class="mi">50</span> <span class="o">&lt;</span> <span class="n">test</span><span class="p">.</span><span class="n">en</span> <span class="o">&gt;</span> <span class="n">ne_WIPO_BPE_zh_en</span><span class="o">/</span><span class="n">test</span><span class="p">.</span><span class="n">en</span>
+    
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>二值化</p>
+
+    <p>需要退到fairseq文件夹下去运行命令</p>
+  </li>
+</ol>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">TEXT</span><span class="o">=</span><span class="n">examples</span><span class="o">/</span><span class="n">ne_WIPO_MT</span><span class="o">/</span><span class="n">ne_WIPO_BPE_zh_en</span>
+<span class="n">fairseq</span><span class="o">-</span><span class="n">preprocess</span> <span class="o">--</span><span class="n">source</span><span class="o">-</span><span class="n">lang</span> <span class="n">zh</span> <span class="o">--</span><span class="n">target</span><span class="o">-</span><span class="n">lang</span> <span class="n">en</span> <span class="o">--</span><span class="n">trainpref</span> <span class="err">$</span><span class="n">TEXT</span><span class="o">/</span><span class="n">train</span> <span class="o">--</span><span class="n">validpref</span> <span class="err">$</span><span class="n">TEXT</span><span class="o">/</span><span class="n">valid</span> <span class="o">--</span><span class="n">testpref</span> <span class="err">$</span><span class="n">TEXT</span><span class="o">/</span><span class="n">test</span> <span class="o">--</span><span class="n">destdir</span> <span class="n">data</span><span class="o">-</span><span class="nb">bin</span><span class="o">/</span><span class="n">ne_WIPO</span><span class="p">.</span><span class="n">tokenized</span><span class="p">.</span><span class="n">zh</span><span class="o">-</span><span class="n">en</span> <span class="o">--</span><span class="n">workers</span> <span class="mi">20</span>
+</code></pre></div></div>
+
+<p>​		在data-bin下会生成二值化数据</p>
+
+<ol>
+  <li>
+    <p>训练</p>
+
+    <p>​	下面训练一个Transformer模型，训练之前别忘了开screen</p>
+  </li>
+</ol>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">CUDA_VISIBLE_DEVICES</span><span class="o">=</span><span class="mi">1</span> <span class="n">fairseq</span><span class="o">-</span><span class="n">train</span> <span class="n">data</span><span class="o">-</span><span class="nb">bin</span><span class="o">/</span><span class="n">ne_WIPO</span><span class="p">.</span><span class="n">tokenized</span><span class="p">.</span><span class="n">zh</span><span class="o">-</span><span class="n">en</span> <span class="o">--</span><span class="n">arch</span> <span class="n">transformer</span> <span class="o">--</span><span class="n">optimizer</span> <span class="n">adam</span> <span class="o">--</span><span class="n">adam</span><span class="o">-</span><span class="n">betas</span> <span class="s">'(0.9, 0.98)'</span> <span class="o">--</span><span class="n">clip</span><span class="o">-</span><span class="n">norm</span> <span class="mf">0.0</span> <span class="o">--</span><span class="n">lr</span> <span class="mf">5e-4</span> <span class="o">--</span><span class="n">lr</span><span class="o">-</span><span class="n">scheduler</span> <span class="n">inverse_sqrt</span> <span class="o">--</span><span class="n">warmup</span><span class="o">-</span><span class="n">updates</span> <span class="mi">4000</span> <span class="o">--</span><span class="n">dropout</span> <span class="mf">0.3</span> <span class="o">--</span><span class="n">weight</span><span class="o">-</span><span class="n">decay</span> <span class="mf">0.0001</span> <span class="o">--</span><span class="n">criterion</span> <span class="n">label_smoothed_cross_entropy</span> <span class="o">--</span><span class="n">label</span><span class="o">-</span><span class="n">smoothing</span> <span class="mf">0.1</span> <span class="o">--</span><span class="nb">max</span><span class="o">-</span><span class="n">tokens</span> <span class="mi">4096</span> <span class="o">--</span><span class="nb">eval</span><span class="o">-</span><span class="n">bleu</span> <span class="o">--</span><span class="nb">eval</span><span class="o">-</span><span class="n">bleu</span><span class="o">-</span><span class="n">args</span> <span class="s">'{"beam": 5, "max_len_a": 1.2, "max_len_b": 10}'</span> <span class="o">--</span><span class="nb">eval</span><span class="o">-</span><span class="n">bleu</span><span class="o">-</span><span class="n">detok</span> <span class="n">moses</span> <span class="o">--</span><span class="nb">eval</span><span class="o">-</span><span class="n">bleu</span><span class="o">-</span><span class="n">remove</span><span class="o">-</span><span class="n">bpe</span> <span class="o">--</span><span class="nb">eval</span><span class="o">-</span><span class="n">bleu</span><span class="o">-</span><span class="k">print</span><span class="o">-</span><span class="n">samples</span> <span class="o">--</span><span class="n">best</span><span class="o">-</span><span class="n">checkpoint</span><span class="o">-</span><span class="n">metric</span> <span class="n">bleu</span> <span class="o">--</span><span class="n">maximize</span><span class="o">-</span><span class="n">best</span><span class="o">-</span><span class="n">checkpoint</span><span class="o">-</span><span class="n">metric</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">progress</span><span class="o">-</span><span class="n">bar</span> <span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">interval</span> <span class="mi">20</span> <span class="o">--</span><span class="n">save</span><span class="o">-</span><span class="nb">dir</span> <span class="n">checkpoints_WIPO</span> <span class="o">--</span><span class="n">keep</span><span class="o">-</span><span class="n">interval</span><span class="o">-</span><span class="n">updates</span> <span class="mi">20</span> <span class="o">--</span><span class="n">tensorboard</span><span class="o">-</span><span class="n">logdir</span> <span class="n">ne_WIPO_MT</span><span class="o">-</span><span class="n">transformer</span> <span class="o">|</span> <span class="n">tee</span> <span class="n">ne_WIPO_MT</span><span class="o">-</span><span class="n">transformer</span><span class="p">.</span><span class="n">log</span>
+</code></pre></div></div>
+
+<ol>
+  <li>
+    <p>怎么进行翻译呢？</p>
+
+    <p>Once your model is trained, you can generate translations using <a href="https://fairseq.readthedocs.io/en/latest/command_line_tools.html#fairseq-generate">fairseq-generate</a> <strong>(for binarized data)</strong> or <a href="https://fairseq.readthedocs.io/en/latest/command_line_tools.html#fairseq-interactive"><strong>fairseq-interactive</strong></a> <strong>(for raw text)</strong>:</p>
+  </li>
+</ol>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fairseq</span><span class="o">-</span><span class="n">generate</span> <span class="n">data</span><span class="o">-</span><span class="nb">bin</span><span class="o">/</span><span class="n">ne</span><span class="p">.</span><span class="n">tokenized</span><span class="p">.</span><span class="n">zh</span><span class="o">-</span><span class="n">en</span> <span class="o">--</span><span class="n">path</span> <span class="n">checkpoints_ne2</span><span class="o">/</span><span class="n">checkpoint_best</span><span class="p">.</span><span class="n">pt</span> <span class="o">--</span><span class="n">beam</span> <span class="mi">5</span> <span class="o">--</span><span class="n">remove</span><span class="o">-</span><span class="n">bpe</span> <span class="o">&gt;</span> <span class="n">predict_test</span><span class="p">.</span><span class="n">txt</span>
+</code></pre></div></div>
+
+<p>​		怎么交互式的进行翻译呢？</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fairseq</span><span class="o">-</span><span class="n">interactive</span> <span class="n">data</span><span class="o">-</span><span class="nb">bin</span><span class="o">/</span><span class="n">ne</span><span class="p">.</span><span class="n">tokenized</span><span class="p">.</span><span class="n">zh</span><span class="o">-</span><span class="n">en</span> <span class="o">--</span><span class="n">path</span> <span class="n">checkpoints_ne2</span><span class="o">/</span><span class="n">checkpoint_best</span><span class="p">.</span><span class="n">pt</span> <span class="o">--</span><span class="n">beam</span> <span class="mi">5</span> <span class="o">--</span><span class="n">remove</span><span class="o">-</span><span class="n">bpe</span>
+</code></pre></div></div>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20200713163216.png" alt="image-20200713163216226" /></p>
+
+<ol>
+  <li>用tensorboard查看运行进度</li>
+</ol>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tensorboard --logdir=./ne_WIPO_MT-transformer
+</code></pre></div></div>
+
+:ET
