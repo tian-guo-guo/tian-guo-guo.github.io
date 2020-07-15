@@ -1,0 +1,748 @@
+I"[�<h1 id="一篇教会你写90的shell脚本"><a href="https://blog.csdn.net/CSDN___LYY/article/details/100584638">一篇教会你写90%的shell脚本！</a></h1>
+
+<h4 id="shell脚本">shell脚本？</h4>
+
+<p><strong>在说什么是shell脚本之前，先说说什么是shell。</strong></p>
+
+<p>shell是外壳的意思，就是操作系统的外壳。我们可以通过shell命令来操作和控制操作系统，比如Linux中的Shell命令就包括ls、cd、pwd等等。总结来说，Shell是一个命令解释器，它通过接受用户输入的Shell命令来启动、暂停、停止程序的运行或对计算机进行控制。</p>
+
+<p>shell 是一个应用程序，它连接了用户和 Linux 内核，让用户能够更加高效、安全、低成本地使用 Linux 内核，这就是 Shell 的本质。</p>
+
+<p>shell 本身并不是内核的一部分，它只是站在内核的基础上编写的一个应用程序。</p>
+
+<p><strong>那么什么是shell脚本呢？</strong></p>
+
+<p>shell脚本就是由Shell命令组成的执行文件，将一些命令整合到一个文件中，进行处理业务逻辑，脚本不用编译即可运行。它通过解释器解释运行，所以速度相对来说比较慢。</p>
+
+<p>shell脚本中最重要的就是对shell命令的使用与组合，再使用shell脚本支持的一些语言特性，完成想要的功能。</p>
+
+<h4 id="注释">注释</h4>
+
+<p>“# ”开头的就是注释，被编译器忽略</p>
+
+<ul>
+  <li>单行注释： #</li>
+  <li>多行注释： :«EOF … EOF 或者 :«! … ! （:« 标识多行注释开始，并指定一个标识符作为开始结束的标志）</li>
+</ul>
+
+<hr />
+
+<h4 id="变量">变量</h4>
+
+<p><strong>变量类型</strong>
+运行shell时，会同时存在三种变量：</p>
+
+<ol>
+  <li>局部变量：局部变量在脚本或命令中定义，仅在当前shell实例中有效，其他shell启动的程序不能访问局部变量。</li>
+  <li>环境变量：所有的程序，包括shell启动的程序，都能访问环境变量，有些程序需要环境变量来保证其正常运行。必要的时候shell脚本也可以定义环境变量。</li>
+  <li>shell变量：shell变量是由shell程序设置的特殊变量。shell变量中有一部分是环境变量，有一部分是局部变量，这些变量保证了shell的正常运行</li>
+</ol>
+
+<p><strong>变量操作</strong></p>
+
+<ul>
+  <li>创建普通变量： name=“test” （=两边不可有空格）</li>
+  <li>创建只可函数体中使用的局部变量： local name=“test” （使用local修饰的变量在函数体外无法访问，并且local只能在函数体内使用）</li>
+  <li>使用变量： echo $name 或者 echo ${name} （推荐使用大括号版）</li>
+  <li>变量重新赋值： name=“new_test” （将原值覆盖）</li>
+  <li>只读变量： name=“only_read” -&gt; readonly name （使用readonly标识后的变量，不可被修改）</li>
+  <li>删除变量： unset name; （删除之后不可访问，删除不掉只读变量）</li>
+</ul>
+
+<p><strong>字符串变量</strong>
+1）单引号</p>
+
+<ul>
+  <li>单引号变量<code class="language-plaintext highlighter-rouge">var='test'</code> ，只能原样输出，变量无效</li>
+  <li>单引号中不能出现一个单独的单引号，转义也不可以</li>
+</ul>
+
+<p>2）双引号</p>
+
+<ul>
+  <li>双引号变量<code class="language-plaintext highlighter-rouge">var="my name is ${name}"</code>，变量有效</li>
+  <li>可出现转义符</li>
+</ul>
+
+<p>3）拼接字符串</p>
+
+<ul>
+  <li>中间无任何+，之类的字符</li>
+  <li>name=“this is”” my name”; name=“this is my name”; name=“this” is “my name” 等效</li>
+  <li>name=‘this is’’ my nam’; name=‘this is my name’; name=‘this’ is ‘my name’ 等效</li>
+</ul>
+
+<p>4）获取字符串长度</p>
+
+<ul>
+  <li>在${}中使用“#”获取长度</li>
+  <li>name=“test”;</li>
+  <li>echo ${#name}; # 输出为4</li>
+</ul>
+
+<p>5）提取子字符串</p>
+
+<ul>
+  <li>1:4 从第2个开始 往后截取4个字符</li>
+  <li>::4 从第一个字符开始 往后截取4个字符</li>
+  <li>name=“this is my name”;</li>
+  <li>echo ${name:1:4} #输出 is i</li>
+  <li>echo ${name::4} #输出 this</li>
+</ul>
+
+<p><strong>数组</strong></p>
+
+<p>bash只支持一维数组，不支持多维数组</p>
+
+<ul>
+  <li>定义数组：array_name=(li wang xiang zhang) （小括号做边界、使用空格分离）</li>
+  <li>单独定义数组的元素： array_para[0]=“w”; array_para[3]=“s” （定义时下标不连续也可以）</li>
+  <li>赋值数组元素：array_name[0]=“zhao”;</li>
+  <li>获取数组元素：
+    <ul>
+      <li>array_name[0]=“li”</li>
+      <li>array_name[3]=“zhang”</li>
+      <li>echo ${array_name[0]} # 输出”li”</li>
+      <li>echo ${array_name[1]} # 输出” “</li>
+      <li>echo ${array_name[3]} # 输出”zhang”</li>
+      <li>echo ${array_name[@]} # 输出”li zhang” 输出数组所有元素，没有元素的下标省略</li>
+    </ul>
+  </li>
+  <li>取得元素个数：${#array_name[@]} 或者​ {#array_name[*]}</li>
+  <li>取得单个元素长度：${#array_name[1]}</li>
+</ul>
+
+<hr />
+
+<h4 id="参数传递">参数传递</h4>
+
+<ul>
+  <li>获取参数值：
+    <ul>
+      <li>$0 ： 固定，代表执行的文件名</li>
+      <li>$1 ： 代表传入的第1个参数</li>
+      <li>$n ： 代表传入的第n个参数</li>
+    </ul>
+  </li>
+  <li>$#：参数个数</li>
+  <li>$<em>： 以一个单字符串显示所有向脚本传递的参数。如”$</em>“用「”」括起来的情况、以”$1 $2 … $n”的形式输出所有参数</li>
+  <li>$@：与$*相同，但是使用时加引号，并在引号中返回每个参数。</li>
+  <li>$$：脚本运行的当前进程号</li>
+  <li>$！：后台运行的最后一个进程的ID</li>
+  <li>$?： 显示最后命令的退出状态。0表示没有错误，其他任何值表明有错误。</li>
+  <li>$* 与 $@ 区别
+    <ul>
+      <li>相同点：都是引用所有参数。</li>
+      <li>不同点：只有在双引号中体现出来。假设在脚本运行时写了三个参数 1、2、3，，则 “ * “ 等价于 “1 2 3”（传递了一个参数），而 “@” 等价于 “1” “2” “3”（传递了三个参数）。</li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<h4 id="运算符">运算符</h4>
+
+<p><strong>算数运算</strong></p>
+
+<ul>
+  <li>+ 、-、*、\ ： 乘号前必须加\进行转义才可以进行乘法运算</li>
+  <li>加法运算
+    <ul>
+      <li>val=<code class="language-plaintext highlighter-rouge">expr 2 + 2</code> （使用linux命令expr进行辅助运算）</li>
+      <li>val=$[2+2] （4个空格不是必要的，不同于条件判断）</li>
+      <li>val=$((2+2))</li>
+    </ul>
+  </li>
+</ul>
+
+<p><strong>数字关系运算符</strong>
+关系运算符只支持数字，不支持字符串，除非字符串的值是数字。
+下面假定变量 a 为 10，变量 b 为 20</p>
+
+<ul>
+  <li>-eq ：检测两个数是否相等，相等返回 true。 [ $a -eq $b ] 返回 false。</li>
+  <li>-ne： 检测两个数是否不相等，不相等返回 true。 [ $a -ne $b ] 返回 true。</li>
+  <li>-gt： 检测左边的数是否大于右边的，如果是，则返回 true。 [ $a -gt $b ] 返回 false。</li>
+  <li>-lt ： 检测左边的数是否小于右边的，如果是，则返回 true。 [ $a -lt $b ] 返回 true。</li>
+  <li>-ge： 检测左边的数是否大于等于右边的，如果是，则返回 true。 [ $a -ge $b ] 返回 false。</li>
+  <li>-le ： 检测左边的数是否小于等于右边的，如果是，则返回 true。 [ $a -le $b ] 返回 true。</li>
+</ul>
+
+<p><strong>字符串运算符</strong>
+下表列出了常用的字符串运算符，假定变量 a 为 “abc”，变量 b 为 “efg”：</p>
+
+<ul>
+  <li>= ：检测两个字符串是否相等，相等返回 true。 [ $a = $b ] 返回 false。</li>
+  <li>!= ：检测两个字符串是否相等，不相等返回 true。 [ $a != $b ] 返回 true。</li>
+  <li>-z ：检测字符串长度是否为0，为0返回 true。 [ -z $a ] 返回 false。</li>
+  <li>-n ：检测字符串长度是否为0，不为0返回 true。 [ -n “$a” ] 返回 true。</li>
+  <li>$ ：检测字符串是否为空，不为空返回 true。 [ $a ] 返回 true。</li>
+</ul>
+
+<p><strong>布尔运算符</strong>
+下表列出了常用的布尔运算符，假定变量 a 为 10，变量 b 为 20：</p>
+
+<ul>
+  <li>! ：非运算，表达式为 true 则返回 false，否则返回 true。 [ ! false ] 返回 true。</li>
+  <li>-o ：或运算，有一个表达式为 true 则返回 true。 [ $a -lt 20 -o $b -gt 100 ] 返回 true。</li>
+  <li>-a ：与运算，两个表达式都为 true 才返回 true。 [ $a -lt 20 -a $b -gt 100 ] 返回 false。</li>
+</ul>
+
+<p><strong>逻辑运算符</strong>
+以下介绍 Shell 的逻辑运算符，假定变量 a 为 10，变量 b 为 20:</p>
+
+<ul>
+  <li>&amp;&amp; ：逻辑的 AND [[ $a -lt 100 &amp;&amp; ​b -gt 100 ]] 返回 false</li>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td> </td>
+          <td>：逻辑的 OR [[ $a -lt 100</td>
+          <td> </td>
+          <td>$b -gt 100 ]] 返回 true</td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<p><strong>文件运算符</strong></p>
+
+<ul>
+  <li>-b file ：检测文件是否是块设备文件，如果是，则返回 true。 [ -b $file ] 返回 false。</li>
+  <li>-c file ：检测文件是否是字符设备文件，如果是，则返回 true。 [ -c $file ] 返回 false。</li>
+  <li>-d file ：检测文件是否是目录，如果是，则返回 true。 [ -d $file ] 返回 false。</li>
+  <li>-f file ：检测文件是否是普通文件（既不是目录，也不是设备文件），如果是，则返回 true。 [ -f $file ] 返回 true。</li>
+  <li>-g file ：检测文件是否设置了 SGID 位，如果是，则返回 true。 [ -g $file ] 返回 false。</li>
+  <li>-k file ：检测文件是否设置了粘着位(Sticky Bit)，如果是，则返回 true。 [ -k $file ] 返回 false。</li>
+  <li>-p file ：检测文件是否是有名管道，如果是，则返回 true。 [ -p $file ] 返回 false。</li>
+  <li>-u file ：检测文件是否设置了 SUID 位，如果是，则返回 true。 [ -u $file ] 返回 false。</li>
+  <li>-r file ：检测文件是否可读，如果是，则返回 true。 [ -r $file ] 返回 true。</li>
+  <li>-w file ：检测文件是否可写，如果是，则返回 true。 [ -w $file ] 返回 true。</li>
+  <li>-x file ：检测文件是否可执行，如果是，则返回 true。 [ -x $file ] 返回 true。</li>
+  <li>-s file ：检测文件是否为空（文件大小是否大于0），不为空返回 true。 [ -s $file ] 返回 true。</li>
+  <li>-e file ：检测文件（包括目录）是否存在，如果是，则返回 true。 [ -e $file ] 返回 true。</li>
+</ul>
+
+<hr />
+
+<h4 id="执行相关">执行相关</h4>
+
+<p><strong>命令替换</strong>
+命令替换与变量替换差不多，都是用来重组命令行的，先完成引号里的命令行，然后将其结果替换出来，再重组成新的命令行。
+执行命令：</p>
+
+<ol>
+  <li><code class="language-plaintext highlighter-rouge">ls /etc</code> ： 反引号 （所有的unix系统都支持）</li>
+  <li>$(ls /etc) ： $+() （部分unix系统不支持）
+多个嵌套使用时，从内向外执行</li>
+</ol>
+
+<blockquote>
+  <p>for file in \s /etc\ 或 for file in $(ls /etc) 循环中使用
+  <code class="language-plaintext highlighter-rouge">dirname $0</code> 获取脚本文件所在的目录
+  path=$(cd <code class="language-plaintext highlighter-rouge">dirname $0</code>;pwd) ： 获取脚本当前所在目录，并且执行cd命令到达该目录，使用pwd获取路径并赋值到path变量</p>
+</blockquote>
+
+<p><strong>算术运算</strong></p>
+
+<ol>
+  <li>$[ ] : 加减乘除,不必添加空格</li>
+  <li>$(( )) ：加减乘除等,不必添加空格</li>
+</ol>
+
+<p><strong>逻辑判断</strong></p>
+
+<ol class="task-list">
+  <li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled="disabled" />： 中括号旁边和运算符两边必须添加空格 （可以使用，不推荐）</li>
+  <li class="task-list-item">[[ ]]：中括号旁边和运算符两边必须添加空格 （字符串验证时，推荐使用）</li>
+  <li class="task-list-item">(()) ： 中括号旁边和运算符两边必须添加空格 （数字验证时，推荐使用）</li>
+  <li class="task-list-item">[[]] 和 (()) 分别是[ ]的针对数学比较表达式和字符串表达式的加强版。</li>
+  <li class="task-list-item">使用[[ … ]]条件判断结构，而不是[ … ]，能够防止脚本中的许多逻辑错误。比如，&amp;&amp;、||、<和> 操作符能够正常存在于[[ ]]条件判断结构中，但是如果出现在[ ]结构中的话，会报错。比如可以直接使用if [[ a != 1 &amp;&amp; a != 2 ]], 如果不适用双括号, 则为if [ a -ne 1] &amp;&amp; [ ​a != 2 ]或者if [ $a -ne 1 -a $a != 2 ]。
+[[ ]]中增加模式匹配特效；
+(( ))不需要再将表达式里面的大小于符号转义，除了可以使用标准的数学运算符外，还增加了以下符号</和></li>
+</ol>
+
+<hr />
+
+<h4 id="输出">输出</h4>
+
+<p><strong>echo</strong>
+仅用于字符串的输出，没有使用printf作为输出的移植性好，建议使用printf</p>
+
+<p><strong>printf</strong></p>
+
+<blockquote>
+  <p>printf 不会像 echo 自动添加换行符，我们可以手动添加 \n
+  无大括号，直接以空格分隔</p>
+</blockquote>
+
+<ul>
+  <li>格式：<code class="language-plaintext highlighter-rouge">printf format-string [arguments...]</code> 其中（format-string: 格式控制字符串、arguments: 参数列表）</li>
+  <li>案例：<code class="language-plaintext highlighter-rouge">printf "%-10s %-8s %-4.2f\n" 郭靖 男 66.1234</code></li>
+  <li>%s %c %d %f 都是格式替代符
+    <ul>
+      <li>d：Decimal 十进制整数 对应位置参数必须是十进制整数，否则报错!</li>
+      <li>s：String 字符串 对应位置参数必须是字符串或者字符型 否则报错</li>
+      <li>c：Char 字符 对应位置参数必须是字符串或者字符型 否则报错</li>
+      <li>f：Float 浮点 对应位置参数必须是数字型 否则报错</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">%-10s</code> ： 指一个宽度为10个字符（-表示左对齐，没有则表示右对齐），任何字符都会被显示在10个字符宽的字符内，如果不足则自动以空格填充，超过也会将内容全部显示出来。</li>
+  <li><code class="language-plaintext highlighter-rouge">%-4.2f</code> ：指格式化为小数，宽度为4个字符，其中<code class="language-plaintext highlighter-rouge">.2</code>指保留2位小数。</li>
+  <li>转义符：
+    <ul>
+      <li>\a ：警告字符，通常为ASCII的BEL字符</li>
+      <li>\b ：后退</li>
+      <li>\c ：抑制（不显示）输出结果中任何结尾的换行字符（只在%b格式指示符控制下的参数字符串中有效），而且，任何留在参数里的字符、任何接下来的参数以及任何留在格式字符串中的字符，都被忽略</li>
+      <li>\f ：换页（formfeed）</li>
+      <li>\n ：换行</li>
+      <li>\r ：回车（Carriage return）</li>
+      <li>\t ：水平制表符</li>
+      <li>\v ：垂直制表符</li>
+      <li>\ ：一个字面上的反斜杠字符</li>
+      <li>\ddd ：表示1到3位数八进制值的字符。仅在格式字符串中有效</li>
+      <li>\0ddd ：表示1到3位的八进制值字符</li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<h4 id="流程控制">流程控制</h4>
+
+<p>和Java、PHP等语言不一样，sh的流程控制不可为空，即if或者else的大括号中无任何语句
+<strong>if else</strong></p>
+
+<ul>
+  <li>if</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if </span>condition
+<span class="k">then
+    </span>command1 
+    command2
+    ...
+    commandN 
+<span class="k">fi
+</span>1234567
+</code></pre></div></div>
+
+<ul>
+  <li>if else</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if </span>condition
+<span class="k">then
+    </span>command1 
+    command2
+    ...
+    commandN
+<span class="k">else
+    </span><span class="nb">command
+</span><span class="k">fi
+</span>123456789
+</code></pre></div></div>
+
+<ul>
+  <li>if else-if else</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if </span>condition1
+<span class="k">then
+    </span>command1
+<span class="k">elif </span>condition2 
+<span class="k">then 
+    </span>command2
+<span class="k">else
+    </span>commandN
+<span class="k">fi
+</span>123456789
+</code></pre></div></div>
+
+<p><strong>for</strong></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for </span>var <span class="k">in </span>item1 item2 ... itemN
+<span class="k">do
+    </span>command1
+    command2
+    ...
+    commandN
+<span class="k">done
+</span>1234567
+</code></pre></div></div>
+
+<p><strong>while</strong></p>
+
+<ul>
+  <li>while condition</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">while </span>condition
+<span class="k">do
+    </span><span class="nb">command
+</span><span class="k">done
+</span>1234
+</code></pre></div></div>
+
+<ul>
+  <li>while 无限循环</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">while</span> :
+<span class="k">do
+    </span><span class="nb">command
+</span><span class="k">done
+</span>1234
+</code></pre></div></div>
+
+<p><strong>until</strong>
+until 循环执行一系列命令直至条件为 true 时停止。
+until 循环与 while 循环在处理方式上刚好相反。</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">until </span>condition
+<span class="k">do
+    </span><span class="nb">command
+</span><span class="k">done
+</span>1234
+</code></pre></div></div>
+
+<p><strong>case</strong>
+Shell case语句为多选择语句。可以用case语句匹配一个值与一个模式，如果匹配成功，执行相匹配的命令。
+case需要一个esac（就是case反过来）作为结束标记，每个case分支用右圆括号，用两个分号表示break，其中“;;”不是跳出循环，是不在去匹配下面的模式
+case语句格式如下：</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">case</span> 值 <span class="k">in
+  </span>模式1<span class="p">)</span>
+    command1
+    command2
+    ...
+    commandN
+    <span class="p">;;</span>
+  模式2）
+    command1
+    command2
+    ...
+    commandN
+    <span class="p">;;</span>
+<span class="k">esac</span>
+1234567891011121314
+</code></pre></div></div>
+
+<p><strong>跳出循环</strong></p>
+
+<ol>
+  <li>break ：跳出总循环</li>
+  <li>continue：跳出当前循环，继续下一次循环</li>
+</ol>
+
+<h4 id="定义函数">定义函数</h4>
+
+<p>可以带function fun() 定义，也可以直接fun() 定义,不带任何参数。</p>
+
+<ul>
+  <li><strong>函数定义</strong></li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span> <span class="k">function</span> <span class="o">]</span> funname<span class="o">()</span>
+<span class="o">{</span>
+    action<span class="p">;</span>
+    <span class="o">[</span><span class="k">return </span>int<span class="p">;</span><span class="o">]</span>
+<span class="o">}</span>
+12345
+</code></pre></div></div>
+
+<ul>
+  <li>参数传递
+    <ul>
+      <li>调用函数: fun_name 2 3 4</li>
+      <li>函数中使用：和shell取用函数相同 $n $# $* $? 或者加上{}</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>funWithParam<span class="o">(){</span>
+    <span class="nb">echo</span> <span class="s2">"第一个参数为 </span><span class="nv">$1</span><span class="s2"> !"</span>
+    <span class="nb">echo</span> <span class="s2">"第二个参数为 </span><span class="nv">$2</span><span class="s2"> !"</span>
+    <span class="nb">echo</span> <span class="s2">"第十个参数为 </span><span class="nv">$10</span><span class="s2"> !"</span>
+    <span class="nb">echo</span> <span class="s2">"第十个参数为 </span><span class="k">${</span><span class="nv">10</span><span class="k">}</span><span class="s2"> !"</span>
+    <span class="nb">echo</span> <span class="s2">"第十一个参数为 </span><span class="k">${</span><span class="nv">11</span><span class="k">}</span><span class="s2"> !"</span>
+    <span class="nb">echo</span> <span class="s2">"参数总数有 </span><span class="nv">$# </span><span class="s2">个!"</span>
+    <span class="nb">echo</span> <span class="s2">"作为一个字符串输出所有参数 </span><span class="nv">$*</span><span class="s2"> !"</span><span class="o">}</span>
+funWithParam 1 2 3 4 5 6 7 8 9 34 73
+<span class="nb">echo</span> <span class="nv">$?</span>  <span class="se">\#</span> 判断执行是否成功
+12345678910
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>函数返回值</p>
+
+    <ul>
+      <li>return字样可存在也可不存在</li>
+      <li>return 只能为 return [0-255]，此处的返回可作为函数执行的状态，通过$?获取的便是这个返回值</li>
+      <li>如果不加return ， 则默认最后一条语句的执行状态所为函数执行状态的返回值，如果最后一条语句执行成功，则$?为0，否则不为0</li>
+    </ul>
+  </li>
+  <li>
+    <p>使用函数返回值</p>
+
+    <p>（Janusgraph图数据库官方启动服务脚本片段）</p>
+
+    <ul>
+      <li>return返回的数字，只是作为函数执行状态的返回值，也就是接下来$?获取的值</li>
+      <li>对于类似于下面的<code class="language-plaintext highlighter-rouge">BIN=\</code>abs_path``语句，获取的是函数体内所有的echo、printf输出组合成的一个字符串</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>abs_path<span class="o">()</span> <span class="o">{</span>
+    <span class="nv">SOURCE</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">BASH_SOURCE</span><span class="p">[0]</span><span class="k">}</span><span class="s2">"</span>
+    <span class="k">while</span> <span class="o">[</span> <span class="nt">-h</span> <span class="s2">"</span><span class="nv">$SOURCE</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">do
+        </span><span class="nv">DIR</span><span class="o">=</span><span class="s2">"</span><span class="si">$(</span> <span class="nb">cd</span> <span class="nt">-P</span> <span class="s2">"</span><span class="si">$(</span> <span class="nb">dirname</span> <span class="s2">"</span><span class="nv">$SOURCE</span><span class="s2">"</span> <span class="si">)</span><span class="s2">"</span> <span class="o">&amp;&amp;</span> <span class="nb">pwd</span> <span class="si">)</span><span class="s2">"</span>
+        <span class="nv">SOURCE</span><span class="o">=</span><span class="s2">"</span><span class="si">$(</span><span class="nb">readlink</span> <span class="s2">"</span><span class="nv">$SOURCE</span><span class="s2">"</span><span class="si">)</span><span class="s2">"</span>
+        <span class="o">[[</span> <span class="nv">$SOURCE</span> <span class="o">!=</span> /<span class="k">*</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nv">SOURCE</span><span class="o">=</span><span class="s2">"</span><span class="nv">$DIR</span><span class="s2">/</span><span class="nv">$SOURCE</span><span class="s2">"</span>
+    <span class="k">done
+    </span><span class="nb">echo</span> <span class="s2">"test"</span>  
+    <span class="nb">echo</span> <span class="s2">"</span><span class="si">$(</span> <span class="nb">cd</span> <span class="nt">-P</span> <span class="s2">"</span><span class="si">$(</span> <span class="nb">dirname</span> <span class="s2">"</span><span class="nv">$SOURCE</span><span class="s2">"</span> <span class="si">)</span><span class="s2">"</span> <span class="o">&amp;&amp;</span> <span class="nb">pwd</span> <span class="si">)</span><span class="s2">"</span>  
+    <span class="c"># 此函数的两个echo输出会组合成一个字符串作为下述BIN的值</span>
+<span class="o">}</span>
+
+<span class="nv">BIN</span><span class="o">=</span><span class="sb">`</span>abs_path<span class="sb">`</span> <span class="c"># BIN赋值函数返回值，如果没有return，则函数中所有的echo、printf输出组合成一个字符串传入BIN</span>
+<span class="nv">path</span><span class="o">=</span><span class="k">${</span><span class="nv">BIN</span><span class="k">}</span>/nodetool <span class="c"># 可直接使用</span>
+1234567891011121314
+</code></pre></div></div>
+
+<h4 id="输入输出重定向">输入输出重定向</h4>
+
+<p>一般情况下，每个 Unix/Linux 命令运行时都会打开三个文件：</p>
+
+<ul>
+  <li>标准输入文件(stdin)：stdin的文件描述符为0，Unix程序默认从stdin读取数据。</li>
+  <li>标准输出文件(stdout)：stdout 的文件描述符为1，Unix程序默认向stdout输出数据。</li>
+  <li>标准错误文件(stderr)：stderr的文件描述符为2，Unix程序会向stderr流中写入错误信息。</li>
+</ul>
+
+<p>默认情况下，command &gt; file 将 stdout 重定向到 file，command &lt; file 将stdin 重定向到 file。
+如果希望执行某个命令，但又不希望在屏幕上显示输出结果，那么可以将输出重定向到 /dev/null：</p>
+
+<p><strong>输入重定向</strong></p>
+
+<ol>
+  <li>bash.sh &lt; file ： 将脚本的输入重定向到file，由file提供参数</li>
+</ol>
+
+<p><strong>输出重定向</strong></p>
+
+<ol>
+  <li>bash.sh &gt; file ： 将脚本的输出数据重定向到file中，覆盖数据</li>
+  <li>bash.sh » file ： 将脚本的输出数据重定向到file中，追加数据</li>
+  <li>command » file 2&gt;&amp;1 ： 将 stdout 和 stderr 合并后重定向到 file</li>
+</ol>
+
+<h4 id="读取外部输入">读取外部输入</h4>
+
+<p>命令：<code class="language-plaintext highlighter-rouge">read arg</code> （脚本读取外部输入并赋值到变量上）
+在shell脚本执行到上述命令时，停止脚本执行并等待外部输入，将外部输入赋值到arg变量上，继续执行脚本</p>
+
+<h4 id="文件引用">文件引用</h4>
+
+<p>引用其他的文件之后，可以使用其变量、函数等等，相当于将引用的文件包含进了当前文件
+两种方式：</p>
+
+<ol>
+  <li><strong>.</strong> file_path\file_name</li>
+  <li><strong>source</strong> file_path\file_name</li>
+</ol>
+
+<h4 id="颜色标识">颜色标识</h4>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">printf</span>  <span class="s2">"</span><span class="se">\0</span><span class="s2">33[32m SUCCESS: yay </span><span class="se">\0</span><span class="s2">33[0m</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
+<span class="nb">printf</span>  <span class="s2">"</span><span class="se">\0</span><span class="s2">33[33m WARNING: hmm </span><span class="se">\0</span><span class="s2">33[0m</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
+<span class="nb">printf</span>  <span class="s2">"</span><span class="se">\0</span><span class="s2">33[31m ERROR: fubar </span><span class="se">\0</span><span class="s2">33[0m</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
+123
+</code></pre></div></div>
+
+<p>输出结果：
+<img src="/Users/suntian/文档/读书笔记/科研/一篇教会你写90%的shell脚本！_web洋仔-CSDN博客_shell脚本能写web吗_files/20190909160814745.png" alt="在这里插入图片描述" /></p>
+
+<h4 id="长句换行">长句换行</h4>
+
+<p>在shell中为避免一个语句过长，可以使用“\”进行换行
+使用“\”换行，在脚本执行过程中还是当做一行一个语句执行，不同于enter直接换行</p>
+
+<blockquote>
+  <p>注意：\ 前添加一个空格 。 \ 后无空格直接换行。</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code> /mysql/bin/mysql <span class="se">\</span>
+  <span class="nt">-h</span> test_host  <span class="nt">-P</span> 000 <span class="se">\</span>
+  <span class="nt">-u</span> test_user <span class="nt">-ptest_password</span> <span class="p">;</span>
+123
+</code></pre></div></div>
+
+<h4 id="shell操作mysql">shell操作mysql</h4>
+
+<p>下面案例为登录mysql，并选择操作数据库，之后进行导入数据</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code> /mysql/mysql/bin/mysql <span class="se">\</span>
+  <span class="nt">-h</span> test_host  <span class="nt">-P</span> 000 <span class="se">\</span>
+  <span class="nt">-u</span> test_user <span class="nt">-ptest_password</span> <span class="se">\</span>
+  <span class="nt">-e</span><span class="s2">"use test_database; source data_faile; "</span> <span class="c"># -e 代表执行sql语句</span>
+1234
+</code></pre></div></div>
+
+<blockquote>
+  <p>-u 用户名
+  -p 用户密码
+  -h 服务器ip地址
+  -D 连接的数据库
+  -N 不输出列信息
+  -B 使用tab键 代替 分隔符
+  -e 执行的SQL语句</p>
+</blockquote>
+
+<h4 id="退出脚本">退出脚本</h4>
+
+<p>命令：<code class="language-plaintext highlighter-rouge">exit</code></p>
+
+<p>在退出脚本时使用不同的错误码，这样可以根据错误码来判断发生了什么错误。</p>
+
+<blockquote>
+  <p>在绝大多数 shell 脚本中，exit 0 表示执行成功，exit 1 表示发生错误。
+  对错误与错误码进行一对一的映射，这样有助于脚本调试。</p>
+</blockquote>
+
+<p>命令：<code class="language-plaintext highlighter-rouge">set -e 或者 set +e</code>
+set -e表示从当前位置开始，如果出现任何错误都将触发exit。相反，set +e表示不管出现任何错误继续执行脚本。</p>
+
+<blockquote>
+  <p>如果脚本是有状态的（每个后续步骤都依赖前一个步骤），那么请使用set -e，在脚本出现错误时立即退出脚本。
+  如果要求所有命令都要执行完（很少会这样），那么就使用set +e。</p>
+</blockquote>
+
+<h4 id="shell脚本调试">shell脚本调试</h4>
+
+<p>检查是否有语法错误<code class="language-plaintext highlighter-rouge">-n</code>：
+<code class="language-plaintext highlighter-rouge">bash -n script_name.sh</code>
+使用下面的命令来执行并调试 Shell 脚本<code class="language-plaintext highlighter-rouge">-x</code>：
+<code class="language-plaintext highlighter-rouge">bash -x script_name.sh</code>
+<strong>调试count_odd_number.sh 程序案例：</strong></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/usr/bin.env bash</span>
+
+<span class="c"># 用于计算数组中奇数的和</span>
+<span class="c"># @author liyangyang</span>
+<span class="c"># @time 2019/09/17</span>
+
+<span class="nb">sum</span><span class="o">=</span>0
+<span class="k">for </span>num <span class="k">in </span>1 2 3 4<span class="p">;</span><span class="k">do
+    </span><span class="nv">re</span><span class="o">=</span><span class="k">${</span><span class="nv">num</span><span class="k">}</span>%2
+    <span class="k">if</span> <span class="o">((</span> <span class="k">${</span><span class="nv">re</span><span class="k">}</span> <span class="o">==</span> 1 <span class="o">))</span><span class="p">;</span><span class="k">then
+        </span><span class="nb">sum</span><span class="o">=</span><span class="nv">$[</span><span class="k">${</span><span class="nv">sum</span><span class="k">}</span>+<span class="k">${</span><span class="nv">num</span><span class="k">}</span><span class="o">]</span>
+    <span class="k">fi
+done
+</span><span class="nb">echo</span> <span class="k">${</span><span class="nv">sum</span><span class="k">}</span>
+1234567891011121314
+</code></pre></div></div>
+
+<ol>
+  <li>首先检查有无语法错误：
+<code class="language-plaintext highlighter-rouge">bash -n count_odd_number.sh</code></li>
+  <li>没有输出，说明没有错误，开始实际调试：
+<code class="language-plaintext highlighter-rouge">bash -x count_odd_number.sh</code></li>
+  <li>调试结果如下：</li>
+</ol>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+ <span class="nb">sum</span><span class="o">=</span>0
++ <span class="k">for </span>num <span class="k">in </span>1 2 3 4
++ <span class="nv">re</span><span class="o">=</span>1%2
++ <span class="o">((</span>  1%2 <span class="o">==</span> 1  <span class="o">))</span>
++ <span class="nb">sum</span><span class="o">=</span>1
++ <span class="k">for </span>num <span class="k">in </span>1 2 3 4
++ <span class="nv">re</span><span class="o">=</span>2%2
++ <span class="o">((</span>  2%2 <span class="o">==</span> 1  <span class="o">))</span>
++ <span class="k">for </span>num <span class="k">in </span>1 2 3 4
++ <span class="nv">re</span><span class="o">=</span>3%2
++ <span class="o">((</span>  3%2 <span class="o">==</span> 1  <span class="o">))</span>
++ <span class="nb">sum</span><span class="o">=</span>4
++ <span class="k">for </span>num <span class="k">in </span>1 2 3 4
++ <span class="nv">re</span><span class="o">=</span>4%2
++ <span class="o">((</span>  4%2 <span class="o">==</span> 1  <span class="o">))</span>
++ <span class="nb">echo </span>4
+4
+1234567891011121314151617
+</code></pre></div></div>
+
+<p>其中的输出显示了程序执行的每一步，通过观察程序执行的步骤是否满足预期从而达到调试的效果
+带有 + 表示的是 Shell 调试器的输出，不带 + 表示程序的输出。</p>
+
+<h4 id="案例">案例：</h4>
+
+<p>这是es（ElasticSearch）官方启动服务的脚本，看可不可以理解吧~</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/usr/bin/env bash</span>
+
+<span class="c"># CONTROLLING STARTUP:</span>
+<span class="c">#</span>
+<span class="c"># This script relies on a few environment variables to determine startup</span>
+<span class="c"># behavior, those variables are:</span>
+<span class="c">#</span>
+<span class="c">#   ES_PATH_CONF -- Path to config directory</span>
+<span class="c">#   ES_JAVA_OPTS -- External Java Opts on top of the defaults set</span>
+<span class="c">#</span>
+<span class="c"># Optionally, exact memory values can be set using the `ES_JAVA_OPTS`. Note that</span>
+<span class="c"># the Xms and Xmx lines in the JVM options file must be commented out. Example</span>
+<span class="c"># values are "512m", and "10g".</span>
+<span class="c">#</span>
+<span class="c">#   ES_JAVA_OPTS="-Xms8g -Xmx8g" ./bin/elasticsearch</span>
+
+<span class="nb">source</span> <span class="s2">"</span><span class="sb">`</span><span class="nb">dirname</span> <span class="s2">"</span><span class="nv">$0</span><span class="s2">"</span><span class="sb">`</span><span class="s2">"</span>/elasticsearch-env
+
+parse_jvm_options<span class="o">()</span> <span class="o">{</span>
+  <span class="k">if</span> <span class="o">[</span> <span class="nt">-f</span> <span class="s2">"</span><span class="nv">$1</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"</span><span class="sb">`</span><span class="nb">grep</span> <span class="s2">"^-"</span> <span class="s2">"</span><span class="nv">$1</span><span class="s2">"</span> | <span class="nb">tr</span> <span class="s1">'\n'</span> <span class="s1">' '</span><span class="sb">`</span><span class="s2">"</span>
+  <span class="k">fi</span>
+<span class="o">}</span>
+
+<span class="nv">ES_JVM_OPTIONS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$ES_PATH_CONF</span><span class="s2">"</span>/jvm.options
+
+<span class="nv">ES_JAVA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="sb">`</span>parse_jvm_options <span class="s2">"</span><span class="nv">$ES_JVM_OPTIONS</span><span class="s2">"</span><span class="sb">`</span><span class="s2"> </span><span class="nv">$ES_JAVA_OPTS</span><span class="s2">"</span>
+
+<span class="c"># manual parsing to find out, if process should be detached</span>
+<span class="k">if</span> <span class="o">!</span> <span class="nb">echo</span> <span class="nv">$*</span> | <span class="nb">grep</span> <span class="nt">-E</span> <span class="s1">'(^-d |-d$| -d |--daemonize$|--daemonize )'</span> <span class="o">&gt;</span> /dev/null<span class="p">;</span> <span class="k">then
+  </span><span class="nb">exec</span> <span class="se">\</span>
+    <span class="s2">"</span><span class="nv">$JAVA</span><span class="s2">"</span> <span class="se">\</span>
+    <span class="nv">$ES_JAVA_OPTS</span> <span class="se">\</span>
+    <span class="nt">-Des</span>.path.home<span class="o">=</span><span class="s2">"</span><span class="nv">$ES_HOME</span><span class="s2">"</span> <span class="se">\</span>
+    <span class="nt">-Des</span>.path.conf<span class="o">=</span><span class="s2">"</span><span class="nv">$ES_PATH_CONF</span><span class="s2">"</span> <span class="se">\</span>
+    <span class="nt">-cp</span> <span class="s2">"</span><span class="nv">$ES_CLASSPATH</span><span class="s2">"</span> <span class="se">\</span>
+    org.elasticsearch.bootstrap.Elasticsearch <span class="se">\</span>
+    <span class="s2">"</span><span class="nv">$@</span><span class="s2">"</span>
+<span class="k">else
+  </span><span class="nb">exec</span> <span class="se">\</span>
+    <span class="s2">"</span><span class="nv">$JAVA</span><span class="s2">"</span> <span class="se">\</span>
+    <span class="nv">$ES_JAVA_OPTS</span> <span class="se">\</span>
+    <span class="nt">-Des</span>.path.home<span class="o">=</span><span class="s2">"</span><span class="nv">$ES_HOME</span><span class="s2">"</span> <span class="se">\</span>
+    <span class="nt">-Des</span>.path.conf<span class="o">=</span><span class="s2">"</span><span class="nv">$ES_PATH_CONF</span><span class="s2">"</span> <span class="se">\</span>
+    <span class="nt">-cp</span> <span class="s2">"</span><span class="nv">$ES_CLASSPATH</span><span class="s2">"</span> <span class="se">\</span>
+    org.elasticsearch.bootstrap.Elasticsearch <span class="se">\</span>
+    <span class="s2">"</span><span class="nv">$@</span><span class="s2">"</span> <span class="se">\</span>
+    &lt;&amp;- &amp;
+  <span class="nv">retval</span><span class="o">=</span><span class="nv">$?</span>
+  <span class="nv">pid</span><span class="o">=</span><span class="nv">$!</span>
+  <span class="o">[</span> <span class="nv">$retval</span> <span class="nt">-eq</span> 0 <span class="o">]</span> <span class="o">||</span> <span class="nb">exit</span> <span class="nv">$retval</span>
+  <span class="k">if</span> <span class="o">[</span> <span class="o">!</span> <span class="nt">-z</span> <span class="s2">"</span><span class="nv">$ES_STARTUP_SLEEP_TIME</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">sleep</span> <span class="nv">$ES_STARTUP_SLEEP_TIME</span>
+  <span class="k">fi
+  if</span> <span class="o">!</span> ps <span class="nt">-p</span> <span class="nv">$pid</span> <span class="o">&gt;</span> /dev/null <span class="p">;</span> <span class="k">then
+    </span><span class="nb">exit </span>1
+  <span class="k">fi
+  </span><span class="nb">exit </span>0
+<span class="k">fi
+
+</span><span class="nb">exit</span> <span class="nv">$?</span>
+12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061
+</code></pre></div></div>
+:ET

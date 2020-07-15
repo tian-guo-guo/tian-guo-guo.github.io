@@ -1,0 +1,550 @@
+I"��<h1 id="神经机器翻译概览基准模型与改进">神经机器翻译概览：基准模型与改进</h1>
+
+<p>介绍一下当前机器翻译领域很火的神经机器翻译(<strong>Neural Machine Translation</strong> ，简称<strong>NMT)</strong>领域的大致状况，最近的一些进展（内容主要来自<strong>Philipp Koehn</strong>的 <strong>*Statistical Machine Translation*</strong> 还未发布的草稿，想了解更详细内容，读<a href="https://link.jianshu.com?t=https%3A%2F%2Farxiv.org%2Fpdf%2F1709.07809.pdf">原文</a>)。</p>
+
+<h3 id="首先什么是机器翻译">首先什么是机器翻译？</h3>
+
+<p>显而易见就是<strong>用机器来翻译</strong>，这里机器说的是计算机了。终极目标是抢走翻译们的饭… 噢，不对，是消除人们的交流沟通障碍，促进世界人民大团结！</p>
+
+<h3 id="那神经机器翻译又是什么鬼">那神经机器翻译又是什么鬼？</h3>
+
+<p>首先机器翻译是个大目标，达到目标有很多种方法。比如说神经机器翻译之前，很流行用统计方法来搭建机器翻译系统，这叫做<strong>统计机器翻译</strong> (Statistical Machine Translation SMT)。</p>
+
+<p>同样的如果用神经网络方法来达成机器翻译这个目标，那么就叫神经机器翻译。</p>
+
+<h3 id="为什么现在神经机器翻译很火呢">为什么现在神经机器翻译很火呢？</h3>
+
+<p>第一，在自然语言处理中，<strong>机器翻译是一个高级问题</strong>，这意味着解决这个问题，还能顺带把方法用到很多其他问题上去。比如说现在广泛使用的注意力机制 (Attention Mechanism)，最早就是先在机器翻译系统使用的。并且机器翻译<strong>非常实用</strong>，想想你看不懂论文时打开谷歌翻译时，就知道了。</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20200715230301.png" alt="image-20200715230301399" /></p>
+
+<p>第二，还有现在深度学习大火，<strong>神经网络也确实在机器翻译上取得很好的成绩</strong>，比起之前统计机器翻译中效果最好的模型（基于短语的统计机器翻译模型）都能强出很多。这也是为什么现在谷歌翻译基本上都已经换成神经机器翻译模型了。</p>
+
+<p>好了，这就是背景知识了。那么先来讲讲现在使用最普遍的基准模型吧。</p>
+
+<h2 id="基准模型seq2seqattention">基准模型（seq2seq+attention）</h2>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20200715230336.png" alt="img" /></p>
+
+<p>现在最常用的基准模型如上图，主体部分主要由三部分组成，编码器(Encoder)、解码器(Decoder)、还有注意力机制(Attention)。</p>
+
+<p><strong>编码器</strong>：编码器其实很好理解，就把它当做一个总结器，输入一段源语言句子(比如说英文的I love you.)，那么编码器就是把这句话的信息总结出来。可以理解为人读完一句话，然后总结成一个模糊的意思。</p>
+
+<p><strong>解码器</strong>：然后解码器根据编码器传过来的信息，来把这个信息用目标语言表示出来，也就是翻译出来。</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20200715230401.jpg" alt="img" /></p>
+
+<p><strong>注意力机制：</strong>如果单靠一次总结后直接解码翻译的话，效果并不好。所以可以再像人一样，边翻译同时再回看源语言每个词的信息，之后也能知道更准确的词和词的对应关系。上图就是英法翻译时，词对应情况。</p>
+
+<p>之后输入输出部分就主要由<strong>词向量表</strong>和<strong>预测模块</strong>组成了。</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>![img](https:////upload-images.jianshu.io/upload_images/4787675-5026fd46e7fc5f4e.gif?imageMogr2/auto-orient/strip</td>
+      <td>imageView2/2/w/640/format/webp)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>整个翻译流程像这样，输入源语言（比如说汉语），转换成词向量，传入编码器编码总结，然后传给解码器，解码器通过注意力机制，一个词一个词，边参考源语言信息边翻译成目标语言（比如说英语），最后用到柱搜索 (Beam Search，感兴趣自己去搜搜看) 算法选出最好的备选翻译。</p>
+
+<p>这就是目前神经机器学习的基准模型了。</p>
+
+<p>基准模型学习资源（流行框架）：</p>
+
+<ul>
+  <li><a href="https://link.jianshu.com?t=https%3A%2F%2Fgithub.com%2Ftensorflow%2Fnmt">TensorFlow NMT Tutorial</a></li>
+  <li><a href="https://link.jianshu.com?t=https%3A%2F%2Fgithub.com%2Fspro%2Fpractical-pytorch%2Fblob%2Fmaster%2Fseq2seq-translation%2Fseq2seq-translation.ipynb">PyTorch NMT Tutorial</a></li>
+</ul>
+
+<h3 id="基准模型改进">基准模型改进</h3>
+
+<p>当然这个领域还在不停地发展，因此每年也会不断有很多提高基准模型的方法被发表出来，特别是在每年<a href="https://link.jianshu.com?t=http%3A%2F%2Fwww.statmt.org%2Fwmt17%2F"><strong>WMT</strong></a>（相当于机器翻译领域每年的华山论贱）大赛上都会有队伍将最有效地一些方法进行总结，然后实现到实际模型上来。</p>
+
+<p>这些方法也都很有意思，之后就一一来介绍。</p>
+
+<h4 id="集成解码方法ensemble-decoding">集成解码方法(Ensemble Decoding)</h4>
+
+<p>首先是比较容易理解的集成解码，实际上就是一句话<strong>人多力量大</strong>。</p>
+
+<p>既然一个模型的准确率不行，那么就几个不同的模型一起用，因为每个模型可能都会有些差异，有不同的缺点，如果用多个模型的话，就能产生互补效应，获得更好的翻译效果。</p>
+
+<p>但是集成也根据集成模型的不同分为以下几种。</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20200715230430.png" alt="img" /></p>
+
+<h5 id="检查点checkpoint集成"><strong>检查点（checkpoint）集成</strong></h5>
+
+<p>检查点就相当于游戏中的存档点，将模型训练到一定程度，然后希望把当前模型的所有参数保持下来，以便之后使用。一般检查点会以epoch（整个数据集过一遍）、iteration（一次批训练更新权重）、或者句子数为单位，比如说epoch15模型就是训练完15个epoch的模型。</p>
+
+<p>而检查点集成就是，<strong>用这些不同时间点保存下来的模型一起来预测</strong>。</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20200715230448.png" alt="img" /></p>
+
+<h5 id="多次运行-multi-run-集成"><strong>多次运行 (Multi-run) 集成</strong></h5>
+
+<p>多次运行集成有好几种情况。</p>
+
+<p>可以是<strong>同一个模型，以不同的初始条件来运行</strong>，最后得到的多个模型；也可以是<strong>不同的模型</strong>，在用一个数据集上训练，最后得到的多个模型。</p>
+
+<h5 id="利用从右到左模型重排序解码">利用从右到左模型重排序解码</h5>
+
+<p>目前一般的解码器都是从左到右地一个词一个词地译出目标语言，所以一般RNN解码器都是单方向的，但编码器都是双方向以获得更多的信息。</p>
+
+<p>为了让解码器也能利用双方向的信息，可以训练一个模型反过来翻译目标语言，从右到左输出结果，比如说“我爱你”翻译成英文，按这样的顺序来译“you -&gt; love -&gt; I.”。</p>
+
+<p>之后用从右到左的模型输出的结果，来筛选从左到右模型输出的结果，就可以获得更好的翻译。</p>
+
+<p>当然上面这些集成方法也可以都用上，一起集成输出结果当然更好，但同时也会导致<strong>运算成本过高</strong>的问题，毕竟一个模型训练下来就要很久了，更何况几个了。</p>
+
+<h4 id="处理大词汇量">处理大词汇量</h4>
+
+<p>对于NMT，其中一个最大的难题就是<strong>如何处理庞大的词汇量</strong>。</p>
+
+<p>因为神经网络方法一般处理词汇是建立词向量表，之后通过查表将句子转换成词向量。也就是对于词向量表，每个不同的词就对应一个不同的向量。对于有些语言，因为形态学(Morphology)比较复杂，所以一个词可能会有很多很多种变形，即使意思并没差太多，这样的语言词汇量却会非常大。</p>
+
+<p>对于编码器端，会导致<strong>词向量表非常大</strong>，同时因为可能某些形态的词在整个数据集中只出现很少的次数，所以会<strong>导致稀疏问题，某些词向量根本没得到充足的训练</strong>。</p>
+
+<p>而对于解码器端，因为输出时会用softmax来进行概率输出，从目标语言词汇中挑选出合适的词。这会导致<strong>过大的计算量</strong>，也是一个大问题。</p>
+
+<p>目前大家能想到的解决这个问题的方法是，使用**子词 (sub-word) **而不是词(Word)来进行翻译，比如说英文里面 unhappy = un + happy.</p>
+
+<p>对于人来说，因为语言本能，这些都可以自然而然在脑中解构。但对于计算机就不行，得我们告诉它怎么做。</p>
+
+<h5 id="字节对编码-byte-pair-encoding-bpe-法">字节对编码 (Byte Pair Encoding, BPE) 法</h5>
+
+<p>现在使用比较广泛的一个方法是BPE法，因为爱丁堡大学的<strong>Nematus</strong>系统用这个取得了很好的效果。</p>
+
+<p>原理的话出乎意料，和语言学没有关系，也并不是很难。主要步骤如下。</p>
+
+<ol>
+  <li>将训练数据中所有词都表示成字节，把这些字节加入符号表，最开始大概是a, b, c…还有各种符号；</li>
+  <li>然后统计符号对的出现频率，比如说th, zt…；</li>
+  <li>挑出其中频率最高的符号对，加入符号表，训练数据集中所有该符号对融合，比如说t和h全变成了th。这个叫做一次融合，之后重复2,3过程，直到指定的融合次数。</li>
+</ol>
+
+<p>比如说爱丁堡大学在WMT16比赛中就用了89500次融合。完成这个BPE学习之后，用它来处理训练数据集，之后直接在bpe之间翻译，这样可以大大降低了词汇量。</p>
+
+<h3 id="使用单语言数据">使用单语言数据</h3>
+
+<p>机器翻译里面训练数据之所以难收集，主要是因为它用的是<strong>并列数据 (parallel data)</strong>，也就是源语言和目标语言之间，一句话一句话得对应起来。因此准备数据的过程特别麻烦，所以对于深度学习这种数据越多越好的模型，有时候可能数据也并不够。</p>
+
+<p>但同时另一方面，单独的语言数据我们又不缺，随便在网上抓一抓就很多很多。因此如何利用这些单语言数据就成了一个热门研究方向。</p>
+
+<p>这里列举几个比较成功的方法。主要分为增加训练数据和训练语言模型来辅助翻译。</p>
+
+<h5 id="回译">回译</h5>
+
+<p>回译的要点是，<strong>既然训练数据不足，那么就合成数据</strong>。但是怎么样合成呢？</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>![img](https:////upload-images.jianshu.io/upload_images/4787675-f435c0d7a37e7ff4.png?imageMogr2/auto-orient/strip</td>
+      <td>imageView2/2/w/546/format/webp)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>这里假设我们有大量的目标语言单语言数据，那么为什么不建立一个反向的翻译系统，将这些目标语言翻译成源语言，之后再用获得的并行数据来训练所需要的系统呢。</p>
+
+<p>这也是为什么这个技巧的名字叫做”<strong>回译 (Back Translation)</strong>“。</p>
+
+<h4 id="加入语言模型">加入语言模型</h4>
+
+<p>首先什么是语言模型？一句话，<strong>训练一个模型，然后这个模型判断你说不说的是人话</strong>，这就是语言模型，很简单吧。</p>
+
+<p>比方说我用脸打出来的“过以风格黑哦豆腐干会双方各黑分两个覅”就不是人话，你估计也不可能再在其他地方看到这样的句子了；而“我吃饭了”，这样正常的、有意义的、随处可见的话就是人话了。</p>
+
+<p>而加入语言模型主要就是判断解码器翻译出来的是不是人话，从而帮助解码器获得更好的翻译效果。</p>
+
+<p>至于如何学习怎么判断说的是不是人话，也就是训练语言模型，只要读书破万卷就可以了，把单语言数据丢给语言模型让自己训练就好了。</p>
+
+<h4 id="往返训练">往返训练</h4>
+
+<table>
+  <tbody>
+    <tr>
+      <td>![img](https:////upload-images.jianshu.io/upload_images/4787675-84693fdf68e59339.png?imageMogr2/auto-orient/strip</td>
+      <td>imageView2/2/w/439/format/webp)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>最后是往返训练，就是把回译的技巧用来同时训练两个模型。比如上图一个模型是从 f-&gt;e（法译英），而另一个是反过来的英译法。</p>
+
+<p>往返训练的流程是这样子的，假设我们有f单语言数据，那么先用正向模型翻译成e’，之后用这个e‘和f来训练反向模型。当要用e的单语言数据，只要反过来操作就好了。</p>
+
+<p>这样子两个好基友互相训练♂♂，最终就能都成为好模型。</p>
+
+<p>在下篇中，我们开始讨论</p>
+
+<ul>
+  <li>怎么利用<strong>深层模型</strong>，改进编码和解码器</li>
+  <li>怎么利用**引导对齐 (Alignment) **训练，加强注意力机制</li>
+  <li>怎么加入<strong>覆盖 (Coverage)</strong> 技巧，保证不过度翻译</li>
+</ul>
+
+<p>同时进一步讨论怎么利用数据，其中包括</p>
+
+<ul>
+  <li>如何用<strong>域适应</strong> (Domain Adaption) 技巧，利用其它域的数据来帮助训练只有少量数据的任务</li>
+  <li>如何利用除了词以外的<strong>语言学标记</strong>，来加强翻译</li>
+  <li>如何处理<strong>多语言对</strong>的问题，甚至是利用多语言对实现零样本学习</li>
+</ul>
+
+<h3 id="深层模型">深层模型</h3>
+
+<p>对于神经网络模型，其中最值得探索的便是其中的深层模型，这也是深度学习在探索的。因为根据不同连接方式，就可以得到不同的模型架构，而这些不同架构分别在处理特定问题是会有很好的效果。</p>
+
+<p>比如计算机视觉的话，之前也提到过的<a href="https://www.jianshu.com/p/841ac51c7961">CNN里面各种变种</a>，ResNet还有InceptNet这样的通过不同的连接技巧获得不同构架变种。</p>
+
+<h4 id="深层解码器">深层解码器</h4>
+
+<p>对于解码器端，主要是对循环神经网络（RNN）的两种链接方式的应用。</p>
+
+<p>第一种连接方式，<strong>堆叠（Stacked）RNN</strong>，也就是一般常见的连接方式。<strong>当前隐态是由同一个时序前一个层的隐态和前一个时序同一个层的隐态决定的</strong>。</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>![img](https:////upload-images.jianshu.io/upload_images/4787675-2253286ca6904fee.png?imageMogr2/auto-orient/strip</td>
+      <td>imageView2/2/w/1200/format/webp)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>两种连接</p>
+
+<p>第二种连接，<strong>深层过渡（Transition）RNN</strong>，这种是<strong>当前时序的第一层隐态由前一个时序的最后一层隐态决定，而其他的隐态则只由前一层的隐态决定</strong>。</p>
+
+<p>在现实应用中可以把两个技巧结合起来使用，至于到底怎么组合更好，现在还没有定论，还有待探索。实际上很多模型中就只用了堆叠模型，如果要用上两个的话，这里可以给出一个例子。</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>![img](https:////upload-images.jianshu.io/upload_images/4787675-e4eba49c74c019e8.png?imageMogr2/auto-orient/strip</td>
+      <td>imageView2/2/w/988/format/webp)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>这个模型里面，有些层用堆叠RNN里的处理方法，而有的层则是用过渡RNN的处理方法。</p>
+
+<h4 id="深层编码器">深层编码器</h4>
+
+<p>编码器跟解码器一样，也可以利用上述的不同连接技巧。</p>
+
+<p>比起解码器，因为编码器更容易利用句子的双向信息，所以更重要的是，应该试着应用不同的连接技巧，获得更多的双向信息。</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>![img](https:////upload-images.jianshu.io/upload_images/4787675-8babc056e64cc952.png?imageMogr2/auto-orient/strip</td>
+      <td>imageView2/2/w/834/format/webp)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Alternating RNN</p>
+
+<p>这里举一个例子，一个叫做<strong>交替 (Alternating) RNN*<em>*</em>的</strong>模型，从第一层开始往上，首先是从左到右，之后从右到左，之后再从左到右… 这样子的交替运行。</p>
+
+<p>除了上面说的这些，对于深层的编码解码器，当然也可以用上一般深层模型中的一些技巧，比如说残差连接。</p>
+
+<h3 id="引导对齐-guided-alignment-训练">引导对齐 (Guided Alignment) 训练</h3>
+
+<p>首先如之前基准模型时介绍的，模型中注意力机制的主要作用，是决定源语言句子和目标语言句子之间词对应关系。比如说通过注意力机制，模型知道德语里面的词Bücherregal，对应英语里的book shelf。</p>
+
+<p>而这样的对应关系是通过在大量数据上训练，模型自己学会的，但实际情况中，有时注意力机制可能学习的<strong>并不是对齐方式</strong>，而是其他东西。比如说下图就是对齐和注意力机制的对比。</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>![img](https:////upload-images.jianshu.io/upload_images/4787675-20b3f0e49c7d824f.png?imageMogr2/auto-orient/strip</td>
+      <td>imageView2/2/w/1156/format/webp)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>图中蓝色的框是标准的对齐方法，而绿色部分则是注意力机制学习的对齐，我们会发现在有些地方两者很不一致。所以这也表示可能在这里注意力机制学习的就不是词对齐，那能不能让注意力机制学习标准的对齐方式呢？</p>
+
+<p>当然可以。就像翻译时有标准的翻译数据一样，对齐的话，如果事先有标准的对齐数据，就<strong>能用标准对齐方式来作为目标训练注意力机制</strong>，使得它输出的结果和标准对齐方式一样。</p>
+
+<h3 id="模型的覆盖coverage">模型的覆盖(Coverage)</h3>
+
+<p>现在的神经网络翻译模型还有一个很大的问题，过度翻译 (Over-translation)和翻译不足 (Under-translation) 。</p>
+
+<p>有时候注意力机制<strong>把注意力都只放在某些重要词上</strong>，所以会出现翻译时对重要的词进行重复翻译，也就是突然结巴了；也会对有些本因翻译的词视而不见。</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>![img](https:////upload-images.jianshu.io/upload_images/4787675-bde27df49b4e48a8.png?imageMogr2/auto-orient/strip</td>
+      <td>imageView2/2/w/1104/format/webp)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Social Housing 过度注意，导致翻译不足</p>
+
+<p>而解决这个问题的方法就如标题，要保重翻译时对输入的所有词有一个全面的覆盖，使得所有词得到适当的翻译。</p>
+
+<h4 id="在翻译阶段设置约束保证强制覆盖">在翻译阶段设置约束保证强制覆盖</h4>
+
+<p>第一个方法，我们可以设计一个评价函数。当束搜索（Beam Search）给出几个备选翻译时，根据每个备选翻译的覆盖程度给出一定的评分。</p>
+
+<p>实际上也就是<strong>人为地设计一个对更标准翻译评估的函数，来引导解码器的翻译有更好的覆盖</strong>。</p>
+
+<h4 id="覆盖模型">覆盖模型</h4>
+
+<p>还有一种方法，叫做覆盖（Coverage）模型。</p>
+
+<p>首先之所以模型不能完成全面的覆盖，第一，最初输入的信息在经过几个时序传输后，信息并不能被有效保存下来；第二，每次翻译利用注意力机制来查看源语言时，都只与当前的翻译中的注意力有关，但却不知道之前的翻译词用到过的注意力，也就是说<strong>即使之前的翻译已经将注意力放在一个词上并给出了翻译，当前词也不知道</strong>。</p>
+
+<p>那么解决方案也很直观，那就是让当前翻译知道之前用到过的注意力。</p>
+
+<p>比如说可以把每个时序获得的注意力向量作为输入，输进RNN网络。而在每一个时序上，输入是对之前注意力的总结，还有当前时序用正常方法获得的注意力，之后输出要用到的注意力向量。</p>
+
+<p>于是当前用到的注意力向量就是来自于历史注意力和当前注意力，可以避免过度翻译。</p>
+
+<h4 id="fertility-可繁殖性">Fertility (可繁殖性)</h4>
+
+<p>对于覆盖模型还可以利用fertility来进行辅助，fertility指的就是<strong>一个源语言词可以翻译成目标语言词的个数</strong>，比如说德语的natuerlich译成英文就是两个词in fact，那么natuerlich的fertility就是2。</p>
+
+<p>通过预测fertility就可以比较方便地知道当前词应该翻译成多少个词，如果达到了，那就把注意力集中在其他词。</p>
+
+<p>Fertility也有很多其他应用，比如说<a href="https://link.jianshu.com?t=https%3A%2F%2Feinstein.ai%2Fresearch%2Fnon-autoregressive-neural-machine-translation">最近Salesforce利用fertility实现了完全并行翻译</a>，而不是像RNN解码器一样得一个个解码。</p>
+
+<p>但实际上我认为fertility有很多局限性，比如说实际翻译中有很多种译法，那么这些对于的fertility就都不一样，也就是说某个词的fertility不唯一。</p>
+
+<h3 id="域适应-domain-adaption">域适应 (Domain Adaption)</h3>
+
+<p>和很多其他领域一样，在机器翻译领域里域适应问题也是个大问题。</p>
+
+<p>首先什么是域（Domain）? 比较直观的解释是，<strong>某个类型的数据</strong>。比如说，情感分析里亚马逊的商品评论数据就根据商品种类分为：家电、书籍、衣物等多个种类，那么我们可以把这些当成不同的域。</p>
+
+<p>机器翻译中和域相关的问题是，大部分并行数据 (Parallel Data) 都来自于国际性的官方文档 (Europarl)，或者是字幕 (<a href="https://link.jianshu.com?t=https%3A%2F%2Fwit3.fbk.eu%2F">WIT3</a>)。</p>
+
+<p>而像是那种日常聊天的并行数据却很少，因此如果用提说到的数据训练机器翻译系统，然后用它来翻译聊天的语言的话，那么效果会大打折扣。这是因为<strong>域的不吻合 (Domain Mismatch)</strong> 导致的，为了解决这个问题，就需要域适应技巧了。</p>
+
+<p>通常的域适应问题是这样的，假设有一组和目标任务相关的数据，这个叫做<strong>域内数据 (in-domain data)</strong>，同时也有一组和目标任务不是那么相关的数据，这个叫它<strong>域外数据 (out-of-domain data)</strong>。通常，域内数据太少了，而域外数据比较充足。</p>
+
+<p>当然，域内域外的说法并不是绝对的，而是根据当前目标任务而决定的。</p>
+
+<p>首先来说说两个通常的方案吧。</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>![img](https:////upload-images.jianshu.io/upload_images/4787675-9a8d92d1869a379f.png?imageMogr2/auto-orient/strip</td>
+      <td>imageView2/2/w/611/format/webp)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>第一，<strong>迁移学习</strong>。就跟在预训练好的ImageNet分类器上用很少数据训练高性能分类器一样，首先先在大量的一般数据上训练出一个神经机器翻译系统，然后再用少量的域内数据进行继续训练。</p>
+
+<p>这种情况下，模型就不光能从大量的一般数据中获得知识，之后也会集中在域内数据的知识上。事实上，这个方案在用域内数据训练阶段，收敛会很快，可以得到不错的域内模型。</p>
+
+<p>第二个，<strong>多域集成学习</strong>，比起第一个用到的就不是那么多了。上篇里也讲过集成学习，这里也就是在不同的域里面训练出多个模型，之后用这多个模型进行集成解码。如果想要再进行微调，可以给予每个模型一定的权重。</p>
+
+<p>之后来看看，在实际应用中会碰到的特殊情况吧。</p>
+
+<h4 id="从大量数据中采样域内数据">从大量数据中采样域内数据</h4>
+
+<p>在实际应用中有时会出现的情况是，<strong>域内数据太少</strong>。即使利用上面提到的第一种迁移学习的方法，也会因为数据过少的原因而过拟合 (overfitting)。</p>
+
+<p>为了避免过拟合，只能人为的来增加更多的域内数据了。其中一个方法是，<strong>从一个有着大量一般数据的数据集中挑出与域内数据最接近的数据</strong>。</p>
+
+<p>具体方法也并不是太难，只要先分别训练出域内域外的源和目标语言的4个语言模型，这里需要用到四个单语言数据。</p>
+
+<p>之后对大量并行数据里面的每对数据进行相关性评分，与域内数据相像的得到比较高的评分，之后把评分高的挑出来就好了。</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>![img](https:////upload-images.jianshu.io/upload_images/4787675-eb65626ba90aed23.png?imageMogr2/auto-orient/strip</td>
+      <td>imageView2/2/w/697/format/webp)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>最后把采样出来的数据和已有数据合并，就可以用来训练目标模型了。</p>
+
+<h4 id="只有域内单语言数据">只有域内单语言数据</h4>
+
+<p>实际应用中还有一种情况是，根本就没有域内的并行数据，但是有单语言数据。</p>
+
+<p>第一个解决方案，就像上面提到的一样，先用单语言数据训练语言模型，之后对大量数据进行采样获得域内数据。</p>
+
+<p>第二个方案则是，<strong>合成数据</strong>。首先利用域外数据训练出一个模型，然后用这个模型来回译已有域内单语言数据，之后利用这些数据来进行迁移学习的第二阶段的训练。</p>
+
+<h4 id="多领域模型">多领域模型</h4>
+
+<p>最后一种情况，已经有一些分类分得很清的数据了，可以清晰地知道它们属于不同的域。</p>
+
+<p>这种情况，可以首先在各个域训练出翻译模型，然后再训练出一个文本分类器。</p>
+
+<p>之后，进行翻译时，<strong>先对当前文本进行文本分类</strong>，搞清楚它到底是属于哪个域。之后，挑选<strong>其所属域的翻译模型，对其进行翻译</strong>。这样子也就不用麻烦地进行域适应了。</p>
+
+<h3 id="利用语言学标记">利用语言学标记</h3>
+
+<p>以上谈到的各种技巧，都是从词语层面上进行翻译的。但实际上，在语言学中每个词除了本身作为一个词，还会有着各种语言学的标记。</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>![img](https:////upload-images.jianshu.io/upload_images/4787675-866f5705d2cfe349.png?imageMogr2/auto-orient/strip</td>
+      <td>imageView2/2/w/900/format/webp)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>一般会用到的标记，从底层到上层，常用到的分别有形态学(Morphology)标记、词性(POS, part of speech)标记、依存(Dependency)和成分(Constituent)标记、语义(Semantic)标记…</p>
+
+<p>在机器翻译中对这些语言学知识的利用，主要可以分为三个方面。</p>
+
+<ol>
+  <li>利用输入句子的语言学标记</li>
+  <li>利用输出句子的语言学标记</li>
+  <li>建立利用了语言学结构的模型</li>
+</ol>
+
+<h4 id="输入端的语言学标记">输入端的语言学标记</h4>
+
+<p>首先对于输入端，比较容易想到的一种利用方法，是除了给词建立一个词向量表外，同时<strong>也给语言学标记分别建立向量表</strong>。</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>![img](https:////upload-images.jianshu.io/upload_images/4787675-f96623de57ab4d4e.png?imageMogr2/auto-orient/strip</td>
+      <td>imageView2/2/w/1002/format/webp)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>the girl watched attentively the beautiful fireflies 的各种语言学标记</p>
+
+<p>之后训练时，每次输入一个词还有其对应的语言学标记，就分别进行查表，之后把这些特征向量拼接起来，作为一个词的向量输入编码器。</p>
+
+<p>这个技巧因为简单的原因，所以在很多已有神经机器翻译工具包里都得到了实现。</p>
+
+<h4 id="输出端的语言学标记">输出端的语言学标记</h4>
+
+<p>输出端这边，首先也可以像输入端一样，建立语言学标记的向量表，然后查表，拼接起来。但是，对于输出端我们还能够进行些更复杂的改变，比如说<strong>同时进行语言学结构和目标词的输出</strong>，这样可以利用语言学的结构引导输出句子的句法正确性。</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>![img](https:////upload-images.jianshu.io/upload_images/4787675-335697e0b9ec3c27.png?imageMogr2/auto-orient/strip</td>
+      <td>imageView2/2/w/952/format/webp)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>线性化句法树</p>
+
+<p>这里举一个最简单的例子，就是<strong>将目标句子的句法树 (Syntax tree) 线性化，从树结构变成线性结构，然后中间同时插入预测词。训练的时候，预测的不再单单是目标句子了，而是这个线性化了的句法树</strong>。</p>
+
+<p>除了这样子的简单线性化以外，还有一些其他论文，同时进行句法结构预测和句子的预测进行多任务学习，也取得了比较好的效果。</p>
+
+<h4 id="语言结构化的模型">语言结构化的模型</h4>
+
+<p>上面提到的所有情况，都还是序列到序列的翻译。因为在上面的这种翻译方法看来，语言不过就是一串字符排成的序列，输入一段序列，然后得到另一段序列**。</p>
+
+<p>但是实际上我们是知道的，语言并不仅仅只是序列，而是递归的，像树状一样层层展开。</p>
+
+<p>所以现在神经机器翻译里一个很火的研究方向就是，如何<strong>从语言结构到语言结构，然后进行翻译</strong>。目前还没有能够做到树到树结构的翻译，但是在源或目标语言一端利用树状结构，已经有一些成果了。</p>
+
+<h3 id="多语言对">多语言对</h3>
+
+<p>最后，在把基本模型几乎方方面面提高进行了讨论之后，再来看看多语言对。因为世界上并不是只有两种语言，而是很多种语言，有些语言对有足够数据，但也有很多语言对并没有足够数据。</p>
+
+<p>但是看现在Google的翻译系统，不是可以对应很多很多语言吗？</p>
+
+<p>这是因为谷歌的神经网络翻译系统在一定程度上实现了，<strong>零样本学习 (Zero-shot Learning)</strong>，当然也同时用了很多其他技巧。</p>
+
+<blockquote>
+  <p>所谓零样本学习，就是指对于某个任务，没有这个任务的训练数据，但是仍然可以训练出相应的模型。在现实生活中，人类有时就会大量使用零样本学习。</p>
+
+  <p>Quora链接：<a href="https://link.jianshu.com?t=https%3A%2F%2Fwww.quora.com%2FWhat-is-zero-shot-learning">https://www.quora.com/What-is-zero-shot-learning</a></p>
+</blockquote>
+
+<h4 id="多输入语言">多输入语言</h4>
+
+<p>首先如果有多个输入语言，而只有一个输出语言，怎么进行训练呢？</p>
+
+<p>方法很想当然，直接把这些数据放在一起训练，输入端不同语言共享一个词汇表。每次输入句子的时候<strong>快速识别出输入句子所属语言，然后调用相应的词向量</strong>。</p>
+
+<h4 id="多输出语言">多输出语言</h4>
+
+<p>对于多个输出语言，也可以用同样的技巧，把数据放在一起进行训练，多个语言共享词汇表，</p>
+
+<p>但是模型怎么知道想翻译成什么语言呢，输入端还能够自动检测，但是输出端就不行呢，那就直接由我们告诉它好了。于是可以<strong>在输入句子前加上一个标签，来告诉系统想把当前句子翻译成什么语言</strong>。谷歌翻译系统中，这个在最开始我们选择相应语言的时候就会告诉系统。</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>![img](https:////upload-images.jianshu.io/upload_images/4787675-1790eac59459f18d.png?imageMogr2/auto-orient/strip</td>
+      <td>imageView2/2/w/911/format/webp)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>虽然这个方法看起来很天然，但是却非常有效。而且更出乎人意料的是，用这个方法可以实现零样本学习。</p>
+
+<p>比如说现在有<strong>德语-英语</strong>、<strong>法语-英语</strong>、还有<strong>法语-西班牙语</strong>三个语言对的数据。</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>![img](https:////upload-images.jianshu.io/upload_images/4787675-663b111296be1767.png?imageMogr2/auto-orient/strip</td>
+      <td>imageView2/2/w/357/format/webp)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>利用上述方法，把这些数据放在一起训练一个模型。之后翻译的时候，先给源语言句子加上一个目标语言的标签，然后输入系统就可以得到结果。</p>
+
+<p>这里神奇的事情是，如果把一句德语句子作为输入，然后在它前面加上目标语言是西班牙语的标签。</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>![img](https:////upload-images.jianshu.io/upload_images/4787675-f7093df6e016561d.png?imageMogr2/auto-orient/strip</td>
+      <td>imageView2/2/w/898/format/webp)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>一般来说，因为训练的时候根本就没有德语-西班牙语数据，那么也就不会成功。但结果是，居然翻译成功了！</p>
+
+<p>也就是说在<strong>根本没有某个语言对训练的情况下，而模型进行了该语言对的翻译</strong>，也就是零样本学习。而且结果显示翻译效果还挺好的。</p>
+
+<p>对于人类这样的零样本学习显得稀疏平常，近似本能。你既然会德语-英语之间翻译，也会英语-西班牙语翻译，那会德语-西班牙语翻译不就很正常吗。</p>
+
+<p>但是对于以往的机器翻译系统，往往是你给它什么训练语言对，它也就只会这个语言对的翻译。</p>
+
+<p>而这个系统的成功就意味着，对于所有不同语言，这里可能确实存在着一个中间语言 (Interlingua)，或者说是中间表达。模型首先把输入语言转换成中间表达，然后翻译目标语言，这样子就能很自然地实现零样本学习。</p>
+
+<h4 id="分享部件">分享部件</h4>
+
+<p>当然，上述的模型过于简单粗暴，就是把什么都丢进一个万能模型，然后让它自己训练。</p>
+
+<p>所以如果想要更加仔细地考虑怎么处理输入输出语言，我们可以试着为每个语言对训练一个模型，但是分享中间不同的部件。所以具体方案就如下。</p>
+
+<ol>
+  <li>对于有相同输入语言的模型，分享编码器。</li>
+  <li>对于有相同输出语言的模型，分享解码器。</li>
+  <li>而注意力机制则是所有模型进行共享。</li>
+</ol>
+
+<p>以上就是目前大部分对基准模型进行提升的技巧了，实际上最新的各种技巧也不断在出现，这里肯定有很多没有覆盖到的。但里提到的是已经被证实比较有效，而且大部分已经能实际应用的方法。</p>
+
+<h1 id="links">Links：</h1>
+
+<p><a href="https://www.jianshu.com/p/546750a32c92">神经机器翻译概览：基准模型与改进（上）</a> 
+<a href="https://www.jianshu.com/p/3ebce65d61b8">神经机器翻译概览：基准模型与改进（下）</a></p>
+:ET

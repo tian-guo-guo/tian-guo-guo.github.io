@@ -8,7 +8,7 @@ header-img: https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/post-bg-
 catalog: true                       # 是否归档
 tags:                               #标签
     - 技术
- 
+    - 服务器 
 ---
 
 # conda 安装tensorboardX

@@ -1,0 +1,51 @@
+I"k
+<h1 id="logging模块"><a href="https://blog.csdn.net/Bruce_0712/article/details/63683787">logging模块</a></h1>
+
+<h1 id="一logging模块的作用">一、logging模块的作用</h1>
+
+<p>当程序出现错误时，使用logging可以记录程序里发生的事情，方便debug和追踪。</p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gersisxuwyj30uq08gn0k.jpg" alt="image-20200514105419700" /></p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gersjyv45zj30zq0huhao.jpg" alt="image-20200514105529027" /></p>
+
+<p>前边的是5个日志级别。</p>
+
+<p>大写的类，也就是图中高亮显示的字体。</p>
+
+<p>小写的是方法，文中最后的那一大坨。</p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gersn7rwrnj31400pmwp6.jpg" alt="image-20200514105835957" /></p>
+
+<p>输出的日志会保存在lumberjack.log文件中 <img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gersrs8d6oj319m07aagz.jpg" alt="image-20200514110259935" /></p>
+
+<p>测试logger，发现“our first message”并没有打印在log文件中，是因为logger.level=30，得降低一下，在basicConfig里加上level=logging.DEBUG就能正常显示了</p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gersso39xej30pi06aadr.jpg" alt="image-20200514110350911" /></p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gersqgxwpyj31us0r67bt.jpg" alt="image-20200514110144172" /></p>
+
+<p>但是没有时间，我们要加一个字符串进去，更改日志的格式，各种形式的字符串样式。</p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gersyammpnj31q90u07wi.jpg" alt="image-20200514110914372" /></p>
+
+<p>创建一个字符串格式，传到basicConfig的format参数里</p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gersxzcid8j319y06cthc.jpg" alt="image-20200514110856795" /></p>
+
+<p>第一条日志信息还在，因为信息是叠加的。</p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gerswyk4lcj319q03qgqe.jpg" alt="image-20200514110758079" /></p>
+
+<h1 id="二使用解一元二次方程的根测试">二、使用解一元二次方程的根测试：</h1>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gert1qg4ktj31e40fsaos.jpg" alt="image-20200514111233790" /></p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gert2ts3qkj31de0u01kx.jpg" alt="image-20200514111336181" /></p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gert3peh9uj31b205stjo.jpg" alt="image-20200514111426011" /></p>
+
+<h1 id="三example-2">三、Example 2：</h1>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gertuuueh0j31be0lch0p.jpg" alt="image-20200514114032527" /></p>
+:ET

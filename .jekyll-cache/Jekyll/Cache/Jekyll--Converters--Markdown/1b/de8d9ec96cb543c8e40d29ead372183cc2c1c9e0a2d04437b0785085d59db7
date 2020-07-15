@@ -1,0 +1,34 @@
+I"�<h1 id="常用命令">常用命令</h1>
+
+<h2 id="1-python转换文件编码格式">1. <a href="https://www.jianshu.com/p/d5030db5da0e">[python]转换文件编码格式</a></h2>
+
+<p><strong>查看文件</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>file <span class="nb">test
+test</span>: UTF-8 Unicode text
+</code></pre></div></div>
+
+<p><strong>转换</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>iconv <span class="nt">-f</span> utf8 <span class="nt">-t</span> gbk <span class="nb">test</span> <span class="nt">-o</span> test.gbk
+</code></pre></div></div>
+
+<p><strong>效果</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>file <span class="nb">test</span><span class="k">*</span>
+<span class="nb">test</span>:          UTF-8 Unicode text
+test.gbk:     ISO-8859 text
+</code></pre></div></div>
+
+<h3 id="2-服务器传送命令">2. 服务器传送命令</h3>
+
+<blockquote>
+  <p>238上的文件传到237上边去</p>
+
+  <p>scp -P 5722 -r /root/tian/OpenNMT-py/self_note root@211.82.97.237:/root/tian/OpenNMT-py/self_note</p>
+
+  <p>(在238输命令) (-P是5722 -p是22) (237端口号) (238的路径)(237的路径)</p>
+</blockquote>
+
+<p>scp -P 5722 -r /root/tian/OpenNMT-py/data root@211.82.97.237:/root/tian/OpenNMT-py/data</p>
+:ET
