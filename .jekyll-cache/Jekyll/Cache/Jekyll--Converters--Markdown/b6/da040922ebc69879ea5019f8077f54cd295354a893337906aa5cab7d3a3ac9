@@ -1,0 +1,16 @@
+I"<h1 id="解决tensorboard无法显示此网站">解决Tensorboard“无法显示此网站”</h1>
+
+<h1 id="问题">问题</h1>
+
+<p>输入<code class="language-plaintext highlighter-rouge">tensorboard --logdir=./output/ne_WIPO_NER</code>，服务器返回的地址是<code class="language-plaintext highlighter-rouge">TensorBoard 1.14.0 at http://e1fd7a8d1822:6006/ (Press CTRL+C to quit)</code></p>
+
+<p>在浏览器打开显示“无法显示此网站”</p>
+
+<h1 id="解决办法">解决办法</h1>
+
+<p>第一步：打开cmd
+第二步：输入tensorboard –logdir=path（path为数据所在文件夹路径) –host=127.0.0.1
+第三步：复制路径名称，打开chrome，粘贴并搜索</p>
+
+<p><a href="https://blog.csdn.net/thisiszdy/article/details/84671313">Link</a></p>
+:ET
