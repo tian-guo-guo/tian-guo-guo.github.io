@@ -11,7 +11,7 @@ github_repo: "https://github.com/tian-guo-guo/tian-guo-guo.github.io.git" # you 
 
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
-sidebar-about-description: "Live with love, happiness, and dreams~"
+sidebar-about-description: "自爱沉稳，而后爱人。 Live with love, happiness, and dreams~"
 sidebar-avatar: https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/minions.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
 
 cdn: https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/

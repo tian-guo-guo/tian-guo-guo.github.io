@@ -1,0 +1,82 @@
+I"_<h1 id="scrapy获取网站词汇表">Scrapy获取网站词汇表</h1>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20200725220747" alt="img" /></p>
+
+<h2 id="1scrapy爬虫的创建">1、scrapy爬虫的创建</h2>
+
+<p>　　在vscode的Terminal中输入以下命令：</p>
+
+<p>　　　　创建scrapy项目：scrapy startproject bio</p>
+
+<p>　　　　进入到项目目录中：cd bio</p>
+
+<p>　　　　创建一个新的spider：scrapy genspider bio2 yingyucihui.scientrans.com</p>
+
+<p>第一个参数是 Spider 的名称， 第二 个参数是网站域名 。 执行完毕之后， spiders 文件夹中多了一个 bio2.py ， 它就是刚刚创建的 Spider, 内容如下所示：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># -*- coding: utf-8 -*-
+#http://yingyucihui.scientrans.com/shengwucihui/index.html
+</span>
+<span class="kn">import</span> <span class="nn">scrapy</span>
+<span class="kn">from</span> <span class="nn">bio.items</span> <span class="kn">import</span> <span class="n">BioItem</span>
+<span class="kn">from</span> <span class="nn">scrapy</span> <span class="kn">import</span> <span class="n">Request</span>
+
+<span class="k">class</span> <span class="nc">Bio2Spider</span><span class="p">(</span><span class="n">scrapy</span><span class="p">.</span><span class="n">Spider</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">'bio2'</span>
+    <span class="n">allowed_domains</span> <span class="o">=</span> <span class="p">[</span><span class="s">'yingyucihui.scientrans.com'</span><span class="p">]</span>
+    <span class="n">start_urls</span> <span class="o">=</span> <span class="p">[</span><span class="s">'http://yingyucihui.scientrans.com/shengwucihui/238_65_1.html'</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+</code></pre></div></div>
+
+<h2 id="2scrapy爬虫代码编写">2、scrapy爬虫代码编写</h2>
+
+<h3 id="21items文件编写">2.1items文件编写</h3>
+
+<p>　　在items.py文件中定义自己要抓取的数据，我们要爬取英语词汇网站的中英单词这二者的数据，所以此时创建item的两个类。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">scrapy</span>
+
+<span class="k">class</span> <span class="nc">BioItem</span><span class="p">(</span><span class="n">scrapy</span><span class="p">.</span><span class="n">Item</span><span class="p">):</span>
+    <span class="c1"># define the fields for your item here like:
+</span>    
+    <span class="c1"># name = scrapy.Field()
+</span>    
+    <span class="n">title</span> <span class="o">=</span> <span class="n">scrapy</span><span class="p">.</span><span class="n">Field</span><span class="p">()</span>  <span class="c1"># //dd/h2
+</span>    <span class="n">words</span> <span class="o">=</span> <span class="n">scrapy</span><span class="p">.</span><span class="n">Field</span><span class="p">()</span>  <span class="c1"># //dd
+</span></code></pre></div></div>
+
+<h3 id="22编写spider文件lessonpy">2.2编写spider文件（lesson.py）</h3>
+
+<p>　　由于要提取该网站所有单词的数据，需要构造了所有的课程url。此时观察观察多个url，找出其中url变化的规律，以此来构造所有的url。由于每个课程都需要包含课程名、课程链接以及学习人数，所有设置相应的xpath，分别匹配item的三个类。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">scrapy</span>
+<span class="kn">from</span> <span class="nn">bio.items</span> <span class="kn">import</span> <span class="n">BioItem</span>
+<span class="kn">from</span> <span class="nn">scrapy</span> <span class="kn">import</span> <span class="n">Request</span>
+
+<span class="k">class</span> <span class="nc">Bio2Spider</span><span class="p">(</span><span class="n">scrapy</span><span class="p">.</span><span class="n">Spider</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">'bio2'</span>
+    <span class="n">allowed_domains</span> <span class="o">=</span> <span class="p">[</span><span class="s">'yingyucihui.scientrans.com'</span><span class="p">]</span>
+    <span class="n">start_urls</span> <span class="o">=</span> <span class="p">[</span><span class="s">'http://yingyucihui.scientrans.com/shengwucihui/238_65_1.html'</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">'//dd/h2/text()'</span><span class="p">).</span><span class="n">extract_first</span><span class="p">()</span>
+        <span class="n">words</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">'//dd/text()'</span><span class="p">).</span><span class="n">extract</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">words</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="p">{</span>
+                <span class="c1"># 'title':item[:],
+</span>                <span class="s">'words'</span><span class="p">:</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="p">}</span>
+
+        <span class="n">next1</span> <span class="o">=</span> <span class="s">'http://yingyucihui.scientrans.com/shengwucihui/'</span>
+        <span class="n">next2</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">"//span/a[@class='content2']/@href"</span><span class="p">).</span><span class="n">extract</span><span class="p">()</span>
+        <span class="nb">next</span> <span class="o">=</span> <span class="n">next1</span> <span class="o">+</span> <span class="n">next2</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># print(next2[-1])
+</span>        <span class="k">yield</span> <span class="n">Request</span><span class="p">(</span><span class="nb">next</span><span class="p">)</span>
+</code></pre></div></div>
+
+:ET

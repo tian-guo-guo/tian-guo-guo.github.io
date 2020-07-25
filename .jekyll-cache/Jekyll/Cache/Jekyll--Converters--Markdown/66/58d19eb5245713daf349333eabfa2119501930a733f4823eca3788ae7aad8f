@@ -1,0 +1,36 @@
+I"�<h1 id="机器翻译语料库汇总">机器翻译语料库汇总</h1>
+
+<h2 id="一翻译语料translation2019zh520万个中英文句子对">一、<a href="https://github.com/brightmart/nlp_chinese_corpus#5%E7%BF%BB%E8%AF%91%E8%AF%AD%E6%96%99translation2019zh520%E4%B8%87%E4%B8%AA%E4%B8%AD%E8%8B%B1%E6%96%87%E5%8F%A5%E5%AD%90%E5%AF%B9">翻译语料(translation2019zh)，520万个中英文句子对</a></h2>
+
+<h4 id="520万个中英文平行语料-原始数据11g压缩文件596m">520万个中英文平行语料( 原始数据1.1G，压缩文件596M)</h4>
+
+<p><a href="https://drive.google.com/open?id=1EX8eE5YWBxCaohBO8Fh4e2j3b9C2bTVQ">Google Drive下载</a></p>
+
+<h4 id="数据描述">数据描述</h4>
+
+<p>中英文平行语料520万对。每一个对，包含一个英文和对应的中文。中文或英文，多数情况是一句带标点符号的完整的话。</p>
+
+<p>对于一个平行的中英文对，中文平均有36个字，英文平均有19个单词(单词如“she”)</p>
+
+<p>数据集划分：数据去重并分成三个部分。训练集：516万；验证集：3.9万；测试集，数万，不提供下载。</p>
+
+<h4 id="可能的用途">可能的用途：</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>可以用于训练中英文翻译系统，从中文翻译到英文，或从英文翻译到中文；
+
+由于有上百万的中文句子，可以只抽取中文的句子，做为通用中文语料，训练词向量或做为预训练的语料。英文任务也可以类似操作；
+</code></pre></div></div>
+
+<h4 id="结构">结构：</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{"english": &lt;english&gt;, "chinese": &lt;chinese&gt;}
+
+其中，english是英文句子，chinese是中文句子，中英文一一对应。
+</code></pre></div></div>
+
+<h4 id="例子">例子：</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{"english": "In Italy, there is no real public pressure for a new, fairer tax system.", "chinese": "在意大利，公众不会真的向政府施压，要求实行新的、更公平的税收制度。"}
+</code></pre></div></div>
+
+:ET

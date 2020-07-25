@@ -1,0 +1,15 @@
+I"�<h1 id="最小编辑距离">最小编辑距离</h1>
+
+<p><strong>编辑距离（</strong><strong>Edit Distance</strong><strong>）</strong>，又称Levenshtein距离，是指两个字串之间，由一个转成另一个所需的最少编辑操作次数。编辑操作包括将一个字符替换成另一个字符，插入一个字符，删除一个字符。一般来说，编辑距离越小，两个串的相似度越大。</p>
+
+<p>例如将kitten一字转成sitting：（’kitten’ 和 ‘sitting’ 的编辑距离为3）</p>
+
+<p>sitten （k→s）</p>
+
+<p>sittin （e→i）</p>
+
+<p>sitting （→g）</p>
+
+<p>下面为计算字符“beauty”与“batyu”编辑距离的二维图解：</p>
+
+:ET

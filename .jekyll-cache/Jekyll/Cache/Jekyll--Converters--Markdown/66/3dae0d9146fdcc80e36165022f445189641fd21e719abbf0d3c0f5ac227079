@@ -1,0 +1,147 @@
+I"KK<h1 id="actionablepatents网站爬虫">ActionablePatents网站爬虫</h1>
+
+<h1 id="soopat_crawl">SooPAT_crawl</h1>
+
+<h2 id="一获取单页上的patent_num">一、获取单页上的patent_num</h2>
+
+<p>以新能源为关键字，搜索的url是</p>
+
+<p><a href="http://www1.soopat.com/Home/Result?Sort=&amp;View=6&amp;Columns=&amp;Valid=&amp;Embed=&amp;Db=&amp;Ids=&amp;FolderIds=&amp;FolderId=&amp;ImportPatentIndex=&amp;Filter=&amp;SearchWord=新能源&amp;FMZL=Y&amp;SYXX=Y&amp;WGZL=Y&amp;FMSQ=Y">http://www1.soopat.com/Home/Result?Sort=&amp;View=6&amp;Columns=&amp;Valid=&amp;Embed=&amp;Db=&amp;Ids=&amp;FolderIds=&amp;FolderId=&amp;ImportPatentIndex=&amp;Filter=&amp;SearchWord=%E6%96%B0%E8%83%BD%E6%BA%90&amp;FMZL=Y&amp;SYXX=Y&amp;WGZL=Y&amp;FMSQ=Y</a></p>
+
+<p><img src="/Users/suntian/Library/Application Support/typora-user-images/image-20200706104153779.png" alt="image-20200706104153779" /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">requests</span> 
+<span class="kn">import</span> <span class="nn">bs4</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s">'http://www1.soopat.com/Home/Result?Sort=&amp;View=6&amp;Columns=&amp;Valid=&amp;Embed=&amp;Db=&amp;Ids=&amp;FolderIds=&amp;FolderId=&amp;ImportPatentIndex=&amp;Filter=&amp;SearchWord=%E6%96%B0%E8%83%BD%E6%BA%90&amp;FMZL=Y&amp;SYXX=Y&amp;WGZL=Y&amp;FMSQ=Y'</span>
+<span class="n">html</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+<span class="n">soup</span> <span class="o">=</span> <span class="n">bs4</span><span class="p">.</span><span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">html</span><span class="p">.</span><span class="n">text</span><span class="p">,</span> <span class="s">'lxml'</span><span class="p">)</span>
+<span class="c1"># res = soup.find_all(class_='td_line_bottom')
+# print(res)
+</span><span class="n">patent_num</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">res2</span> <span class="o">=</span> <span class="n">soup</span><span class="p">.</span><span class="n">select</span><span class="p">(</span><span class="s">'td ul li'</span><span class="p">)</span>
+<span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">res2</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">num</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">patent_num</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">text</span><span class="p">)</span>
+    <span class="n">num</span> <span class="o">+=</span> <span class="mi">1</span>
+    
+<span class="c1"># patent_num =  ['201910280329.0', '201010507258.2', '201010507302.X', '201020561759.4', '201010507258.2', '201020561654.9', '201911188828.3', '201020561663.8', '201911188791.4', '201020561687.3', '201020561733.X', '201721222011.X', '201010507329.9', '201010507276.0', '201310512089.5', '201010569880.6', '201821226864.5', '201810862347.5', '201821227551.1', '201821233466.6', '201720850640.0', '201911188822.6', '201911189201.X', '201020561672.7', '201010576119.5', '201810860450.6', '201010598204.1', '201010592160.1', '201920387592.5', '201010599880.0']
+</span></code></pre></div></div>
+
+<h2 id="二观察网址标题规律获得所有的patent_nums">二、观察网址标题规律、获得所有的patent_nums</h2>
+
+<p><a href="http://www1.soopat.com/Home/Result?SearchWord=新能源&amp;FMZL=Y&amp;SYXX=Y&amp;WGZL=Y&amp;FMSQ=Y&amp;PatentIndex=30&amp;View=6">http://www1.soopat.com/Home/Result?SearchWord=%E6%96%B0%E8%83%BD%E6%BA%90&amp;FMZL=Y&amp;SYXX=Y&amp;WGZL=Y&amp;FMSQ=Y&amp;PatentIndex=30&amp;View=6</a></p>
+
+<p><a href="http://www1.soopat.com/Home/Result?SearchWord=新能源&amp;FMZL=Y&amp;SYXX=Y&amp;WGZL=Y&amp;FMSQ=Y&amp;PatentIndex=60&amp;View=6">http://www1.soopat.com/Home/Result?SearchWord=%E6%96%B0%E8%83%BD%E6%BA%90&amp;FMZL=Y&amp;SYXX=Y&amp;WGZL=Y&amp;FMSQ=Y&amp;PatentIndex=60&amp;View=6</a></p>
+
+<p>http://www1.soopat.com/Home/Result?SearchWord=%E9%A3%8E%E8%83%BD&amp;FMZL=Y&amp;SYXX=Y&amp;WGZL=Y&amp;FMSQ=Y&amp;PatentIndex=60&amp;View=6</p>
+
+<p>构造网址</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>index = 0
+full_url = 'http://www1.soopat.com/Home/Result?SearchWord=%E6%96%B0%E8%83%BD%E6%BA%90&amp;FMZL=Y&amp;SYXX=Y&amp;WGZL=Y&amp;FMSQ=Y&amp;PatentIndex=' + str(30*i) + '&amp;View=6'
+搜索结果是149071，一个页面上是30个结果，所以是4970个页面
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">requests</span> 
+<span class="kn">import</span> <span class="nn">bs4</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">patent_nums</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">def</span> <span class="nf">get_one_page_patent_nums</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+    <span class="n">html</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="n">soup</span> <span class="o">=</span> <span class="n">bs4</span><span class="p">.</span><span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">html</span><span class="p">.</span><span class="n">text</span><span class="p">,</span> <span class="s">'lxml'</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">soup</span><span class="p">.</span><span class="n">select</span><span class="p">(</span><span class="s">'td ul li'</span><span class="p">)</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">num</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">patent_nums</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">num</span> <span class="o">+=</span> <span class="mi">1</span>
+
+<span class="k">def</span> <span class="nf">write_patent_nums_into_file</span><span class="p">(</span><span class="n">patent_nums_list</span><span class="p">):</span>
+    <span class="n">patent_nums</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">'patent_nums2.txt'</span><span class="p">,</span> <span class="s">'a'</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">patent_nums_list</span><span class="p">:</span>
+        <span class="n">patent_nums</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">num</span><span class="p">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="n">patent_nums</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4970</span><span class="p">):</span>
+        <span class="n">full_url</span> <span class="o">=</span> <span class="s">'http://www1.soopat.com/Home/Result?SearchWord=%E6%96%B0%E8%83%BD%E6%BA%90&amp;FMZL=Y&amp;SYXX=Y&amp;WGZL=Y&amp;FMSQ=Y&amp;PatentIndex='</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="mi">30</span><span class="o">*</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s">'&amp;View=6'</span>
+        <span class="n">get_one_page_patent_nums</span><span class="p">(</span><span class="n">full_url</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">'正在获取第%d页pantent_nums...'</span><span class="o">%</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">patent_nums</span><span class="p">))</span>
+        <span class="n">write_patent_nums_into_file</span><span class="p">(</span><span class="n">patent_nums</span><span class="p">)</span>
+        <span class="n">time</span><span class="p">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</code></pre></div></div>
+
+<h2 id="三获取单页上的中英句对">三、获取单页上的中英句对</h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">bs4</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="k">def</span> <span class="nf">get_title_abs_pairs</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+	<span class="n">htmlfile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="s">'r'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s">'utf-8'</span><span class="p">)</span>
+	<span class="n">htmlhandle</span> <span class="o">=</span> <span class="n">htmlfile</span><span class="p">.</span><span class="n">read</span><span class="p">()</span>
+	<span class="n">soup</span> <span class="o">=</span> <span class="n">bs4</span><span class="p">.</span><span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">htmlhandle</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="s">'lxml'</span><span class="p">)</span>
+	<span class="c1"># html = requests.get(url)
+</span>	<span class="c1"># soup = bs4.BeautifulSoup(html.text, 'lxml')
+</span>	<span class="n">titles</span> <span class="o">=</span> <span class="n">soup</span><span class="p">.</span><span class="n">select</span><span class="p">(</span><span class="s">'.detailtitle h1'</span><span class="p">)</span>
+	<span class="k">try</span><span class="p">:</span>
+		<span class="n">zh_title</span> <span class="o">=</span> <span class="n">titles</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">text</span><span class="p">.</span><span class="n">strip</span><span class="p">().</span><span class="n">split</span><span class="p">(</span><span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+		<span class="c1"># print(zh_title)
+</span>		<span class="n">en_title</span> <span class="o">=</span> <span class="n">titles</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">text</span><span class="p">.</span><span class="n">strip</span><span class="p">()</span>
+		<span class="n">abss</span> <span class="o">=</span> <span class="n">soup</span><span class="p">.</span><span class="n">select</span><span class="p">(</span><span class="s">'td'</span><span class="p">)[:</span><span class="mi">2</span><span class="p">]</span>
+		<span class="n">zh_abs</span> <span class="o">=</span> <span class="n">abss</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">text</span><span class="p">.</span><span class="n">strip</span><span class="p">()</span>
+		<span class="n">en_abs</span> <span class="o">=</span> <span class="n">abss</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">text</span><span class="p">.</span><span class="n">strip</span><span class="p">()</span>
+		<span class="n">write_2_file</span><span class="p">(</span><span class="n">zh_title</span><span class="p">,</span> <span class="n">en_title</span><span class="p">,</span> <span class="n">zh_abs</span><span class="p">,</span> <span class="n">en_abs</span><span class="p">)</span>
+	<span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+		<span class="k">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">write_2_file</span><span class="p">(</span><span class="n">zh_title</span><span class="p">,</span> <span class="n">en_title</span><span class="p">,</span> <span class="n">zh_abs</span><span class="p">,</span> <span class="n">en_abs</span><span class="p">):</span>
+	<span class="n">soo_pat_ne_title_abs_pairs</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">'soo_pat_ne_title_abs_pairs_wind.txt'</span><span class="p">,</span> <span class="s">'a'</span><span class="p">)</span>
+	<span class="n">soo_pat_ne_title_abs_pairs</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">zh_title</span><span class="p">.</span><span class="n">strip</span><span class="p">())</span>
+	<span class="n">soo_pat_ne_title_abs_pairs</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)</span>
+	<span class="n">soo_pat_ne_title_abs_pairs</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">en_title</span><span class="p">.</span><span class="n">strip</span><span class="p">())</span>
+	<span class="n">soo_pat_ne_title_abs_pairs</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)</span>
+	<span class="n">soo_pat_ne_title_abs_pairs</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">zh_abs</span><span class="p">.</span><span class="n">strip</span><span class="p">())</span>
+	<span class="n">soo_pat_ne_title_abs_pairs</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)</span>
+	<span class="n">soo_pat_ne_title_abs_pairs</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">en_abs</span><span class="p">.</span><span class="n">strip</span><span class="p">())</span>
+	<span class="n">soo_pat_ne_title_abs_pairs</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+	<span class="c1"># patent_nums = open('patent_nums5.txt').readlines()
+</span>	<span class="c1"># base_url = 'http://www1.soopat.com/Patent/'
+</span>	<span class="c1"># for num in patent_nums:
+</span>	<span class="c1"># 	url = base_url + num.strip()
+</span>	<span class="c1"># 	print(url)
+</span>	<span class="c1"># 	get_title_abs_pairs(url)
+</span>	<span class="c1"># 	time.sleep(5)
+</span>	<span class="c1"># urls = ['200810194494.6 - 一种风能设备铸件的熔炼工艺 - SooPAT专利搜索.html',
+</span>	<span class="c1">#      '201010507258.2 - 风氢新能源应用在水稻直播机上的动力装置 - SooPAT专利搜索.html',
+</span>	<span class="c1">#      '201020561654.9 - 风氢新能源应用在水稻直播机上的动力装置 - SooPAT专利搜索.html',
+</span>	<span class="c1">#      '201520723745.0 - 一种高空风能风力发电装置及风能动力系统 - SooPAT专利搜索.html',
+</span>	<span class="c1">#      '201711296084.8 - 一种实现中高空风能发电装置自动收回的方法 - SooPAT专利搜索.html',
+</span>	<span class="c1">#      '201711299009.7 - 一种中高空风能发电系统的控制方法 - SooPAT专利搜索.html',
+</span>	<span class="c1">#      '201910280329.0 - 一种基于区块链的新能源结算系统 - SooPAT专利搜索.html',
+</span>	<span class="c1">#      '201911188828.3 - 一种新能源电池组 - SooPAT专利搜索.html']
+</span>	<span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">os</span><span class="p">.</span><span class="n">listdir</span><span class="p">(</span><span class="s">'./soopat_wind/'</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span><span class="p">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">'html'</span><span class="p">)]</span>
+	<span class="n">base_url</span> <span class="o">=</span> <span class="s">'/Users/.../codes/MT/ne_paired/20200706SooPAT/soopat_wind/'</span>
+	<span class="n">urls</span> <span class="o">=</span> <span class="p">[</span><span class="n">base_url</span><span class="o">+</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">files</span><span class="p">]</span>
+	<span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">urls</span><span class="p">:</span>
+		<span class="n">get_title_abs_pairs</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+		<span class="c1"># time.sleep(5)
+</span>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">'__main__'</span><span class="p">:</span>
+	<span class="n">main</span><span class="p">()</span>
+</code></pre></div></div>
+
+<h2 id="四点触验证码的识别">四、点触验证码的识别</h2>
+
+:ET

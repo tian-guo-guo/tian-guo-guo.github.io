@@ -1,0 +1,42 @@
+I"�<h1 id="python调用百度ocr-api实现图像文字识别">Python调用百度OCR API实现图像文字识别</h1>
+
+<p>百度<a href="https://cloud.tencent.com/product/ocr?from=10680">文字识别</a>OCR接口提供了自然场景下整图文字检测、定位、识别等功能。文字识别的结果可以用于翻译、搜索、验证码等代替用户输入的场景。</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20200725163711.png" alt="image-20200725163711422" /></p>
+
+<p>支持Python版本：2.7.+ ,3.+</p>
+
+<p>首先安装接口模块，在电脑终端里执行 pip install baidu-aip 即可。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">aip</span> <span class="kn">import</span> <span class="n">AipOcr</span>
+<span class="n">APP_ID</span> <span class="o">=</span> <span class="s">''</span>
+<span class="n">API_KEY</span> <span class="o">=</span> <span class="s">''</span>
+<span class="n">SECRET_KEY</span> <span class="o">=</span> <span class="s">''</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">AipOcr</span><span class="p">(</span><span class="n">APP_ID</span><span class="p">,</span> <span class="n">API_KEY</span><span class="p">,</span> <span class="n">SECRET_KEY</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">get_OCR_msg</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+	<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s">'.png'</span><span class="p">,</span><span class="s">'rb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+		<span class="c1"># reserved = open("reserved.txt", 'a')
+</span>        
+		<span class="n">img</span> <span class="o">=</span> <span class="n">f</span><span class="p">.</span><span class="n">read</span><span class="p">()</span>
+		<span class="n">msg</span> <span class="o">=</span> <span class="n">client</span><span class="p">.</span><span class="n">basicGeneral</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+		<span class="n">result_para</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">msg</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'words_result'</span><span class="p">):</span>
+			<span class="n">result</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'words'</span><span class="p">)</span>
+			<span class="c1"># reserved.write(result)
+</span>            
+			<span class="c1"># reserved.write("\n")
+</span>            
+			<span class="n">result_para</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+			<span class="k">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+		<span class="c1"># print(''.join(result_para))
+</span>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">14</span><span class="p">):</span>
+		<span class="n">name</span> <span class="o">=</span> <span class="s">"screenshot "</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+		<span class="n">get_OCR_msg</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>APP_ID 、API_KEY、SECRET_KEY 三个值对应在http://console.bce.baidu.com/ai/#/ai/ocr/app/list 这里找到，需要用百度账号登录，然后创建一个应用</p>
+
+<p><img src="/Users/suntian/Library/Application Support/typora-user-images/image-20200725163838355.png" alt="image-20200725163838355" /></p>
+:ET

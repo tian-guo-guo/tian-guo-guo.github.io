@@ -1,0 +1,4 @@
+I"z<h1 id="python调用百度ocr-api实现图像文字识别">Python调用百度OCR API实现图像文字识别</h1>
+
+<p>百度<a href="https://cloud.tencent.com/product/ocr?from=10680">文字识别</a>OCR接口提供了自然场景下整图文字检测、定位、识别等功能。文字识别的结果可以用于翻译、搜索、验证码等代替用户输入的场景。</p>
+:ET
