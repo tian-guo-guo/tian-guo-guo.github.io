@@ -1,4 +1,4 @@
-I"H<h1 id="常用命令">常用命令</h1>
+I"<h1 id="常用命令">常用命令</h1>
 
 <h2 id="1-python转换文件编码格式">1. <a href="https://www.jianshu.com/p/d5030db5da0e">[python]转换文件编码格式</a></h2>
 
@@ -45,6 +45,11 @@ test.gbk:     ISO-8859 text
 4 33 file1
 7 52 file2
 11 11 85 total
+</code></pre></div></div>
+
+<h2 id="4-指定gpu卡">4. 指定GPU卡</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>CUDA_VISIBLE_DEVICES=0 
 </code></pre></div></div>
 
 :ET
