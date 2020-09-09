@@ -1,7 +1,7 @@
 ---
 layout:     post           # 使用的布局（不需要改）
-title:      Offer05替换空格
-subtitle:   Offer05替换空格 #副标题
+title:      LeetCode-Offer05-替换空格
+subtitle:   LeetCode-Offer05-替换空格 #副标题
 date:       2020-09-09            # 时间
 author:     甜果果                    # 作者
 header-img: https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20200701171155.png  #背景图片
