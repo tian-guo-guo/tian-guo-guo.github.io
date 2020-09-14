@@ -13,7 +13,7 @@ tags:                               #标签
 
 ---
 
-# [剑指 Offer 07. 重建二叉树](https://leetcode-cn.com/problems/zhong-jian-er-cha-shu-lcof/)
+# [剑指 Offer 07. 重建二叉树](https://leetcode-cn.com/problems/zhong-jian-er-cha-shu-lcof/) [105. 从前序与中序遍历序列构造二叉树](https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/)
 
 tag: medium，递归，树
 
@@ -67,11 +67,11 @@ tag: medium，递归，树
 返回值： 返回 root，含义是当前递归层级建立的根节点 root 为上一递归层级的根节点的左或右子节点。
 
 ```python
-# class TreeNode:
-#     def __init__(self, x):
-#         self.val = x
-#         self.left = None
-#         self.right = None
+class TreeNode:
+    def __init__(self, x):
+        self.val = x
+        self.left = None
+        self.right = None
 
 class Solution:
     def buildTree(self, preorder: List[int], inorder: List[int]) -> TreeNode:
@@ -97,4 +97,35 @@ class Solution:
 >内存消耗：17.4 MB, 在所有 Python3 提交中击败了91.75%的用户
 
 [Link](https://leetcode-cn.com/problems/zhong-jian-er-cha-shu-lcof/solution/mian-shi-ti-07-zhong-jian-er-cha-shu-di-gui-fa-qin/)
+
+# 视频讲解
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Qc0XLGFnchU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+**思路：**
+
+答案不对。
+
+```python
+class TreeNode:
+    def __init__(self, x):
+        self.val = x
+        self.left = None
+        self.right = None
+        
+class Solution:
+    def buildTree(self, preorder, inorder):
+        if not preorder or not inorder:
+            return None
+        
+        rootValue = preorder[0]
+        root = TreeNode(rootValue)
+        inorderIndex = inorder.index(rootValue)
+        root.left = self.buildTree(preorder[1: inorderIndex+1], inorder[:inorderIndex])
+        root.right = self.buildTree(preorder[inorderIndex+1:], inorder[inorderIndex+1:])
+
+        return root
+```
+
+
 

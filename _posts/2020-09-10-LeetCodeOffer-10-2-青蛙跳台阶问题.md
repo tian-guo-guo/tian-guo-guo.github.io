@@ -13,7 +13,7 @@ tags:                               #标签
 
 ---
 
-# [剑指 Offer 10- II. 青蛙跳台阶问题](https://leetcode-cn.com/problems/qing-wa-tiao-tai-jie-wen-ti-lcof/)
+# [剑指 Offer 10- II. 青蛙跳台阶问题](https://leetcode-cn.com/problems/qing-wa-tiao-tai-jie-wen-ti-lcof/) [70. 爬楼梯](https://leetcode-cn.com/problems/climbing-stairs/)
 
 tag: easy，动态规划
 
@@ -71,4 +71,39 @@ class Solution:
 >内存消耗：13.8 MB, 在所有 Python3 提交中击败了6.38%的用户
 
 [Link](https://leetcode-cn.com/problems/qing-wa-tiao-tai-jie-wen-ti-lcof/solution/mian-shi-ti-10-ii-qing-wa-tiao-tai-jie-wen-ti-dong/)
+
+# 视频讲解
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/NgamBohlrf8" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+思路：
+
+不用递归，观察一下结果
+
+```python
+class Solution:
+	def climbStairs(self, n):
+		#n=1:1
+        
+		#n=2:2
+        
+		#n=3:3
+        
+		#n=4:5
+        
+		#n=5:8
+        
+		#...
+        
+		prev, current = 0, 1
+		for i in range(n):
+			prev, current = current, prev + current
+		return current
+```
+
+
+
+
+
+
 

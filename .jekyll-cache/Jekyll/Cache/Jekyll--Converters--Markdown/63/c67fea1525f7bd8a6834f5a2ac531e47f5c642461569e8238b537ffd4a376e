@@ -1,4 +1,4 @@
-I"0"<h1 id="剑指-offer-07-重建二叉树"><a href="https://leetcode-cn.com/problems/zhong-jian-er-cha-shu-lcof/">剑指 Offer 07. 重建二叉树</a></h1>
+I"�2<h1 id="剑指-offer-07-重建二叉树-105-从前序与中序遍历序列构造二叉树"><a href="https://leetcode-cn.com/problems/zhong-jian-er-cha-shu-lcof/">剑指 Offer 07. 重建二叉树</a> <a href="https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/">105. 从前序与中序遍历序列构造二叉树</a></h1>
 
 <p>tag: medium，递归，树</p>
 
@@ -59,12 +59,12 @@
 右子树： 根节点索引为 i - in_left + pre_root + 1（即：根节点索引 + 左子树长度 + 1），中序遍历的左右边界分别为 i + 1 和 in_right。
 返回值： 返回 root，含义是当前递归层级建立的根节点 root 为上一递归层级的根节点的左或右子节点。</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># class TreeNode:
-#     def __init__(self, x):
-#         self.val = x
-#         self.left = None
-#         self.right = None
-</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">TreeNode</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">val</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">left</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">right</span> <span class="o">=</span> <span class="bp">None</span>
+
 <span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
     <span class="k">def</span> <span class="nf">buildTree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preorder</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">inorder</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">TreeNode</span><span class="p">:</span>
         <span class="bp">self</span><span class="p">.</span><span class="n">dic</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">po</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">preorder</span>
@@ -93,5 +93,33 @@
 </blockquote>
 
 <p><a href="https://leetcode-cn.com/problems/zhong-jian-er-cha-shu-lcof/solution/mian-shi-ti-07-zhong-jian-er-cha-shu-di-gui-fa-qin/">Link</a></p>
+
+<h1 id="视频讲解">视频讲解</h1>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Qc0XLGFnchU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+
+<p><strong>思路：</strong></p>
+
+<p>答案不对。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">TreeNode</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">val</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">left</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">right</span> <span class="o">=</span> <span class="bp">None</span>
+        
+<span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">buildTree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preorder</span><span class="p">,</span> <span class="n">inorder</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">preorder</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">inorder</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        
+        <span class="n">rootValue</span> <span class="o">=</span> <span class="n">preorder</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">TreeNode</span><span class="p">(</span><span class="n">rootValue</span><span class="p">)</span>
+        <span class="n">inorderIndex</span> <span class="o">=</span> <span class="n">inorder</span><span class="p">.</span><span class="n">index</span><span class="p">(</span><span class="n">rootValue</span><span class="p">)</span>
+        <span class="n">root</span><span class="p">.</span><span class="n">left</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">buildTree</span><span class="p">(</span><span class="n">preorder</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span> <span class="n">inorderIndex</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">inorder</span><span class="p">[:</span><span class="n">inorderIndex</span><span class="p">])</span>
+        <span class="n">root</span><span class="p">.</span><span class="n">right</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">buildTree</span><span class="p">(</span><span class="n">preorder</span><span class="p">[</span><span class="n">inorderIndex</span><span class="o">+</span><span class="mi">1</span><span class="p">:],</span> <span class="n">inorder</span><span class="p">[</span><span class="n">inorderIndex</span><span class="o">+</span><span class="mi">1</span><span class="p">:])</span>
+
+        <span class="k">return</span> <span class="n">root</span>
+</code></pre></div></div>
 
 :ET

@@ -1,4 +1,4 @@
-I"�<h1 id="剑指-offer-10--ii-青蛙跳台阶问题"><a href="https://leetcode-cn.com/problems/qing-wa-tiao-tai-jie-wen-ti-lcof/">剑指 Offer 10- II. 青蛙跳台阶问题</a></h1>
+I"z<h1 id="剑指-offer-10--ii-青蛙跳台阶问题-70-爬楼梯"><a href="https://leetcode-cn.com/problems/qing-wa-tiao-tai-jie-wen-ti-lcof/">剑指 Offer 10- II. 青蛙跳台阶问题</a> <a href="https://leetcode-cn.com/problems/climbing-stairs/">70. 爬楼梯</a></h1>
 
 <p>tag: easy，动态规划</p>
 
@@ -66,5 +66,33 @@
 </blockquote>
 
 <p><a href="https://leetcode-cn.com/problems/qing-wa-tiao-tai-jie-wen-ti-lcof/solution/mian-shi-ti-10-ii-qing-wa-tiao-tai-jie-wen-ti-dong/">Link</a></p>
+
+<h1 id="视频讲解">视频讲解</h1>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/NgamBohlrf8" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+
+<p>思路：</p>
+
+<p>不用递归，观察一下结果</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+	<span class="k">def</span> <span class="nf">climbStairs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+		<span class="c1">#n=1:1
+</span>        
+		<span class="c1">#n=2:2
+</span>        
+		<span class="c1">#n=3:3
+</span>        
+		<span class="c1">#n=4:5
+</span>        
+		<span class="c1">#n=5:8
+</span>        
+		<span class="c1">#...
+</span>        
+		<span class="n">prev</span><span class="p">,</span> <span class="n">current</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
+		<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+			<span class="n">prev</span><span class="p">,</span> <span class="n">current</span> <span class="o">=</span> <span class="n">current</span><span class="p">,</span> <span class="n">prev</span> <span class="o">+</span> <span class="n">current</span>
+		<span class="k">return</span> <span class="n">current</span>
+</code></pre></div></div>
 
 :ET
