@@ -1,0 +1,56 @@
+I"M<h1 id="剑指-offer-24-反转链表"><a href="https://leetcode-cn.com/problems/fan-zhuan-lian-biao-lcof/">剑指 Offer 24. 反转链表</a></h1>
+
+<p>tag: easy，链表，双指针</p>
+
+<p><strong>题目：</strong></p>
+
+<p>定义一个函数，输入一个链表的头节点，反转该链表并输出反转后链表的头节点。</p>
+
+<p><strong>示例 1：</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>输入: 1-&gt;2-&gt;3-&gt;4-&gt;5-&gt;NULL
+输出: 5-&gt;4-&gt;3-&gt;2-&gt;1-&gt;NULL
+</code></pre></div></div>
+
+<h1 id="方法一">方法一：</h1>
+
+<ul>
+  <li>解题思路：
+    <ul>
+      <li>相当于定义两个指针，last和head。 head.next= last表示head的下一个指向last。剩下两个等号相当于last和head两个指针同时后移。</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">ListNode</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">val</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="p">.</span><span class="nb">next</span> <span class="o">=</span> <span class="n">Node</span>
+        
+<span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">reverseList</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">head</span><span class="p">):</span>
+        <span class="n">last</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">while</span> <span class="n">head</span><span class="p">:</span>
+            <span class="n">head</span><span class="p">.</span><span class="nb">next</span><span class="p">,</span> <span class="n">last</span><span class="p">,</span> <span class="n">head</span>  <span class="o">=</span> <span class="n">last</span><span class="p">,</span> <span class="n">head</span><span class="p">,</span> <span class="n">head</span><span class="p">.</span><span class="nb">next</span>
+        <span class="k">return</span> <span class="n">last</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>执行用时：52 ms, 在所有 Python3 提交中击败了29.86%的用户</p>
+
+  <p>内存消耗：14.4 MB, 在所有 Python3 提交中击败了98.45%的用户</p>
+</blockquote>
+
+<p><a href="https://leetcode-cn.com/problems/fan-zhuan-lian-biao-lcof/solution/6xing-dai-ma-yi-ci-bian-li-by-chitoseyono/">Link</a></p>
+
+<h1 id="方法二视频讲解">方法二：视频讲解</h1>
+
+<ul>
+  <li>
+    <p>解题思路</p>
+
+    <p>可能需要2-3个指针，起始点设置为dummy，head.val放到dummy.next里去，是想reverse的时候扩展出来一个新的linklist， 也就是dummy的第一个值也就是head的第一个值</p>
+  </li>
+</ul>
+
+:ET
