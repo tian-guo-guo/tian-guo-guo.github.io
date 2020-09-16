@@ -1,0 +1,71 @@
+I"�<h1 id="剑指-offer-25-合并两个排序的链表-21-合并两个有序链表-果果"><a href="https://leetcode-cn.com/problems/he-bing-liang-ge-pai-xu-de-lian-biao-lcof/">剑指 Offer 25. 合并两个排序的链表</a> <a href="https://leetcode-cn.com/problems/merge-two-sorted-lists/">21. 合并两个有序链表</a> <a href="https://tianguoguo.fun/2020/07/11/LeetCode-21-%E5%90%88%E5%B9%B6%E4%B8%A4%E4%B8%AA%E6%9C%89%E5%BA%8F%E9%93%BE%E8%A1%A8/">果果</a></h1>
+
+<p>tag: easy，链表，双指针</p>
+
+<p><strong>题目：</strong></p>
+
+<p>输入两个递增排序的链表，合并这两个链表并使新链表中的节点仍然是递增排序的。</p>
+
+<p><strong>示例 1：</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>输入：1-&gt;2-&gt;4, 1-&gt;3-&gt;4
+输出：1-&gt;1-&gt;2-&gt;3-&gt;4-&gt;4
+</code></pre></div></div>
+
+<h1 id="方法一">方法一：</h1>
+
+<ul>
+  <li>解题思路：
+    <ul>
+      <li>根据题目描述， 链表 l_1, l_2是递增的，因此容易想到使用双指针 l_1和 l_2遍历两链表，根据 l_1.val和 l_2.val的大小关系确定节点添加顺序，两节点指针交替前进，直至遍历完毕。</li>
+      <li>引入伪头节点： 由于初始状态合并链表中无节点，因此循环第一轮时无法将节点添加到合并链表中。解决方案：初始化一个辅助节点 dum作为合并链表的伪头节点，将各节点添加至 dum之后。</li>
+    </ul>
+  </li>
+  <li>算法流程：
+    <ol>
+      <li>初始化： 伪头节点 dum，节点 cur指向 dum。</li>
+      <li>循环合并： 当 l_1或 l_2为空时跳出；
+        <ol>
+          <li>当 l_1.val &lt; l_2.val时： cur的后继节点指定为 l_1，并 l_1向前走一步；</li>
+          <li>当 l_1.val≥l 2 .val 时： curcur 的后继节点指定为 l_2，并 l_2向前走一步 ；</li>
+          <li>节点 cur向前走一步，即 cur = cur.next。</li>
+        </ol>
+      </li>
+      <li>合并剩余尾部： 跳出时有两种情况，即 l_1为空 或 l_2为空。
+若 l_1≠null ： 将 l_1 添加至节点 cur之后；
+否则： 将 l_2添加至节点 cur之后。</li>
+      <li>返回值： 合并链表在伪头节点 dum之后，因此返回 dum.next即可。</li>
+    </ol>
+  </li>
+  <li>复杂度分析：
+    <ul>
+      <li>时间复杂度 O(M+N)： M, N分别为链表 l_1, l_2的长度，合并操作需遍历两链表。</li>
+      <li>空间复杂度 O(1)： 节点引用 dum , cur使用常数大小的额外空间。</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">ListNode</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">val</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="p">.</span><span class="nb">next</span> <span class="o">=</span> <span class="bp">None</span>
+
+<span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">mergeTwoLists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">):</span>
+        <span class="n">cur</span> <span class="o">=</span> <span class="n">dum</span> <span class="o">=</span> <span class="n">ListNode</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">l1</span> <span class="ow">and</span> <span class="n">l2</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">l1</span><span class="p">.</span><span class="n">val</span> <span class="o">&lt;</span> <span class="n">l2</span><span class="p">.</span><span class="n">val</span><span class="p">:</span>
+                <span class="n">cur</span><span class="p">.</span><span class="nb">next</span><span class="p">,</span> <span class="n">l1</span> <span class="o">=</span> <span class="n">l1</span><span class="p">,</span> <span class="n">l1</span><span class="p">.</span><span class="nb">next</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cur</span><span class="p">.</span><span class="nb">next</span><span class="p">,</span> <span class="n">l2</span> <span class="o">=</span> <span class="n">l2</span><span class="p">,</span> <span class="n">l2</span><span class="p">.</span><span class="nb">next</span>
+            <span class="n">cur</span> <span class="o">=</span> <span class="n">cur</span><span class="p">.</span><span class="nb">next</span>
+        <span class="n">cur</span><span class="p">.</span><span class="nb">next</span> <span class="o">=</span> <span class="n">l1</span> <span class="k">if</span> <span class="n">l1</span> <span class="k">else</span> <span class="n">l2</span>
+        <span class="k">return</span> <span class="n">dum</span><span class="p">.</span><span class="nb">next</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>执行用时：64 ms, 在所有 Python3 提交中击败了69.74%的用户</p>
+
+  <p>内存消耗：14.1 MB, 在所有 Python3 提交中击败了31.44%的用户</p>
+</blockquote>
+:ET

@@ -1,0 +1,158 @@
+I"�$<h1 id="剑指-offer-28-对称的二叉树"><a href="https://leetcode-cn.com/problems/dui-cheng-de-er-cha-shu-lcof/">剑指 Offer 28. 对称的二叉树</a></h1>
+
+<p>tag: easy，递归，二叉树</p>
+
+<p><strong>题目：</strong></p>
+
+<p>请实现一个函数，用来判断一棵二叉树是不是对称的。如果一棵二叉树和它的镜像一样，那么它是对称的。</p>
+
+<p>例如，二叉树 [1,2,2,3,4,4,3] 是对称的。</p>
+
+<p>1
+  / <br />
+ 2  2
+ / \ / <br />
+3  4 4  3</p>
+
+<p>但是下面这个 [1,2,2,null,3,null,3] 则不是镜像对称的:</p>
+
+<p>1
+  / <br />
+ 2  2
+  \  <br />
+  3   3</p>
+
+<p><strong>示例 1：</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>输入：root = [1,2,2,3,4,4,3]
+输出：true
+</code></pre></div></div>
+
+<p><strong>示例 1：</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>输入：root = [1,2,2,null,3,null,3]
+输出：false
+</code></pre></div></div>
+
+<h1 id="方法一递归法">方法一：递归法</h1>
+
+<blockquote>
+  <p>二叉树镜像定义： 对于二叉树中任意节点 root，设其左 / 右子节点分别为 left, right ；则在二叉树的镜像中的对应 root节点，其左 / 右子节点分别为 right, left 。</p>
+</blockquote>
+
+<ul>
+  <li>解题思路：
+    <ul>
+      <li>对称二叉树定义： 对于树中 任意两个对称节点 L 和 R ，一定有：
+        <ul>
+          <li>L.val = R.val：即此两对称节点值相等。</li>
+          <li>L.left.val = R.right.val：即 L 的 左子节点 和 R 的 右子节点 对称；</li>
+          <li>L.right.val = R.left.val：即 LL 的 右子节点 和 RR 的 左子节点 对称。</li>
+        </ul>
+      </li>
+      <li>根据以上规律，考虑从顶至底递归，判断每对节点是否对称，从而判断树是否为对称二叉树。</li>
+    </ul>
+  </li>
+  <li>算法流程：</li>
+  <li>isSymmetric(root) ：
+    <ul>
+      <li>特例处理： 若根节点 root 为空，则直接返回 true 。</li>
+      <li>返回值： 即 recur(root.left, root.right) ;</li>
+    </ul>
+  </li>
+  <li>recur(L, R) ：</li>
+  <li>终止条件：
+    <ul>
+      <li>当 L 和 R 同时越过叶节点： 此树从顶至底的节点都对称，因此返回 true ；</li>
+      <li>当 L 或 R 中只有一个越过叶节点： 此树不对称，因此返回 false ；</li>
+      <li>当节点 L 值≠节点 R 值： 此树不对称，因此返回 false ；</li>
+    </ul>
+  </li>
+  <li>递推工作：
+    <ul>
+      <li>判断两节点 L.left 和 R.right 是否对称，即 recur(L.left, R.right) ；</li>
+      <li>判断两节点 L.right和R.leftt 是否对称，即 recur(L.right, R.left) ；</li>
+    </ul>
+  </li>
+  <li>返回值： 两对节点都对称时，才是对称树，因此用与逻辑符 &amp;&amp; 连接。</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">TreeNode</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">val</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">left</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">right</span> <span class="o">=</span> <span class="bp">None</span>
+        
+<span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">mirrorTree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">root</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">root</span><span class="p">.</span><span class="n">left</span><span class="p">,</span> <span class="n">root</span><span class="p">.</span><span class="n">right</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">mirrorTree</span><span class="p">(</span><span class="n">root</span><span class="p">.</span><span class="n">right</span><span class="p">),</span> <span class="bp">self</span><span class="p">.</span><span class="n">mirrorTree</span><span class="p">(</span><span class="n">root</span><span class="p">.</span><span class="n">left</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">root</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>执行用时：36 ms, 在所有 Python3 提交中击败了90.35%的用户</p>
+
+  <p>内存消耗：13.4 MB, 在所有 Python3 提交中击败了27.56%的用户</p>
+</blockquote>
+
+<h1 id="方法二辅助栈队列">方法二：辅助栈（队列）</h1>
+
+<blockquote>
+  <p>利用栈（或队列）遍历树的所有节点 node，并交换每个 node的左 / 右子节点。</p>
+</blockquote>
+
+<ul>
+  <li>算法流程：
+    <ol>
+      <li>特例处理： 当 root为空时，直接返回 null；</li>
+      <li>初始化： 栈（或队列），本文用栈，并加入根节点 root。</li>
+      <li>循环交换： 当栈 stack为空时跳出；
+        <ol>
+          <li>出栈： 记为 node；</li>
+          <li>添加子节点： 将 node左和右子节点入栈；</li>
+          <li>交换： 交换 node的左 / 右子节点。</li>
+        </ol>
+      </li>
+      <li>返回值： 返回根节点 root 。</li>
+    </ol>
+  </li>
+  <li>复杂度分析：
+    <ul>
+      <li>时间复杂度 O(N)： 其中 N为二叉树的节点数量，建立二叉树镜像需要遍历树的所有节点，占用 O(N)时间。</li>
+      <li>空间复杂度 O(N)： 最差情况下（当为满二叉树时），栈 stack最多同时存储 N/2个节点，占用 O(N)额外空间。</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">TreeNode</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">val</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">left</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">right</span> <span class="o">=</span> <span class="bp">None</span>
+        
+<span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">mirrorTree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">root</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">stack</span> <span class="o">=</span> <span class="p">[</span><span class="n">root</span><span class="p">]</span>
+        <span class="k">while</span> <span class="n">stack</span><span class="p">:</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">stack</span><span class="p">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">node</span><span class="p">.</span><span class="n">left</span><span class="p">:</span>
+                <span class="n">stack</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="n">left</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">node</span><span class="p">.</span><span class="n">right</span><span class="p">:</span>
+                <span class="n">stack</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="n">right</span><span class="p">)</span>
+            <span class="n">node</span><span class="p">.</span><span class="n">left</span><span class="p">,</span> <span class="n">node</span><span class="p">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">node</span><span class="p">.</span><span class="n">right</span><span class="p">,</span> <span class="n">node</span><span class="p">.</span><span class="n">left</span>
+        <span class="k">return</span> <span class="n">root</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>执行用时：32 ms, 在所有 Python3 提交中击败了97.16%的用户</p>
+
+  <p>内存消耗：13.4 MB, 在所有 Python3 提交中击败了33.78%的用户</p>
+</blockquote>
+
+<p><a href="https://leetcode-cn.com/problems/er-cha-shu-de-jing-xiang-lcof/solution/mian-shi-ti-27-er-cha-shu-de-jing-xiang-di-gui-fu-/">Link</a></p>
+
+:ET
