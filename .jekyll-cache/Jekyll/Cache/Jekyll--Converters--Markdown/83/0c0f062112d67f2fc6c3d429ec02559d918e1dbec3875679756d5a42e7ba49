@@ -1,0 +1,91 @@
+I"�<h1 id="剑指-offer-50-第一个只出现一次的字符"><a href="https://leetcode-cn.com/problems/di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof/">剑指 Offer 50. 第一个只出现一次的字符</a></h1>
+
+<p>tag: easy，字符串，哈希表</p>
+
+<p><strong>题目：</strong></p>
+
+<p>在字符串 s 中找出第一个只出现一次的字符。如果没有，返回一个单空格。 s 只包含小写字母。</p>
+
+<p><strong>示例一</strong>：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>s = "abaccdeff"
+返回 "b"
+
+s = "" 
+返回 " "
+</code></pre></div></div>
+
+<h1 id="方法一哈希表">方法一：哈希表</h1>
+
+<p><strong>思路：</strong></p>
+
+<ol>
+  <li>遍历字符串 <code class="language-plaintext highlighter-rouge">s</code> ，使用哈希表统计 “各字符数量是否 &gt; 1 ”。</li>
+  <li>再遍历字符串 <code class="language-plaintext highlighter-rouge">s</code> ，在哈希表中找到首个 “数量为 1 的字符”，并返回。</li>
+</ol>
+
+<p><strong>算法流程：</strong></p>
+
+<ol>
+  <li>初始化： 字典 (Python)、HashMap(Java)、map(C++)，记为 dic ；</li>
+  <li>字符统计： 遍历字符串 s 中的每个字符 c ；
+    <ol>
+      <li>若 dic 中 不包含 键(key) c ：则向 dic 中添加键值对 (c, True) ，代表字符 c 的数量为 1 ；</li>
+      <li>若 dic 中 包含 键(key) c ：则修改键 c 的键值对为 (c, False) ，代表字符 c 的数量 &gt; 1&gt;1 。</li>
+    </ol>
+  </li>
+  <li>查找数量为 11 的字符： 遍历字符串 s 中的每个字符 c ；
+    <ol>
+      <li>若 dic中键 c 对应的值为 True ：，则返回 c 。</li>
+    </ol>
+  </li>
+  <li>返回 ‘ ‘ ，代表字符串无数量为 1 的字符。</li>
+</ol>
+
+<p><strong>复杂度分析：</strong></p>
+
+<ul>
+  <li>时间复杂度 O(N) ： N 为字符串 s 的长度；需遍历 s 两轮，使用 O(N) ；HashMap 查找操作的复杂度为 O(1) ；</li>
+  <li>空间复杂度 O(1) ： 由于题目指出 s 只包含小写字母，因此最多有 26 个不同字符，HashMap 存储需占用 O(26) = O(1) 的额外空间。</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">firstUniqChar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+        <span class="n">dic</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
+            <span class="n">dic</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">dic</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dic</span><span class="p">[</span><span class="n">c</span><span class="p">]:</span> <span class="k">return</span> <span class="n">c</span>
+        <span class="k">return</span> <span class="s">' '</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>执行用时：92 ms, 在所有 Python3 提交中击败了79.51%的用户</p>
+
+  <p>内存消耗：13.5 MB, 在所有 Python3 提交中击败了48.75%的用户</p>
+</blockquote>
+
+<h1 id="方法二有序哈希表">方法二：有序哈希表</h1>
+
+<p><strong>思想：</strong></p>
+
+<p>在哈希表的基础上，有序哈希表中的键值对是 按照插入顺序排序 的。基于此，可通过遍历有序哈希表，实现搜索首个 “数量为 11 的字符”。</p>
+
+<p>哈希表是 去重 的，即哈希表中键值对数量 \leq≤ 字符串 s 的长度。因此，相比于方法一，方法二减少了第二轮遍历的循环次数。当字符串很长（重复字符很多）时，方法二则效率更高。</p>
+
+<p><strong>复杂度分析：</strong></p>
+
+<p>时间和空间复杂度均与 “方法一” 相同，而具体分析：方法一 需遍历 <code class="language-plaintext highlighter-rouge">s</code> 两轮；方法二 遍历 <code class="language-plaintext highlighter-rouge">s</code> 一轮，遍历 <code class="language-plaintext highlighter-rouge">dic</code> 一轮（ <code class="language-plaintext highlighter-rouge">dic</code> 的长度不大于 26 ）。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">firstUniqChar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">dic</span> <span class="o">=</span> <span class="n">collections</span><span class="p">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
+            <span class="n">dic</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">dic</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">dic</span><span class="p">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">v</span><span class="p">:</span> <span class="k">return</span> <span class="n">k</span>
+        <span class="k">return</span> <span class="s">' '</span>
+</code></pre></div></div>
+
+<p><a href="https://leetcode-cn.com/problems/di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof/solution/mian-shi-ti-50-di-yi-ge-zhi-chu-xian-yi-ci-de-zi-3/">Link</a></p>
+:ET

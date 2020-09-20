@@ -1,0 +1,102 @@
+I"�<h1 id="剑指-offer-39-数组中出现次数超过一半的数字-169-多数元素"><a href="https://leetcode-cn.com/problems/shu-zu-zhong-chu-xian-ci-shu-chao-guo-yi-ban-de-shu-zi-lcof/">剑指 Offer 39. 数组中出现次数超过一半的数字</a> <a href="https://leetcode-cn.com/problems/majority-element/">169. 多数元素</a></h1>
+
+<p>tag: easy，数组</p>
+
+<p><strong>题目：</strong></p>
+
+<p>数组中有一个数字出现的次数超过数组长度的一半，请找出这个数字。</p>
+
+<p>你可以假设数组是非空的，并且给定的数组总是存在多数元素。</p>
+
+<p><strong>示例一</strong>：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>输入: [1, 2, 3, 2, 2, 2, 5, 4, 2]
+输出: 2
+</code></pre></div></div>
+
+<h1 id="方法一摩尔投票法">方法一：摩尔投票法</h1>
+
+<ul>
+  <li>解题思路：</li>
+</ul>
+
+<blockquote>
+  <p>本题常见解法如下：</p>
+
+  <ol>
+    <li>哈希表统计法： 遍历数组 nums ，用 HashMap 统计各数字的数量，最终超过数组长度一半的数字则为众数。此方法时间和空间复杂度均为 O(N) 。</li>
+    <li>数组排序法： 将数组 nums 排序，由于众数的数量超过数组长度一半，因此 数组中点的元素 一定为众数。此方法时间复杂度 O(N log_2 N)。</li>
+    <li>摩尔投票法： 核心理念为 “正负抵消” ；时间和空间复杂度分别为 O(N) 和 O(1)；是本题的最佳解法。</li>
+  </ol>
+</blockquote>
+
+<ul>
+  <li>摩尔投票法：
+    <ul>
+      <li>票数和：由于众数出现的次数超过数组长度的一半；若记众数的票数为+1，非众数的票数为-1，则一定有所有数字的票数和&gt;0 。</li>
+      <li>票数正负抵消： 设数组 nums 中的众数为 x ，数组长度为 n 。若 nums 的前 a 个数字的 票数和=0 ，则 数组后 (n−a) 个数字的 票数和一定仍 &gt;0 （即后(n−a) 个数字的 众数仍为 x ）。</li>
+    </ul>
+  </li>
+  <li>算法原理：
+    <ul>
+      <li>为构建正负抵消，假设数组首个元素 n_1为众数，遍历统计票数，当发生正负抵消时，剩余数组的众数一定不变 ，这是因为（设真正的众数为 xx ）：
+        <ul>
+          <li>当 n_1 = x： 抵消的所有数字中，有一半是众数 x 。</li>
+          <li>当 n_1 ≠ x ： 抵消的所有数字中，少于或等于一半是众数 x。</li>
+        </ul>
+      </li>
+      <li>利用此特性，每轮假设都可以 缩小剩余数组区间 。当遍历完成时，最后一轮假设的数字即为众数（由于众数超过一半，最后一轮的票数和必为正数）。</li>
+    </ul>
+  </li>
+  <li>算法流程:
+    <ol>
+      <li>初始化： 票数统计 votes = 0 ， 众数 x；</li>
+      <li>循环抵消： 遍历数组 nums 中的每个数字 num ；
+        <ol>
+          <li>当 票数 votes 等于 0 ，则假设 当前数字 num 为 众数 x ；</li>
+          <li>当 num = x 时，票数votes 自增 1 ；否则，票数 votes 自减 1 。</li>
+        </ol>
+      </li>
+      <li>返回值： 返回 众数 x 即可。</li>
+    </ol>
+  </li>
+  <li>复杂度分析：
+    <ul>
+      <li>时间复杂度 O(N) ： N 为数组 nums 长度。</li>
+      <li>空间复杂度 O(1) ： votes变量使用常数大小的额外空间。</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">majorityElement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nums</span><span class="p">):</span>
+        <span class="n">votes</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">nums</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">votes</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> 
+                <span class="n">x</span> <span class="o">=</span> <span class="n">num</span>
+            <span class="n">votes</span> <span class="o">+=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">num</span> <span class="o">==</span> <span class="n">x</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">return</span> <span class="n">x</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>执行用时：48 ms, 在所有 Python3 提交中击败了83.75%的用户</p>
+
+  <p>内存消耗：14.8 MB, 在所有 Python3 提交中击败了44.83%的用户</p>
+</blockquote>
+
+<p><a href="https://leetcode-cn.com/problems/shu-zu-zhong-chu-xian-ci-shu-chao-guo-yi-ban-de-shu-zi-lcof/solution/mian-shi-ti-39-shu-zu-zhong-chu-xian-ci-shu-chao-3/">Link</a></p>
+
+<h1 id="方法二排序法">方法二：排序法</h1>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">majorityElement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nums</span><span class="p">):</span>
+        <span class="n">nums</span><span class="p">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">nums</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nums</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)]</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>执行用时：48 ms, 在所有 Python3 提交中击败了83.75%的用户</p>
+
+  <p>内存消耗：14.6 MB, 在所有 Python3 提交中击败了95.83%的用户</p>
+</blockquote>
+:ET
