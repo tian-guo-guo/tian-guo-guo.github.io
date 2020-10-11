@@ -1,0 +1,104 @@
+I"<h1 id="剑指-offer-58---ii-左旋转字符串"><a href="https://leetcode-cn.com/problems/zuo-xuan-zhuan-zi-fu-chuan-lcof/">剑指 Offer 58 - II. 左旋转字符串</a></h1>
+
+<p>tag: easy，字符串</p>
+
+<p><strong>题目：</strong></p>
+
+<p>字符串的左旋转操作是把字符串前面的若干个字符转移到字符串的尾部。请定义一个函数实现字符串左旋转操作的功能。比如，输入字符串”abcdefg”和数字2，该函数将返回左旋转两位得到的结果”cdefgab”。</p>
+
+<p><strong>示例1：</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>输入: s = "abcdefg", k = 2
+输出: "cdefgab"
+</code></pre></div></div>
+
+<p><strong>示例2：</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>输入: s = "lrloseumgh", k = 6
+输出: "umghlrlose"
+</code></pre></div></div>
+
+<h1 id="方法一字符串切片">方法一：字符串切片</h1>
+
+<blockquote>
+  <p>应用字符串切片函数，可方便实现左旋转字符串。</p>
+</blockquote>
+
+<p>获取字符串 s[n:] 切片和 s[:n] 切片，使用 “+” 运算符拼接并返回即可。</p>
+
+<p><strong>复杂度分析：</strong></p>
+
+<ul>
+  <li>时间复杂度 O(N) ： 其中 N 为字符串 s 的长度，字符串切片函数为线性时间复杂度（参考资料）；</li>
+  <li>空间复杂度 O(N) ： 两个字符串切片的总长度为 N 。</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">reverseLeftWords</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">s</span><span class="p">[</span><span class="n">n</span><span class="p">:]</span> <span class="o">+</span> <span class="n">s</span><span class="p">[:</span><span class="n">n</span><span class="p">]</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>执行用时：36 ms, 在所有 Python3 提交中击败了89.65%的用户</p>
+
+  <p>内存消耗：13.3 MB, 在所有 Python3 提交中击败了86.13%的用户</p>
+</blockquote>
+
+<h1 id="方法二列表遍历拼接">方法二：列表遍历拼接</h1>
+
+<blockquote>
+  <p>若面试规定不允许使用 切片函数 ，则使用此方法。</p>
+</blockquote>
+
+<p><strong>算法流程：</strong></p>
+
+<ol>
+  <li>新建一个 list(Python)、StringBuilder(Java) ，记为 res ；</li>
+  <li>先向 res 添加 “第 n+1 位至末位的字符” ；</li>
+  <li>再向 res 添加 “首位至第 n 位的字符” ；</li>
+  <li>将 res 转化为字符串并返回。</li>
+</ol>
+
+<p><strong>复杂度分析</strong>：</p>
+
+<ul>
+  <li>时间复杂度 O(N)O(N) ： 线性遍历 ss 并添加，使用线性时间；</li>
+  <li>空间复杂度 O(N) ： 新建的辅助 res 使用 O(N) 大小的额外空间。</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">reverseLeftWords</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)):</span>
+            <span class="n">res</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="n">res</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">return</span> <span class="s">''</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h1 id="方法三字符串遍历拼接">方法三：字符串遍历拼接</h1>
+
+<blockquote>
+  <p>若规定 Python 不能使用 join() 函数，或规定 Java 只能用 String ，则使用此方法。</p>
+</blockquote>
+
+<p>此方法与 方法二 思路一致，区别是使用字符串代替列表。</p>
+
+<p><strong>复杂度分析：</strong></p>
+
+<ul>
+  <li>时间复杂度 O(N)： 线性遍历 s 并添加，使用线性时间；</li>
+  <li>空间复杂度 O(N)： 假设循环过程中内存会被及时回收，内存中至少同时存在长度为 N 和 N−1 的两个字符串（新建长度为 N 的 res 需要使用前一个长度 N−1 的 res ），因此至少使用 O(N) 的额外空间。</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">reverseLeftWords</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="s">""</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)):</span>
+            <span class="n">res</span> <span class="o">+=</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="n">res</span> <span class="o">+=</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">res</span>
+</code></pre></div></div>
+
+:ET
