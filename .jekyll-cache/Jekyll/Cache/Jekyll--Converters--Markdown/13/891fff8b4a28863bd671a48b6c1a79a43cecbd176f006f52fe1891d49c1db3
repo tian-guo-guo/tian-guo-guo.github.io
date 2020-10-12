@@ -1,0 +1,55 @@
+I"�<h1 id="css哪些属性可以继承哪些不可继承-与-css优先级算法"><a href="https://segmentfault.com/a/1190000018411761">CSS哪些属性可以继承哪些不可继承 与 CSS优先级算法</a></h1>
+
+<p>CSS哪些属性可以继承哪些不可继承
+可继承属性:
+1.字体系列属性
+font:组合字体
+font-family:规定元素的字体系列
+font-weight:设置字体的粗细
+font-size:设置字体的尺寸
+font-style:定义字体的风格
+font-variant:偏大或偏小的字体
+2.文本系列属性
+text-indent:文本缩进
+text-align:文本水平对刘
+line-height:行高
+word-spacing:增加或减少单词间的空白
+letter-spacing:增加或减少字符间的空白
+text-transform:控制文本大小写
+direction:规定文本的书写方向
+color:文本颜色
+3.元素可见性
+visibility
+4.表格布局属性.
+caption-side定位表格标题位置
+border-collapse合并表格边框
+border-spacing设置相邻单元格的边框间的距离
+empty-cells单元格的边框的出现与消失</p>
+
+<p>table-layout表格的宽度由什么决定<automatic.fixed.inherit>
+5.列表布局属性
+list-style-type文字前面的小点点样式
+list-style-position小点点位置
+list-style以上的属性可通过这属性集合
+6.51F
+quotes设置嵌套引用的引号类型
+7.)1J/ 'lkt
+cursor:箭头可以变成需要的形状
+不可继承属性
+1.displey
+2.文本属性
+vertical-align:垂直文本对齐
+text-decoration:规定添加到文本的装饰
+text-shadow:文本阴影效果
+white-space:空白符的处理
+3.盒子模型属性
+width. height. margin x margin-top. margin-right. margin-bottom. margin-left. border 
+border-style s border-top-style s border-right-style. border-bottom-style. border-left-style 
+border-width, border-top-width. border-right-right. border- bottom-width. border-left-width .
+border-color border-top-color. border-right-color border-bottom-color border-left-color.
+border-top. border-right. border-bottom. border-left. padding padding-top. padding-right.
+padding-bottom. padding-left
+4.背景属性
+background. background-color background-image. background-repeat. background-position.
+background-attachment</automatic.fixed.inherit></p>
+:ET

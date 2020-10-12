@@ -1,0 +1,13 @@
+I"�<h1 id="css-定位详解"><a href="https://segmentfault.com/a/1190000018411761">CSS 定位详解</a></h1>
+
+<p>作者： <a href="http://www.ruanyifeng.com/">阮一峰</a></p>
+
+<p>日期： <a href="http://www.ruanyifeng.com/blog/2019/11/">2019年11月19日</a></p>
+
+<p>CSS 有两个最重要的基本属性，前端开发必须掌握：<code class="language-plaintext highlighter-rouge">display</code> 和 <code class="language-plaintext highlighter-rouge">position</code>。</p>
+
+<p><code class="language-plaintext highlighter-rouge">display</code>属性指定网页的布局。两个重要的布局，我已经介绍过了：<a href="http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html">弹性布局<code class="language-plaintext highlighter-rouge">flex</code></a>和<a href="http://www.ruanyifeng.com/blog/2019/03/grid-layout-tutorial.html">网格布局<code class="language-plaintext highlighter-rouge">grid</code></a>。</p>
+
+<p>本文介绍非常有用的<code class="language-plaintext highlighter-rouge">position</code>属性。我希望通过10分钟的阅读，帮助大家轻松掌握网页定位，说清楚浏览器如何计算网页元素的位置，尤其是新引进的<code class="language-plaintext highlighter-rouge">sticky</code>定位。</p>
+
+:ET

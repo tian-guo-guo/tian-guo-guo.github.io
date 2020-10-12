@@ -1,0 +1,128 @@
+I"�<h1 id="详解bfc块级格式化上下文"><a href="https://segmentfault.com/a/1190000018411761">详解BFC块级格式化上下文</a></h1>
+
+<p>在平常布局中都会遇到外边距合并、浮动元素覆盖等问题，这些都是触发了 bfc 的缘故</p>
+
+<h2 id="什么为-bfc"><strong>什么为 BFC</strong></h2>
+
+<p>BFC（Block Formatting Contexts ） 就是即块级格式化上下文。是Web页面中盒模型布局的CSS渲染模式，指一个独立的渲染区域或者说是一个隔离的独立容器。</p>
+
+<h2 id="bfc的特性">BFC的特性</h2>
+
+<p>我们大家都知道bfc的特性：</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1.内部的元素会在垂直方向，从顶部开始一个接一个地放置。 
+2.元素垂直方向的距离由margin决定。属于同一个BFC的两个相邻 元素的margin会发生叠加
+3.都是从最左边开始的。每个元素的margin box的左边，与包含块border box的左边(对于从左往右的格式化，否则
+相反)。即使存在浮动也是如此
+4.BFC的区域不会与float box叠加。 
+5.BFC就是页面上的一个隔离的独立容器，容器里面的子元素不会影响到外面的元素，反之亦然。 
+6.计算BFC的高度时，浮动元素也参与计算（当BFC内部有浮动时，为了不影响外部元素的布局，BFC计算高度时会包
+括浮动元素的高度）
+</code></pre></div></div>
+
+<p><img src="https://pic4.zhimg.com/v2-416671e009d1d2906b753e90cef68fd7_b.jpg" alt="img" /></p>
+
+<h2 id="触发bfc的方式">触发BFC的方式</h2>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>float 除了none以外的值 
+
+overflow 除了visible 以外的值（hidden，auto，scroll ） 
+
+display (table-cell，table-caption，inline-block, flex, inline-flex) 
+
+position值为（absolute，fixed） 
+
+fieldset元素
+</code></pre></div></div>
+
+<h2 id="实例">实例</h2>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"box"</span><span class="nt">&gt;</span>
+	<span class="nt">&lt;p&gt;</span>案例<span class="nt">&lt;/p&gt;</span>
+	<span class="nt">&lt;p&gt;</span>案例<span class="nt">&lt;/p&gt;</span>
+	<span class="nt">&lt;p&gt;</span>案例<span class="nt">&lt;/p&gt;</span>
+	<span class="nt">&lt;p&gt;</span>案例<span class="nt">&lt;/p&gt;</span>
+	<span class="nt">&lt;p&gt;</span>案例<span class="nt">&lt;/p&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;style </span><span class="na">type=</span><span class="s">"text/css"</span><span class="nt">&gt;</span>
+	<span class="o">*</span> <span class="p">{</span>
+		<span class="nl">margin</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+		<span class="nl">padding</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="nt">p</span> <span class="p">{</span>
+		<span class="nl">margin</span><span class="p">:</span> <span class="m">20px</span> <span class="m">0</span><span class="p">;</span>
+		<span class="nl">border</span><span class="p">:</span> <span class="m">1px</span> <span class="nb">solid</span> <span class="m">#000000</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="nf">#box</span> <span class="p">{</span>
+		<span class="nl">width</span><span class="p">:</span> <span class="m">500px</span><span class="p">;</span>
+		<span class="nl">margin</span><span class="p">:</span> <span class="m">0</span> <span class="nb">auto</span><span class="p">;</span>
+		<span class="nl">background</span><span class="p">:</span> <span class="m">#00FFFF</span><span class="p">;</span>
+	<span class="p">}</span>
+<span class="nt">&lt;/style&gt;</span>
+</code></pre></div></div>
+
+<p><img src="https://pic4.zhimg.com/80/v2-a4d88d690f9531a4ac1e8bed5a480913_1440w.jpg" alt="img" /></p>
+
+<p>这里我门可以看到，第一个子盒子有上边距（不会发生margin穿透的问题）；两个子盒子的垂直距离为20px而不是40px，因为垂直外边距会折叠</p>
+
+<p>那么有没有方法使他不重叠呢？答案肯定是有的</p>
+
+<p>特性里面的第五条说了，BFC就是页面上的一个隔离的独立容器，容器里面的子元素不会影响到外面的元素，反之亦然。所以让 p 标签 处在另一个BFC 容器里面就好了</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#box2{
+	overflow: hidden;
+}
+
+<span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"box"</span><span class="nt">&gt;</span>
+	<span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"box2"</span><span class="nt">&gt;</span>
+		<span class="nt">&lt;p&gt;</span>案例<span class="nt">&lt;/p&gt;</span>
+	<span class="nt">&lt;/div&gt;</span>
+	<span class="nt">&lt;p&gt;</span>案例<span class="nt">&lt;/p&gt;</span>
+	<span class="nt">&lt;p&gt;</span>案例<span class="nt">&lt;/p&gt;</span>
+	<span class="nt">&lt;p&gt;</span>案例<span class="nt">&lt;/p&gt;</span>
+	<span class="nt">&lt;p&gt;</span>案例<span class="nt">&lt;/p&gt;</span>
+<span class="nt">&lt;/di</span>
+</code></pre></div></div>
+
+<p><img src="https://pic3.zhimg.com/v2-9699ee14ee130356fa894669153f5af2_b.jpg" alt="img" /></p>
+
+<h2 id="实例2">实例2</h2>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;style </span><span class="na">type=</span><span class="s">"text/css"</span><span class="nt">&gt;</span>
+	<span class="o">*</span> <span class="p">{</span>
+	  <span class="nl">margin</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+	  <span class="nl">padding</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+	<span class="p">}</span>
+	
+	<span class="nc">.Left</span><span class="p">{</span>
+		<span class="nl">width</span><span class="p">:</span> <span class="m">50px</span><span class="p">;</span>
+		<span class="nl">height</span><span class="p">:</span> <span class="m">50px</span><span class="p">;</span>
+		<span class="nl">background</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+		<span class="nl">float</span><span class="p">:</span> <span class="nb">left</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="nc">.Right</span><span class="p">{</span>
+		<span class="nl">width</span><span class="p">:</span> <span class="m">100px</span><span class="p">;</span>
+		<span class="nl">height</span><span class="p">:</span> <span class="m">100px</span><span class="p">;</span>
+		<span class="nl">background</span><span class="p">:</span> <span class="no">blue</span><span class="p">;</span>
+	<span class="p">}</span>
+<span class="nt">&lt;/style&gt;</span>
+
+<span class="nt">&lt;body&gt;</span>
+	<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"Left"</span><span class="nt">&gt;</span>red<span class="nt">&lt;/div&gt;</span>
+	<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"Right"</span><span class="nt">&gt;</span>blue<span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+</code></pre></div></div>
+
+<p><img src="https://pic4.zhimg.com/80/v2-e0bac0af777a7c5478514b50cdb7d6f7_1440w.jpg" alt="img" /></p>
+
+<p>从这个例子中看到，元素的外边距会触碰到包含块容器的外边框，也就是元素左边与容器左边相接触，与浮动元素发生了重叠。</p>
+
+<p>解决办法就是给 .Right 也加上浮动</p>
+
+<p><img src="https://pic3.zhimg.com/v2-b679030a5467991959948b9739574746_b.webp" alt="img" /></p>
+
+<p>大家可以看一下尚学堂b站的这个视频</p>
+
+<iframe src="//player.bilibili.com/player.html?aid=48246596&amp;bvid=BV13b411g78D&amp;cid=84483831&amp;page=65" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+:ET

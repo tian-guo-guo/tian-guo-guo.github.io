@@ -1,10 +1,35 @@
-I"�I<h1 id="2020最新100道有答案的前端面试题上">2020最新：100道有答案的前端面试题（上）</h1>
+I"�X<h1 id="2020最新100道有答案的前端面试题上">2020最新：100道有答案的前端面试题（上）</h1>
 
 <h3 id="1写一个-mysetintervalfn-a-b每次间隔-aaba2b-的时间然后写一个-myclear停止上面的-mysetinterval">1.写一个 mySetInterVal(fn, a, b),每次间隔 a,a+b,a+2b 的时间，然后写一个 myClear，停止上面的 mySetInterVal</h3>
 
 <p>公司：头条</p>
 
 <p>分类：JavaScript</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">mySetInterVal</span><span class="p">(</span><span class="nx">fn</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">a</span> <span class="o">=</span> <span class="nx">a</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">b</span> <span class="o">=</span> <span class="nx">b</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">time</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">handle</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">start</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">handle</span> <span class="o">=</span> <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="nx">fn</span><span class="p">();</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">time</span><span class="o">++</span><span class="p">;</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">start</span><span class="p">();</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">a</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">time</span> <span class="o">*</span> <span class="k">this</span><span class="p">.</span><span class="nx">b</span><span class="p">);</span>
+        <span class="p">},</span> <span class="k">this</span><span class="p">.</span><span class="nx">a</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">time</span> <span class="o">*</span> <span class="k">this</span><span class="p">.</span><span class="nx">b</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">this</span><span class="p">.</span><span class="nx">stop</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">clearTimeout</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">handle</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">time</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">mySetInterVal</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">123</span><span class="dl">'</span><span class="p">)},</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">2000</span> <span class="p">);</span>
+<span class="nx">a</span><span class="p">.</span><span class="nx">start</span><span class="p">();</span>
+<span class="nx">a</span><span class="p">.</span><span class="nx">stop</span><span class="p">();</span>
+</code></pre></div></div>
 
 <p><a href="https://github.com/lgwebdream/FE-Interview/issues/7">答案&amp;解析</a></p>
 
