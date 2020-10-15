@@ -1,0 +1,199 @@
+I"j$<h1 id="js创建对象的几种方法"><a href="https://juejin.im/post/6844903616512278536">JS创建对象的几种方法</a></h1>
+
+<h2 id="1object构造函数创建">1：Object构造函数创建</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var Person =new Object();
+Person.name = 'Jason';Person.age = 21;复制代码
+</code></pre></div></div>
+
+<h2 id="2使用对象字面量表示法来创建对象">2:使用对象字面量表示法来创建对象</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var Person={};   //等同于var Person =new Object();
+var Person={
+name:"Jason",
+age:21
+}复制代码
+</code></pre></div></div>
+
+<p>对象字面量是对象定义的一种简写形式，第一种和第二种创建形式的缺点就是：<strong>他们用同一个接口创建很多对象和，会产生大量的重复代码，如果你有500个对象，那么你就要输入500次很多相同的代码。</strong></p>
+
+<h2 id="3使用工厂模式创建对象">3：使用工厂模式创建对象</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th> </th>
+      <th> </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function createPerson(name,age,job)
+{ var o = new Object(); 
+o.name = name; 
+o.age = age; 
+o.job = job; 
+o.sayName = function()
+{  alert(this.name);  };
+ return o;
+ }
+var person1 = createPerson('Nike',29,'teacher');
+var person2 = createPerson('Arvin',20,'student');复制代码
+</code></pre></div></div>
+
+<p>在使用工厂模式创建对象的时候，我们都可以注意到，在createPerson函数中，返回的是一个对象。那么我们就无法判断返回的对象究竟是一个什么样的类型。于是就出现了第四种创建对象的模式</p>
+
+<h2 id="4-使用构造函数创建对象">4 使用构造函数创建对象</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function Person(name,age,job)
+{ this.name = name; 
+this.age = age; 
+this.job = job; 
+this.sayName = function(){ alert(this.name); }; 
+}
+var person1 = new Person('Nike',29,'teacher');
+var person2 = new Person('Arvin',20,'student');复制代码
+</code></pre></div></div>
+
+<p><strong>对比</strong></p>
+
+<p><strong>工厂模式，我们可以发现以下区别：</strong></p>
+
+<p>1.没有显示地创建对象</p>
+
+<p>2.直接将属性和方法赋给了this对象</p>
+
+<p>3.没有return语句</p>
+
+<p>4.终于可以识别的对象的类型。对于检测对象类型，我们应该使用instanceof操作符，我们来进行自主检测</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>alert(person1 instanceof Object);//turealert
+(person1 instanceof Person);//turealert
+(person2 instanceof Object);//turealert
+(person2 instanceof Object);//ture复制代码
+</code></pre></div></div>
+
+<p>同时我们也应该明白，<strong>按照惯例，构造函数始终要应该以一个大写字母开头，而非构造函数则应该以一个小写字母开头。</strong></p>
+
+<h3 id="构造函数执行的流程">构造函数执行的流程：</h3>
+
+<p>1 创建一个新的对象（遇到new 的时候）</p>
+
+<p>2 将构造函数的作用域赋给新的对象（因此this就指向这个对象）</p>
+
+<p>3 执行构造函数中的代码（为这个对象添加属性）</p>
+
+<p>4 返回新对象</p>
+
+<p>那么构造函数确实挺好用的，但是它也有它的缺点：</p>
+
+<p>每个对象里面都有公用的函数，意味着每次创建都会穿件这个函数，因此可以这个函数放到外面，但是会污染全局作用域。</p>
+
+<p>就是每个方法都要在每个实例上重新创建一遍，方法指的就是我们在对象里面定义的函数。如果方法的数量很多，就会占用很多不必要的内存。于是出现了第五种创建对象的方法</p>
+
+<h2 id="5原型创建对象模式">5：原型创建对象模式</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function Person(){}
+Person.prototype.name = 'Nike';
+Person.prototype.age = 20;
+Person.prototype.jbo = 'teacher';
+Person.prototype.sayName = function(){ alert(this.name);};
+var person1 = new Person();person1.sayName();复制代码
+</code></pre></div></div>
+
+<p>使用原型创建对象的方式，可以让所有对象实例共享它所包含的属性和方法。</p>
+
+<p>如果是使用原型创建对象模式，请看下面代码：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function Person(){}
+Person.prototype.name = 'Nike';
+Person.prototype.age = 20;
+Person.prototype.jbo = 'teacher';
+Person.prototype.sayName = function()
+{ alert(this.name);};
+var person1 = new Person();
+var person2 = new Person();
+person1.name ='Greg';alert(person1.name); 
+//'Greg' --来自实例alert(person2.name); //'Nike' --来自原型复制代码
+</code></pre></div></div>
+
+<p>前面的例子中，每添加一个属性和方法都要敲一遍Person.prototype。为减少不必要的输入，从视觉上更好封装原型的功能。常见的做法：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function Person(){}
+Person.prototype={
+name:"NIke",
+age:11,
+sayName:function(){
+alert(this.name);
+ }
+};复制代码
+</code></pre></div></div>
+
+<p>在上面的代码中，我们将Person.prototype设置为等于一个以对象字面量形式创建新对象，最终结果相同，但有一个例外：constructor属性不在指向Person了。</p>
+
+<h3 id="原型prototype">原型prototype</h3>
+
+<p>我们所创建的每一个函数，解析器都会向函数中添加一个属性prototype这个属性对应着一个对象，这个对象就是我们所谓的原型对象。</p>
+
+<p>如果函数作为普通函数调用，prototype没有任何作用</p>
+
+<p>当函数以构造函数调用时，它所创建的对象中都会有一个隐含的属性指向该构造函数的原型对象，我们可以通过__proto__来访问该属性</p>
+
+<p>原型对象就相当于一个公共的区域，所有同一个类的实例都可以访问到这个原型对象，我们将对象中共有的内容，统一设置到原型对象中，</p>
+
+<p>当我们访问对象的一个属性或方法时，它会先在对象自身中寻找，如果有则直接使用，如果没有则去原型对象寻找。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>函数名.a=123;//只会添加到函数名该类的里面
+函数名.prototype.a=123//会添加到原型对象里面复制代码
+</code></pre></div></div>
+
+<p><strong>使用 in 检查对象中是否含有某个属性时，如果对象中没有但是原型中有，也会返回true</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>console.log("属性" in 对象名)复制代码
+</code></pre></div></div>
+
+<p><strong>使用对象的hasOwnProperty()来检查对象自身（实例）中是否存在该属性，使用该方法只有当对象自身含有属性时，才会返回true</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>对象名.hasOwnProperty("属性名")复制代码
+</code></pre></div></div>
+
+<p>原型对象也是对象，所以它也有原型：</p>
+
+<p>当我们使用一个对象的属性或者方法时，会在自身寻找，</p>
+
+<p>自身如果有，则直接使用</p>
+
+<p>如果没有则去原型对象中寻找，如果原型对象中有，则使用。</p>
+
+<p>如果没有则去原型的原型对象去寻找，直到object对象的原型，object对象的原型没有原型，如果在object中依然没有找到，则返回undefined</p>
+
+<p>当为对象实例添加一个属性时，这个属性就会<strong>屏蔽</strong>原型对象中保存的同名属性。</p>
+
+<p>这时候我们就可以使用构造函数模式与原型模式结合的方式，构造函数模式用于定义实例属性，而原型模式用于定义方法和共享的属性</p>
+
+<h2 id="6组合使用构造函数模式和原型模式">6：组合使用构造函数模式和原型模式</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function Person(name,age,job)
+{ this.name =name; 
+this.age = age;
+ this.job = job;}
+Person.prototype = { 
+constructor:Person,
+ sayName: function()
+{ alert(this.name); };
+}
+var person1 = new Person('Nike',20,'teacher');复制代码
+</code></pre></div></div>
+
+<p>创建自定义类型的最常见方式，就是组合使用构造函数模式和原型模式</p>
+
+<p>实例属性都是在构造函数中定义的，而所有实例共享的属性constructor和方法sayName()则是在原型中定义。这种模式是ECMAScript中使用最广泛，认可度最高的一种创建自定义类型的方法，可以说这是用来定义引用类型的一种默认模式。</p>
+
+<p><a href="https://juejin.im/post/6844903616512278536">Link</a></p>
+:ET

@@ -1,0 +1,193 @@
+I"+<h1 id="利用jenkins--nginx-实现前端项目自动构建与持续集成"><a href="https://juejin.im/post/6844903845936496654">利用Jenkins + nginx 实现前端项目自动构建与持续集成</a></h1>
+
+<h4 id="实现目标">实现目标</h4>
+
+<p>本地push代码到GitHub，Webhook自动触发jenkins上的构建动作,完成安装node插件并且打包，然后通过Publish Over SSH插件，将打包出来的文件，部署到目标服务器上。</p>
+
+<h3 id="前期准备">前期准备</h3>
+
+<ol>
+  <li>github 账号和项目</li>
+  <li>centos 服务器;</li>
+  <li>服务器安装 Java SDK;</li>
+  <li>服务器安装 nginx + 启动；</li>
+  <li>服务器安装jenkins + 启动；</li>
+</ol>
+
+<h3 id="jenkins介绍">jenkins介绍</h3>
+
+<p>Jenkins是开源的,使用Java编写的持续集成的工具，在Centos上可以通过yum命令行直接安装。Jenkins只是一个平台，真正运作的都是插件。这就是jenkins流行的原因，因为jenkins什么插件都有。</p>
+
+<h4 id="首先登录服务器更新系统软件">首先登录服务器更新系统软件</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ yum update
+复制代码
+</code></pre></div></div>
+
+<h4 id="安装java和git">安装Java和git</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ yum install java
+$ yum install git
+复制代码
+</code></pre></div></div>
+
+<h4 id="安装nginx">安装nginx</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ yum install nginx //安装
+$ service nginx start //启动
+复制代码
+</code></pre></div></div>
+
+<p>出现Redirecting to /bin/systemctl start  nginx.service</p>
+
+<p>说明nginx已经启动成功了，访问http://你的ip/，如果成功安装会出来nginx默认的欢迎界面</p>
+
+<p><img src="https://user-gold-cdn.xitu.io/2019/5/17/16ac471b8be0e05f?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="006tNc79gy1g344jsd94xj32700s6tdt.jpg" /></p>
+
+<h4 id="安装jenkins">安装Jenkins</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat/jenkins.repo
+rpm --import https://jenkins-ci.org/redhat/jenkins-ci.org.key 
+
+$ yum install jenkins //完成之后直接使用 yum 命令安装 Jenkins
+
+$ service jenkins restart  //启动 jenkins
+复制代码
+</code></pre></div></div>
+
+<p>jenkins启动成功后默认的是8080端口，浏览器输入你的服务器 ip 地址加8080 端口就可以访问了。</p>
+
+<p><img src="https://user-gold-cdn.xitu.io/2019/5/17/16ac4715b68352cc?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="006tNc79gy1g34500gsipj31id0u0thy.jpg" /></p>
+
+<p>输入 cat /var/lib/jenkins/secrets/initialAdminPassword 查看初始密码</p>
+
+<p>这里我们选择推荐通用插件安装即可，选择后等待完成插件安装以及初始化账户</p>
+
+<p><img src="https://user-gold-cdn.xitu.io/2019/5/17/16ac471ef76433d7?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="WX20190517-111347@2x.png" /></p>
+
+<p><img src="https://user-gold-cdn.xitu.io/2019/5/17/16ac471b8c0ee387?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="WX20190517-111420@2x.png" /></p>
+
+<p><img src="https://user-gold-cdn.xitu.io/2019/5/17/16ac471b8c2afade?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="WX20190517-111734@2x.png" /></p>
+
+<p>然后安装两个推荐的插件 <a href="https://wiki.jenkins.io/display/JENKINS/Rebuild+Plugin">Rebuilder</a> <a href="https://wiki.jenkins.io/display/JENKINS/SafeRestart+Plugin">SafeRestart</a></p>
+
+<h3 id="在jenkins中安装nodejs插件">在jenkins中安装nodeJs插件</h3>
+
+<p>因为我们的项目是要用到node打包的，所以先在jenkins中安装nodeJs插件，安装后进入全局工具配置，配置一个我们要用到的node版本。</p>
+
+<p><img src="https://user-gold-cdn.xitu.io/2019/5/17/16ac471b8c1aa34d?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="9999.png" /></p>
+
+<p><img src="https://user-gold-cdn.xitu.io/2019/5/17/16ac471b8c01e213?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="9090.png" /></p>
+
+<h3 id="创建任务">创建任务</h3>
+
+<ol>
+  <li>
+    <p>点击创建一个新任务</p>
+
+    <p><img src="https://user-gold-cdn.xitu.io/2019/5/17/16ac4716f16fa79c?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="45.png" /></p>
+
+    <p><img src="https://user-gold-cdn.xitu.io/2019/5/17/16ac4716f78376ff?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="67.png" /></p>
+  </li>
+  <li>
+    <p>jenkins关联 GitHub项目地址</p>
+
+    <p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;1280&quot; height=&quot;805&quot;&gt;&lt;/svg&gt;" alt="89.png" /></p>
+  </li>
+  <li>
+    <p>选择构建环境并编写shell 命令</p>
+
+    <p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;1280&quot; height=&quot;877&quot;&gt;&lt;/svg&gt;" alt="90999999.png" /></p>
+  </li>
+</ol>
+
+<p>配置完成后点击立即构建，等待构建完，点击工作空间，可以发现已经多出一个打包后的dist目录。点击控制台输出可以查看详细构建log</p>
+
+<p><img src="https://user-gold-cdn.xitu.io/2019/5/17/16ac47176d7156da?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="123.png" /></p>
+
+<p><img src="https://user-gold-cdn.xitu.io/2019/5/17/16ac471a1340e15d?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="45.png" /></p>
+
+<p><img src="https://user-gold-cdn.xitu.io/2019/5/17/16ac471a15c8cf73?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="78.png" /></p>
+
+<p>到这里已经实现了本地代码提交到github，然后在jenkins上点击构建，可以拉取代码并且打包，下一步实现打包后的dist目录放到目标服务器上。</p>
+
+<h3 id="安装publish-over-ssh-插件我们将通过这个工具实现服务器部署功能">安装Publish Over SSH 插件，我们将通过这个工具实现服务器部署功能。</h3>
+
+<p>安装完成后在系统管理-&gt; 系统设置-&gt;Publish over SSH 里设置服务器信息</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Passphrase：密码（key的密码，没设置就是空）
+Path to key：key文件（私钥）的路径
+Key：将私钥复制到这个框中(path to key和key写一个即可)
+
+SSH Servers的配置：
+SSH Server Name：标识的名字（随便你取什么）
+Hostname：需要连接ssh的主机名或ip地址（建议ip）
+Username：用户名
+Remote Directory：远程目录（上面第二步建的testjenkins文件夹的路径）
+
+高级配置：
+Use password authentication, or use a different key：勾选这个可以使用密码登录，不想配ssh的可以用这个先试试
+Passphrase / Password：密码登录模式的密码
+Port：端口（默认22）
+Timeout (ms)：超时时间（毫秒）默认300000
+
+复制代码
+</code></pre></div></div>
+
+<p>这里配置的是账号密码登录，填写完后点击test，出现Success说明配置成功</p>
+
+<p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;1219&quot; height=&quot;1280&quot;&gt;&lt;/svg&gt;" alt="909090.png" /></p>
+
+<p>在刚才的testJenkins工程中配置<strong>构建后操作</strong>，选择send build artificial over SSH， 参数说明：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Name:选择一个你配好的ssh服务器
+Source files ：写你要传输的文件路径
+Remove prefix ：要去掉的前缀，不写远程服务器的目录结构将和Source files写的一致
+Remote directory ：写你要部署在远程服务器的那个目录地址下，不写就是SSH Servers配置里默认远程目录
+Exec command ：传输完了要执行的命令，我这里执行了进入test目录,解压缩,解压缩完成后删除压缩包三个命令
+
+复制代码
+</code></pre></div></div>
+
+<p>注意在构建中添加压缩dist目录命令</p>
+
+<p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;1280&quot; height=&quot;899&quot;&gt;&lt;/svg&gt;" alt="232323.png" /></p>
+
+<p>填完后执行构建。成功后登录我们目标服务器发现test目录下有了要运行的文件</p>
+
+<p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;1130&quot; height=&quot;838&quot;&gt;&lt;/svg&gt;" alt="565645.png" /></p>
+
+<p>访问域名发现项目可以访问了</p>
+
+<p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;742&quot; height=&quot;1280&quot;&gt;&lt;/svg&gt;" alt="4545.png" /></p>
+
+<p>接下来实现开发本地push代码到github上后，触发Webhook，jenkins自动执行构建。</p>
+
+<ol>
+  <li>jenkins安装Generic Webhook Trigger 插件</li>
+  <li>github添加触发器</li>
+</ol>
+
+<h3 id="配置方法">配置方法</h3>
+
+<p>1.在刚才的testJenkins工程中点击构建触发器中选择Generic Webhook Trigger，填写token</p>
+
+<p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;1280&quot; height=&quot;927&quot;&gt;&lt;/svg&gt;" alt="877777.png" /></p>
+
+<p>2.github配置Webhook 选择github项目中的Settings-&gt;Webhooks&gt;add webhook 配置方式按上图红框中的格式，选择在push代码时触发webhook，成功后会在下方出现一个绿色的小勾勾</p>
+
+<p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;1280&quot; height=&quot;1055&quot;&gt;&lt;/svg&gt;" alt="888888.png" /></p>
+
+<p>测试一下，把vue项目首页的9900去了，然后push代码去github，发现Jenkins中的构建已经自动执行，</p>
+
+<p><img src="https://user-gold-cdn.xitu.io/2019/5/17/16ac471c2c30ecb7?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="0000.png" /></p>
+
+<p>查看页面也是ok的</p>
+
+<p><img src="https://user-gold-cdn.xitu.io/2019/5/17/16ac471ad4dfb88c?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="9843.png" /></p>
+
+<p>一套简单的前端自动化工作流就搭建完成，是选择代码push后在Jenkins中手动构建，还是push后自动构建，看公司情况使用。</p>
+
+<p><a href="https://juejin.im/post/6844903845936496654">Link</a></p>
+
+:ET

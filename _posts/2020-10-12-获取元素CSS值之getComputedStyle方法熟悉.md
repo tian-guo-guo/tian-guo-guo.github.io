@@ -45,7 +45,7 @@ var style = window.getComputedStyle("元素", "伪类");
 
 ```
 var dom = document.getElementById("test"),
-    style = window.getComputedStyle(dom , ":after");
+style = window.getComputedStyle(dom , ":after");
 ```
 
 就两个参数，大家都懂中文的，没什么好说的。只是额外提示下：Gecko 2.0 (Firefox 4 / Thunderbird 3.3 / SeaMonkey 2.1) 之前，第二个参数“伪类”是必需的（如果不是伪类，设置为`null`），不过现在嘛，不是必需参数了。
