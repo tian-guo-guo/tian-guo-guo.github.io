@@ -1,4 +1,4 @@
-I"�a<h1 id="npm-包管理工具"><a href="https://juejin.im/entry/6844903455312576519">npm 包管理工具</a></h1>
+I"jd<h1 id="npm-包管理工具"><a href="https://juejin.im/entry/6844903455312576519">npm 包管理工具</a></h1>
 
 <p>包其实就是一些模块组织到一起，放到一个目录中的一个称呼，叫包或者模块都行。Node Package Manager: npm 是一个用来安装和管理Node包和前端包的一个工具</p>
 
@@ -503,4 +503,13 @@ hqcopy('README.md','a.md', err =&gt; {
 </code></pre></div></div>
 
 <p>感谢您的支持！</p>
+
+<p>https://www.google.com/search?newwindow=1&amp;sxsrf=ALeKk02LH5aVNcNcJhVBKD4OjEH11Li4Mw%3A1602656577816&amp;ei=QZmGX4SyMauZ4-EPtImZ2AM&amp;q=%E5%8C%97%E6%A3%AE%E5%89%8D%E7%AB%AF%E9%9D%A2%E7%BB%8F&amp;oq=%E5%8C%97%E6%A3%AE%E5%89%8D%E7%AB%AF%E9%9D%A2%E7%BB%8F&amp;gs_lcp=CgZwc3ktYWIQA1DrhARYxYsEYIuNBGgBcAB4AYAB9wOIAaEYkgEHMy01LjIuMZgBAKABAaoBB2d3cy13aXrAAQE&amp;sclient=psy-ab&amp;ved=0ahUKEwjE1pGAubPsAhWrzDgGHbREBjsQ4dUDCA0&amp;uact=5</p>
+
+<p>https://www.kanzhun.com/gsm658967.html</p>
+
+<p>https://blog.csdn.net/qq_36593772/article/details/80169747</p>
+
+<p>https://vickydyy.github.io/2019/06/03/%E5%8C%97%E6%A3%AE%E9%9D%A2%E7%BB%8F%EF%BC%88%E4%B8%80%E9%9D%A2%EF%BC%89/</p>
+
 :ET
