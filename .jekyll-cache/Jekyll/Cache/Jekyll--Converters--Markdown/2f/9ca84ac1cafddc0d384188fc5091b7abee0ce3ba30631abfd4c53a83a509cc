@@ -1,0 +1,175 @@
+I"�B<h1 id="牛客oj在线编程常见输入输出练习python版"><a href="https://blog.csdn.net/qq_41023125/article/details/105748780">牛客OJ在线编程常见输入输出练习（python版）</a></h1>
+
+<p>先放上地址：https://ac.nowcoder.com/acm/contest/320#question</p>
+
+<h3 id="目录">目录</h3>
+
+<ul>
+  <li><a href="https://blog.csdn.net/qq_41023125/article/details/105748780#1AB1_2">1、A+B(1)</a></li>
+  <li><a href="https://blog.csdn.net/qq_41023125/article/details/105748780#2AB2_12">2、A+B(2)</a></li>
+  <li><a href="https://blog.csdn.net/qq_41023125/article/details/105748780#3AB3_26">3、A+B(3)</a></li>
+  <li><a href="https://blog.csdn.net/qq_41023125/article/details/105748780#4AB4_39">4、A+B(4)</a></li>
+  <li><a href="https://blog.csdn.net/qq_41023125/article/details/105748780#5AB5_53">5、A+B(5)</a></li>
+  <li><a href="https://blog.csdn.net/qq_41023125/article/details/105748780#6AB6_66">6、A+B(6)</a></li>
+  <li><a href="https://blog.csdn.net/qq_41023125/article/details/105748780#7AB7_76">7、A+B(7)</a></li>
+  <li><a href="https://blog.csdn.net/qq_41023125/article/details/105748780#81_86">8、字符串排序（1）</a></li>
+  <li><a href="https://blog.csdn.net/qq_41023125/article/details/105748780#92_99">9、字符串排序（2）</a></li>
+  <li><a href="https://blog.csdn.net/qq_41023125/article/details/105748780#103_113">10、字符串排序（3）</a></li>
+</ul>
+
+<h1 id="1ab1">1、A+B(1)</h1>
+
+<p><img src="https://img-blog.csdnimg.cn/20200425141105812.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxMDIzMTI1,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">input</span><span class="p">().</span><span class="n">strip</span><span class="p">().</span><span class="n">split</span><span class="p">())</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>
+    <span class="k">except</span> <span class="nb">EOFError</span><span class="p">:</span>
+        <span class="k">break</span>
+<span class="mi">123456</span>
+</code></pre></div></div>
+
+<h1 id="2ab2">2、A+B(2)</h1>
+
+<p><img src="https://img-blog.csdnimg.cn/20200425141016109.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxMDIzMTI1,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">input</span><span class="p">().</span><span class="n">strip</span><span class="p">().</span><span class="n">split</span><span class="p">()))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">l</span><span class="p">))</span>
+    <span class="k">except</span> <span class="nb">EOFError</span><span class="p">:</span>
+        <span class="k">break</span>
+<span class="mi">123456789</span>
+</code></pre></div></div>
+
+<h1 id="3ab3">3、A+B(3)</h1>
+
+<p><img src="https://img-blog.csdnimg.cn/2020042514092143.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxMDIzMTI1,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span><span class="nb">input</span><span class="p">().</span><span class="n">strip</span><span class="p">().</span><span class="n">split</span><span class="p">()))</span>
+        <span class="k">if</span> <span class="n">l</span> <span class="o">==</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">l</span><span class="p">))</span>
+    <span class="k">except</span> <span class="nb">EOFError</span><span class="p">:</span>
+        <span class="k">break</span>
+<span class="mi">123456789</span>
+</code></pre></div></div>
+
+<h1 id="4ab4">4、A+B(4)</h1>
+
+<p><img src="https://img-blog.csdnimg.cn/20200425140843528.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxMDIzMTI1,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">input</span><span class="p">().</span><span class="n">strip</span><span class="p">().</span><span class="n">split</span><span class="p">()))</span>
+        <span class="k">if</span> <span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+    <span class="k">except</span> <span class="nb">EOFError</span><span class="p">:</span>
+        <span class="k">break</span>
+<span class="mi">123456789</span>
+</code></pre></div></div>
+
+<h1 id="5ab5">5、A+B(5)</h1>
+
+<p><img src="https://img-blog.csdnimg.cn/20200425140753250.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxMDIzMTI1,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span><span class="nb">input</span><span class="p">().</span><span class="n">strip</span><span class="p">().</span><span class="n">split</span><span class="p">()))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+    <span class="k">except</span> <span class="nb">EOFError</span><span class="p">:</span>
+        <span class="k">break</span>
+<span class="mi">123456789</span>
+</code></pre></div></div>
+
+<h1 id="6ab6">6、A+B(6)</h1>
+
+<p><img src="https://img-blog.csdnimg.cn/20200425140703145.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxMDIzMTI1,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">input</span><span class="p">().</span><span class="n">strip</span><span class="p">().</span><span class="n">split</span><span class="p">()))</span>
+        <span class="k">print</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+    <span class="k">except</span> <span class="nb">EOFError</span><span class="p">:</span>
+        <span class="k">break</span>
+<span class="mi">123456</span>
+</code></pre></div></div>
+
+<h1 id="7ab7">7、A+B(7)</h1>
+
+<p><img src="https://img-blog.csdnimg.cn/20200425140533754.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxMDIzMTI1,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">input</span><span class="p">().</span><span class="n">strip</span><span class="p">().</span><span class="n">split</span><span class="p">()))</span>
+        <span class="k">print</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">l</span><span class="p">))</span>
+    <span class="k">except</span> <span class="nb">EOFError</span><span class="p">:</span>
+        <span class="k">break</span>
+<span class="mi">123456</span>
+</code></pre></div></div>
+
+<h1 id="8字符串排序1">8、字符串排序（1）</h1>
+
+<p><img src="https://img-blog.csdnimg.cn/2020042514042565.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxMDIzMTI1,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">n</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="nb">input</span><span class="p">())</span>
+        <span class="n">mystr</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span><span class="nb">input</span><span class="p">().</span><span class="n">strip</span><span class="p">().</span><span class="n">split</span><span class="p">()))</span>
+        <span class="n">mystr</span><span class="p">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">' '</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">mystr</span><span class="p">))</span>
+    <span class="k">except</span> <span class="nb">EOFError</span><span class="p">:</span>
+        <span class="k">break</span>
+<span class="mi">12345678</span>
+</code></pre></div></div>
+
+<h1 id="9字符串排序2">9、字符串排序（2）</h1>
+
+<p><img src="https://img-blog.csdnimg.cn/20200425140248187.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxMDIzMTI1,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">fileinput</span> <span class="kn">import</span> <span class="nb">input</span>
+<span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">input</span><span class="p">():</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">line</span><span class="p">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="s">''</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">s</span><span class="o">+=</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="s">' '</span>
+    <span class="n">s</span> <span class="o">+=</span> <span class="n">a</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">lstrip</span><span class="p">())</span>
+<span class="mi">123456789</span>
+</code></pre></div></div>
+
+<h1 id="10字符串排序3">10、字符串排序（3）</h1>
+
+<p><img src="https://img-blog.csdnimg.cn/20200425140402813.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxMDIzMTI1,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">fileinput</span> <span class="kn">import</span> <span class="nb">input</span>
+<span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">input</span><span class="p">():</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">line</span><span class="p">.</span><span class="n">strip</span><span class="p">().</span><span class="n">split</span><span class="p">(</span><span class="s">','</span><span class="p">))</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="s">''</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">s</span><span class="o">+=</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="s">','</span>
+    <span class="n">s</span> <span class="o">+=</span> <span class="n">a</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="mi">12345678</span>
+</code></pre></div></div>
+
+<p>参考：</p>
+
+<ul>
+  <li>https://www.pythonheidong.com/blog/article/319732/#n_302</li>
+  <li>https://www.cnblogs.com/Komnenos/p/nowcoderIo.html</li>
+</ul>
+:ET

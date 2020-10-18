@@ -1,0 +1,252 @@
+I"�<h1 id="纯css完美实现垂直水平居中的6种方式"><a href="https://segmentfault.com/a/1190000006108996">纯CSS完美实现垂直水平居中的6种方式</a></h1>
+
+<p><strong>前言</strong></p>
+
+<p>由于HTML语言的定位问题，在网页中实现居中也不是如word中那么简单，尤其在内容样式多变，内容宽高不定的情况下，要实现合理的居中也是颇考验工程师经验的。网上讲居中的文章很多，但是都不太完整，所以小茄今天就来总结下纯CSS实现居中的各种方案。学疏才浅，文中如有不当之处，万望指出！</p>
+
+<p><strong>6种方案</strong></p>
+
+<p><strong>1、绝对定位+margin：auto</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;style type="text/css"&gt;
+    .wrp {
+        background-color: #b9b9b9;
+        width: 240px;
+        height: 160px;
+    }
+    .box {
+        color: white;
+        background-color: #3e8e41;
+        width: 200px;
+        height: 120px;
+        overflow: auto;
+    }
+    .wrp1 { position: relative; }
+    .box1 {
+        margin: auto;
+        position: absolute;
+        left: 0; right: 0; top: 0; bottom: 0;
+    }
+&lt;/style&gt;
+&lt;div class="wrp wrp1"&gt;
+    &lt;div class="box box1"&gt;
+        &lt;h3&gt;完全居中层1：&lt;/h3&gt;
+        &lt;h3&gt;开发工具 【 WeX5 】： 高性能轻架构、开源免费、跨端、可视化&lt;/h3&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</code></pre></div></div>
+
+<p>效果：</p>
+
+<p><img src="https://segmentfault.com/img/bVzNnL" alt="图片描述" /></p>
+
+<p>实现原理：利用css定位规则，设置左右、上下方向定位为0，margin为auto，让css根据定位计算margin值，用hack的方式实现居中。居中块（绿色）的尺</p>
+
+<p>寸需要可控,因为css计算margin时也需要参考尺寸值，由于四周为0，所以自动计算的尺寸是与父容器一样的。无论是设置width、height或者是 max-</p>
+
+<p>height、max-width，都是让尺寸不会扩大到与父级一样。</p>
+
+<p><strong>2、绝对定位+margin反向偏移</strong></p>
+
+<p>&lt;/style&gt;</p>
+<style type="text/css">
+
+```
+.wrp2 { position: relative; }
+.box2 {
+    position: absolute;
+    top: 50%; left: 50%;
+    margin-left: -100px; /* (width + padding)/2 */
+    margin-top: -75px; /* (height + padding)/2 */
+}
+```
+
+</style>
+
+<div class="wrp wrp2">
+
+```
+<div class="box box2">
+    <h3>完全居中方案二：</h3>
+    <h3>开发工具 【 WeX5 】： 高性能轻架构、开源免费、跨端、可视化</h3>
+</div>
+```
+
+</div>
+
+<p>效果：
+<img src="https://segmentfault.com/img/bVzNnY" alt="图片描述" /></p>
+
+<p>实现原理：由于top、left偏移了父对象的50%高度宽度，所以需要利用margin反向偏移居中块的50%宽高。而margin中不能使用百分比，因为百分比是针对</p>
+
+<p>父对象的，所以需要手动计算定值指定margin值。这个方案需要固定尺寸值，以此来计算margin反向偏向值，所以方案2比方案1稍差！</p>
+
+<p><strong>3、绝对定位+transform反向偏移</strong></p>
+
+<style type="text/css">
+
+```
+.wrp3 { position: relative; }
+.box3 {
+    margin: auto;
+    position: absolute;
+    top: 50%; left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+```
+
+</style>
+
+<div class="wrp wrp3">
+
+```
+<div class="box box3">
+    <h3>完全居中方案三：</h3>
+    <h3>开发工具 【 WeX5 】： 高性能轻架构、开源免费、跨端、可视化</h3>
+```
+
+</div>
+
+效果：
+![图片描述](https://segmentfault.com/img/bVzNn1)
+
+实现原理：方案3与方案2原理一样！不同点是使用了transform来代替margin做反向偏移，由于transform的计算基准是元素本身，所以这里可以用50%来做反向偏移。这个方案也需要固定尺寸值，浏览器以此为基准来计算定位！
+
+**4、display：tabel**
+
+<style type="text/css">
+
+```
+.wrp4 { display: table; }
+.subwrp4 {
+    display: table-cell;
+    vertical-align: middle;
+}
+.box4 {
+    margin: auto;
+    overflow-wrap: break-word;
+    height: auto;
+    max-height: 80%;
+    max-width: 80%;
+}
+```
+
+</style>
+<div class="wrp wrp4">
+
+```
+<div class="subwrp4">
+    <div class="box box4">
+        <h3>完全居中方案四：</h3>
+    </div>
+</div>
+```
+
+</div>
+
+效果：
+
+![图片描述](https://segmentfault.com/img/bVzNn5)
+
+实现原理：方案4是实现效果比较好的，居中块的尺寸可以做包裹性，缺点是增加了一层table-cell层来实现垂直居中。方案4的居中块可以设置 max-
+
+height、max-width，而且居中块是可以具有垂直方向的包裹性的。水平方向由于是在table-cell里面的，所以会直接显示max-width，也就是宽度趋大。
+
+**5、display: inline-block**
+
+<style type="text/css">
+
+```
+.wrp5 {
+    text-align: center;
+    overflow: auto;
+}
+.box5 {
+    display: inline-block;
+    vertical-align: middle;
+    width: auto;
+    height: auto;
+    max-width: 90%;
+    max-height: 90%;
+}
+.wrp5:after {
+    content: '';
+    display: inline-block;
+    vertical-align: middle;
+    height: 100%;
+    margin-left: -0.25em;
+    /* To offset spacing. May vary by font */
+}
+```
+
+</style>
+<div class="wrp wrp5">
+
+```
+<div class="box box5">
+    <h3>完全居中方案五：</h3>
+    <h3>开发工具 【 WeX5 】： 高性能轻架构、开源免费、跨端、可视化</h3>
+</div>
+```
+
+</div>
+
+效果：
+
+![图片描述](https://segmentfault.com/img/bVzNn9)
+
+实现原理：原理：利用inline-block的vertical-align: middle去对齐after伪元素，after伪元素的高度与父对象一样，就实现了高度方向的对齐。方案5实现效果更加好，居中块的尺寸可以做包裹性、自适应内容，兼容性也相当好。缺点是水平居中需要考虑inline-block间隔中的留白（代码换行符遗留问题。）。方案4的居中块可以设置 max-height、max-width，而且居中块是可以具有水平垂直两个方向的自适应。
+
+**6、display: flex-box**
+
+<style type="text/css">
+
+```
+.wrp6 {
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-box;
+    display: flex;
+    -webkit-box-align: center;
+    -moz-box-align: center;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -moz-box-pack: center;
+    -ms-flex-pack: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+}
+
+.box6 {
+    width: auto;
+    height: auto;
+    max-width: 90%;
+    max-height: 90%;
+}
+```
+
+</style>
+<div class="wrp wrp6">
+
+```
+<div class="box box6">
+    <h3>完全居中方案六：</h3>
+    <h3>开发工具 【 WeX5 】： 高性能轻架构、开源免费、跨端、可视化</h3>
+</div>
+```
+
+</div>
+
+效果：
+
+![图片描述](https://segmentfault.com/img/bVzNof)
+
+实现原理： flexbox布局。此乃布局终极大法，专治各种布局定位难题！优点：能解决各种排列布局问题，实现方式符合人类认知。缺点：PC端某些旧浏览器支持度不高。
+
+</div>
+:ET
