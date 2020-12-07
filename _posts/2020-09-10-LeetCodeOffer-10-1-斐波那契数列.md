@@ -84,3 +84,39 @@ class Solution:
 
 [Link](https://leetcode-cn.com/problems/fei-bo-na-qi-shu-lie-lcof/solution/mian-shi-ti-10-i-fei-bo-na-qi-shu-lie-dong-tai-gui/)
 
+
+
+```python
+class Solution:
+    def fib(self, n: int) -> int:
+####标准递归解法：
+        if n==0:return 0
+        if n==1:return 1
+        return (self.fib(n-1)+self.fib(n-2))%1000000007
+####带备忘录的递归解法
+        records = [-1 for i in range(n+1)] # 记录计算的值
+        if n == 0:return 0
+        if n == 1:return 1
+        if records[n] == -1: # 表明这个值没有算过
+            records[n] = self.fib(n-1) +self.fib(n-2)
+        return records[n]
+#递归输出超时,用记忆化递归规划，时间上优越很多。
+
+###DP方法：解决记忆化递归费内存的问题
+        dp={}
+        dp[0]=0
+        dp[1]=1
+        if n>=2:
+            for i in range(2,n+1):
+                dp[i]=dp[i-1]+dp[i-2]
+        return dp[n]%1000000007
+
+
+###最优化DP方法：
+        a, b = 0, 1
+        for _ in range(n):
+            a, b = b, a + b
+        return a % 1000000007
+
+```
+

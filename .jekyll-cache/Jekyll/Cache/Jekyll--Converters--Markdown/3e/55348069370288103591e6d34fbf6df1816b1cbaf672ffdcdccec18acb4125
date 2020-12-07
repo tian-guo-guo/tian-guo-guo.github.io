@@ -1,0 +1,114 @@
+I"Y<h1 id="selenium-webdriver的工作原理"><a href="https://www.ruanyifeng.com/blog/2016/06/dns.html"><strong>Selenium WebDriver的工作原理</strong></a></h1>
+
+<p>先通过一个简单的类比说个好理解的，这个比喻是我从美版知乎Quora上看到的，觉得比较形象、好理解拿来用用。</p>
+
+<p><strong>我们可以把WebDriver驱动浏览器类比成出租车司机开出租车。</strong></p>
+
+<p>在开出租车时有三个角色：</p>
+
+<p><strong>乘客：</strong>他/她告诉出租车司机去哪里，大概怎么走</p>
+
+<p><strong>出租车司机：</strong>他按照乘客的要求来操控出租车</p>
+
+<p><strong>出租车：</strong>出租车按照司机的操控完成真正的行驶，把乘客送到目的地</p>
+
+<p><img src="https://pic1.zhimg.com/80/v2-7427917f48f96192dec0d9fb53bea998_1440w.jpg" alt="img" /></p>
+
+<p>在WebDriver中也有类似的三个角色：</p>
+
+<p><strong>工程师写的自动化测试代码：</strong>自动化测试代码发送请求给浏览器的驱动（比如火狐驱动、谷歌驱动）</p>
+
+<p><strong>浏览器的驱动：</strong>它来解析这些自动化测试的代码，解析后把它们发送给浏览器</p>
+
+<p><strong>浏览器：</strong>执行浏览器驱动发来的指令，并最终完成工程师想要的操作。</p>
+
+<p>所以在这个类比中：</p>
+
+<p>\1. 工程师写的自动化测试代码就相当于是乘客</p>
+
+<p>\2. 浏览器的驱动就相当于是出租车司机</p>
+
+<p>\3. 浏览器就相当于是出租车</p>
+
+<h2 id="下面再从技术上解释下webdriver的工作原理"><strong>下面再从技术上解释下WebDriver的工作原理：</strong></h2>
+
+<p>从技术上讲，也同样是上面的三个角色：</p>
+
+<p><strong>1. WebDriver API</strong>（基于Java、Python、C#等语言）</p>
+
+<p>对于java语言来说，就是下载下来的selenium的Jar包，比如selenium-java-3.8.1.zip包，代表Selenium3.8.1的版本</p>
+
+<p><strong>2. 浏览器的驱动</strong>（browser driver）</p>
+
+<p>每个浏览器都有自己的驱动，均以exe文件形式存在</p>
+
+<p>比如谷歌的chromedriver.exe、火狐的geckodriver.exe、IE的IEDriverServer.exe</p>
+
+<p><strong>3. 浏览器</strong></p>
+
+<p>浏览器当然就是我们很熟悉的常用的各种浏览器。</p>
+
+<p><strong>那在WebDriver脚本运行的时候，它们之间是如何通信的呢？为什么同一个browser driver即可以处理java语言的脚本，也可以处理python语言的脚本呢？</strong></p>
+
+<p>让我们来看一下，一条Selenium脚本执行时后端都发生了哪些事情：</p>
+
+<ol>
+  <li>对于每一条Selenium脚本，一个http请求会被创建并且发送给浏览器的驱动</li>
+  <li>浏览器驱动中包含了一个HTTP Server，用来接收这些http请求</li>
+  <li>HTTP Server接收到请求后根据请求来具体操控对应的浏览器</li>
+  <li>浏览器执行具体的测试步骤</li>
+  <li>浏览器将步骤执行结果返回给HTTP Server</li>
+  <li>HTTP Server又将结果返回给Selenium的脚本，如果是错误的http代码我们就会在控制台看到对应的报错信息。</li>
+</ol>
+
+<p><strong>为什么使用HTTP协议呢？</strong></p>
+
+<p>因为HTTP协议是一个浏览器和Web服务器之间通信的标准协议，而几乎每一种编程语言都提供了丰富的http libraries，这样就可以方便的处理客户端Client和服务器Server之间的请求request及响应response，WebDriver的结构中就是典型的C/S结构，WebDriver API相当于是客户端，而小小的浏览器驱动才是服务器端。</p>
+
+<p><strong>那为什么同一个浏览器驱动即可以处理Java语言的脚本，也可以处理Python语言的脚本呢？</strong></p>
+
+<p>这就要提到WebDriver基于的协议：<strong>JSON Wire protocol</strong>。</p>
+
+<p>关于WebDriver的协议也是面试的时候经常会问到的问题。</p>
+
+<p>JSON Wire protocol是在http协议基础上，对http请求及响应的body部分的数据的进一步规范。</p>
+
+<p>我们知道在HTTP请求及响应中常常包括以下几个部分：http请求方法、http请求及响应内容body、http响应状态码等。</p>
+
+<p>常见的http请求方法：</p>
+
+<p>GET：用来从服务器获取信息。比如获取网页的标题信息</p>
+
+<p>POST：向服务器发送操作请求。比如findElement，Click等</p>
+
+<p>http响应状态码：</p>
+
+<p>在WebDriver中为了给用户以更明确的反馈信息，提供了更细化的http响应状态码，比如：</p>
+
+<p>7： NoSuchElement</p>
+
+<p>11：ElementNotVisible</p>
+
+<p>200：Everything OK</p>
+
+<p>现在到了最关键的http请求及响应的body部分了：</p>
+
+<p>body部分主要传送具体的数据，在WebDriver中这些数据都是以JSON的形式存在并进行传送的，这就是<strong>JSON Wire protocol</strong>。</p>
+
+<p>JSON是一种数据交换的格式，是对XML的升级与替代，下面是一个JSON文件的例子：</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  {
+ 
+    "firstname": "Alex",
+    "lastname": "Smith",
+    "moble": "13300000000"
+  }
+</code></pre></div></div>
+
+<p>下面的例子是WebDriver中在成功找到一个元素后JSON Wire Protocol的返回：</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{"status" : 0, "value" : {"element" : "123422"}}
+</code></pre></div></div>
+
+<p>所以在Client和Server之间，只要是基于JSON Wire Protocol来传递数据，就与具体的脚本语言无关了，这样同一个浏览器的驱动就即可以处理Java语言的脚本，也可以处理Python语言的脚本了。</p>
+:ET

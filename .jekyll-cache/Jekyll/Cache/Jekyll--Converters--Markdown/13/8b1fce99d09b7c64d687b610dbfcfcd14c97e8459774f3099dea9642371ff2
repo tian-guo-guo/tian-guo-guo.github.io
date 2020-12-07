@@ -1,0 +1,118 @@
+I"G(<h1 id="剑指-offer-10--i-斐波那契数列"><a href="https://leetcode-cn.com/problems/fei-bo-na-qi-shu-lie-lcof/">剑指 Offer 10- I. 斐波那契数列</a></h1>
+
+<p>tag: easy，递归，动态规划</p>
+
+<p><strong>题目：</strong></p>
+
+<p>写一个函数，输入 <code class="language-plaintext highlighter-rouge">n</code> ，求斐波那契（Fibonacci）数列的第 <code class="language-plaintext highlighter-rouge">n</code> 项。斐波那契数列的定义如下：例如，给出</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F(0) = 0,   F(1) = 1
+F(N) = F(N - 1) + F(N - 2), 其中 N &gt; 1.
+</code></pre></div></div>
+
+<p>斐波那契数列由 0 和 1 开始，之后的斐波那契数就是由之前的两数相加而得出。</p>
+
+<p>答案需要取模 1e9+7（1000000007），如计算初始结果为：1000000008，请返回 1。</p>
+
+<p><strong>示例 1：</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>输入：n = 2
+输出：1
+</code></pre></div></div>
+
+<p><strong>示例 2：</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>输入：n = 5
+输出：5
+</code></pre></div></div>
+
+<h1 id="方法一动态规划">方法一：动态规划</h1>
+
+<p>斐波那契数列的定义是 f(n + 1) = f(n) + f(n - 1) ，生成第 n项的做法有以下几种：</p>
+
+<ul>
+  <li>递归法：
+    <ul>
+      <li>原理： 把 f(n)问题的计算拆分成 f(n-1)和 f(n-2)两个子问题的计算，并递归，以 f(0)和 f(1)为终止条件。</li>
+      <li>缺点： 大量重复的递归计算，例如 f(n)和 f(n - 1)两者向下递归需要 各自计算 f(n - 2)的值。</li>
+    </ul>
+  </li>
+  <li>记忆化递归法：
+    <ul>
+      <li>原理： 在递归法的基础上，新建一个长度为 n的数组，用于在递归时存储 f(0)至 f(n)的数字值，重复遇到某数字则直接从数组取用，避免了重复的递归计算。</li>
+      <li>缺点： 记忆化存储需要使用 O(N)的额外空间。</li>
+    </ul>
+  </li>
+  <li>动态规划：
+    <ul>
+      <li>原理： 以斐波那契数列性质 f(n + 1) = f(n) + f(n - 1)为转移方程。</li>
+      <li>从计算效率、空间复杂度上看，动态规划是本题的最佳解法。</li>
+    </ul>
+  </li>
+</ul>
+
+<p>动态规划解析：</p>
+
+<ul>
+  <li>状态定义： 设 dp为一维数组，其中 dp[i]的值代表 斐波那契数列第 i个数字 。</li>
+  <li>转移方程： dp[i + 1] = dp[i] + dp[i - 1] ，即对应数列定义 f(n + 1) = f(n) + f(n - 1) ；</li>
+  <li>初始状态： dp[0] = 0, dp[1] = 1 ，即初始化前两个数字；</li>
+  <li>返回值： dp[n]，即斐波那契数列的第 n 个数字。</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">fib</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="n">f1</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">f2</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="n">f1</span><span class="p">,</span> <span class="n">f2</span> <span class="o">=</span> <span class="n">f2</span><span class="p">,</span> <span class="n">f1</span><span class="o">+</span><span class="n">f2</span>
+        <span class="k">return</span> <span class="n">f1</span> <span class="o">%</span> <span class="mi">1000000007</span>
+</code></pre></div></div>
+
+<ul>
+  <li><strong>时间复杂度 O(N)：</strong> 计算 f(n) 需循环 n次，每轮循环内计算操作使用 O(1)。</li>
+  <li><strong>空间复杂度 O(N)：</strong> 几个标志变量使用常数大小的额外空间。</li>
+</ul>
+
+<blockquote>
+  <p>执行用时：36 ms, 在所有 Python3 提交中击败了88.27%的用户</p>
+
+  <p>内存消耗：13.5 MB, 在所有 Python3 提交中击败了88.36%的用户</p>
+</blockquote>
+
+<p><a href="https://leetcode-cn.com/problems/fei-bo-na-qi-shu-lie-lcof/solution/mian-shi-ti-10-i-fei-bo-na-qi-shu-lie-dong-tai-gui/">Link</a></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">fib</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="c1">####标准递归解法：
+</span>        <span class="k">if</span> <span class="n">n</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span><span class="k">return</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">n</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span><span class="k">return</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="bp">self</span><span class="p">.</span><span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">))</span><span class="o">%</span><span class="mi">1000000007</span>
+<span class="c1">####带备忘录的递归解法
+</span>        <span class="n">records</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span> <span class="c1"># 记录计算的值
+</span>        <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span><span class="k">return</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span><span class="k">return</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">records</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span> <span class="c1"># 表明这个值没有算过
+</span>            <span class="n">records</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span><span class="bp">self</span><span class="p">.</span><span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">records</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+<span class="c1">#递归输出超时,用记忆化递归规划，时间上优越很多。
+</span>
+<span class="c1">###DP方法：解决记忆化递归费内存的问题
+</span>        <span class="n">dp</span><span class="o">=</span><span class="p">{}</span>
+        <span class="n">dp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span>
+        <span class="n">dp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span>
+        <span class="k">if</span> <span class="n">n</span><span class="o">&gt;=</span><span class="mi">2</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                <span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">dp</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">%</span><span class="mi">1000000007</span>
+
+
+<span class="c1">###最优化DP方法：
+</span>        <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+        <span class="k">return</span> <span class="n">a</span> <span class="o">%</span> <span class="mi">1000000007</span>
+
+</code></pre></div></div>
+
+:ET

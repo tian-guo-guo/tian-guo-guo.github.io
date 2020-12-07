@@ -1,7 +1,7 @@
 ---
 layout:     post           # 使用的布局（不需要改）
-title:      LeetCode-Offer55-II-平衡二叉树110平衡二叉树
-subtitle:   LeetCode-Offer55-II-平衡二叉树110平衡二叉树 #副标题
+title:      LeetCode-Offer57-和为s的两个数字
+subtitle:   LeetCode-Offer57-和为s的两个数字 #副标题
 date:       2020-09-22            # 时间
 author:     甜果果                    # 作者
 header-img: https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20200701171155.png  #背景图片
