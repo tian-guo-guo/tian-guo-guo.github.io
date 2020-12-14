@@ -1,0 +1,53 @@
+I"�<h1 id="skill-technique">Skill-technique</h1>
+
+<h2 id="1-文件相关">1. <a href="https://www.jianshu.com/p/d5030db5da0e">文件相关</a></h2>
+
+<p><strong>查看文件</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>file <span class="nb">test
+test</span>: UTF-8 Unicode text
+</code></pre></div></div>
+
+<p><strong>转换</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>iconv <span class="nt">-f</span> utf8 <span class="nt">-t</span> gbk <span class="nb">test</span> <span class="nt">-o</span> test.gbk
+</code></pre></div></div>
+
+<p><strong>效果</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>file <span class="nb">test</span><span class="k">*</span>
+<span class="nb">test</span>:          UTF-8 Unicode text
+test.gbk:     ISO-8859 text
+</code></pre></div></div>
+
+<h2 id="2-音视频相关">2. 音视频相关</h2>
+
+<h3 id="flv2mp4">flv2mp4</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffmpeg -i inputfile.flv -c copy outputfile.mp4
+</code></pre></div></div>
+
+<h3 id="m4a2mp3">m4a2mp3</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffmpeg -i input.m4a output.mp3
+</code></pre></div></div>
+
+<h3 id="下载youtube视频-youtubemy">下载youtube视频: <a href="https://www.youtubemy.com/">youtubemy</a></h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://www.youtubemy.com/
+</code></pre></div></div>
+
+<h3 id="批量下载bilibili视频">批量下载bilibili视频</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>you-get <span class="nt">--playlist</span> <span class="nt">-o</span> /Volumes/NETAC/教学视频/黑马前端就业班<span class="o">(</span>pink老师<span class="o">)</span>第五部分/ <span class="nt">--format</span><span class="o">=</span>flv https://www.bilibili.com/video/av626270590
+</code></pre></div></div>
+
+<p>注意，网址必须是av号开头的，可以<a href="https://www.jianshu.com/p/ca964ee86ffc">检查网页源代码</a>找到。复制head中内容到sublime，control+F
+<code class="language-plaintext highlighter-rouge">https://www.bilibili.com/video/av</code>即可找到av号。</p>
+
+<h2 id="3-word">3. word</h2>
+
+<h3 id="word-一保存图片质量就下降怎么办">word 一保存图片质量就下降怎么办</h3>
+
+<p>打开word，找到“文件”选项。 在左侧边栏中找到“选项”并点击。 选择“高级”，进入word的高级设置。 下拉找到关于“图像大小和质量”的内容，勾选“不压缩文件中的图像”，然后在重新插入高质量的图片，这样图片模糊的问题就解决了。</p>
+:ET

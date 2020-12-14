@@ -56,7 +56,14 @@ ffmpeg -i input.m4a output.mp3
 https://www.youtubemy.com/
 ```
 
+### 批量下载bilibili视频
 
+```bash
+you-get --playlist -o /Volumes/NETAC/教学视频/黑马前端就业班(pink老师)第五部分/ --format=flv https://www.bilibili.com/video/av626270590
+```
+
+注意，网址必须是av号开头的，可以[检查网页源代码](https://www.jianshu.com/p/ca964ee86ffc)找到。复制head中内容到sublime，control+F
+`https://www.bilibili.com/video/av`即可找到av号。
 
 ## 3. word
 

@@ -217,7 +217,151 @@ print(longestCommonPrefix(["flower", "flow", "flight"]))
 
 另外，因为写了个while True死循环，所以可以用try except来break跳出！
 
+## LeetCode-[125. 验证回文串](https://leetcode-cn.com/problems/valid-palindrome/)
 
+**题目：**
+
+```
+输入: "A man, a plan, a canal: Panama"   输出: true
+输入: "race a car"    输出: false
+```
+
+**方法一**：
+
+最好的方法是有两个指针，一个指向头一个指向尾，每读一个往中间进一步，看是不是一样的，当走到中间或者右边的指针走到左边的时候，对比就完成了。
+
+需要有while i < j and not s[i].isalnum()这一行判断当前的s[i]是不是字母，因为会有空格和标点的存在！
+
+```python
+def isPalindrome(s):
+    i, j = 0, len(s) -1
+    while i < j:
+        while i < j and not s[i].isalnum():
+            i += 1
+        while i < j and not s[j].isalnum():
+            j -= 1
+        if s[i].lower() != s[j].lower():
+            return False
+        i += 1
+        j -= 1
+    return True
+
+print(isPalindrome("A man, a plan, a canal: Panama"))
+```
+
+**收获：**
+
+两个指针首尾比较嘛。
+
+直到找到第一个是字母的写法while i>j and s[i].isalnum(): i += 1
+
+直到找到最后一个是字母的写法while i<j and s[j].isalnum():j-=1
+
+然后进行比较，记得加.lower() 
+
+如果不相等直接返回false，否则的话i，j分别往里走一步然后继续比较。
+
+## [Offer 05. 替换空格](https://leetcode-cn.com/problems/ti-huan-kong-ge-lcof/)
+
+**题目：**
+
+输入：s = "We are happy."  输出："We%20are%20happy."
+
+**思路一：**直接遍历
+
+新建字符串，遍历逐个相加，如果是空格就替换成%20，不是的话加到到新建的字符串后面
+
+```python
+def replaceSpace(s):
+    res = ''
+    for c in s:
+        if c == ' ':
+            res += '%20'
+        else:
+            res += c
+    return res
+
+print(replaceSpace("We are happy."))
+```
+
+-   时间复杂度 O(N) ：遍历字符串。
+-   空间复杂度 O(N) ：字符串的长度。
+
+**思路二：**join函数
+
+```python
+def replaceSpace(s):
+    li = s.split(' ')
+    return '%20'.join(li)
+
+print(replaceSpace("We are happy."))
+```
+
+**思路三**：replace函数
+
+```python
+def replaceSpace(s):
+    return s.replace(' ', '%20')
+
+print(replaceSpace("We are happy."))
+```
+
+## [Offer-58 - I. 翻转单词顺序](https://leetcode-cn.com/problems/fan-zhuan-dan-ci-shun-xu-lcof/) [151. 翻转字符串里的单词](https://leetcode-cn.com/problems/reverse-words-in-a-string/)
+
+**题目：**
+
+输入: "the sky is blue"   输出: "blue is sky the"    输入: "  hello world!  "   输出: "world! hello"   输入: "a good  example"   输出: "example good a"
+
+**方法一：双指针**
+
+算法解析：
+
+-   倒序遍历字符串 s ，记录单词左右索引边界 i , j ；
+-   每确定一个单词的边界，则将其添加至单词列表 res ；
+-   最终，将单词列表拼接为字符串，并返回即可。
+
+复杂度分析：
+
+-   时间复杂度 O(N) ： 其中 N 为字符串 s 的长度，线性遍历字符串。
+-   空间复杂度 O(N) ： 新建的 list(Python) 或     StringBuilder(Java) 中的字符串总长度 ≤N ，占用 O(N) 大小的额外空间。
+
+**思路一：双指针**
+
+```python
+def reverseWords(s):
+    s = s.strip()
+    i = j = len(s) - 1
+    res = []
+    while i >= 0:
+        while i>=0 and s[i]!= ' ':
+            i -= 1
+        res.append(s[i+1:j+1])
+        while s[i]== ' ':
+            i -= 1
+        j = i
+    return ' '.join(res)
+
+print(reverseWords('the sky is blue'))
+```
+
+**收获：**
+
+逆序翻转字符串里的单词，那就倒着数每一个字符，只要不是空格，那就继续往前走，直到遇到空格位置。
+
+用双指针，全指向字符串的末尾，用i，j来卡一个完整的单词。
+
+找到空格以后就可以把i指针再往前走一个，然后给了j，作为新的字符串的末尾。
+
+
+
+**思路二：用函数**
+
+```python
+def reverseWords(s):
+    return ' '.join(s.strip().split(' ')[::-1])
+
+print(reverseWords('the sky is blue'))
+```
 
 # 字典
 
@@ -370,7 +514,68 @@ print(isValid("()(]{}"))
 
 >学到了字典弹出一个数据是dic[strack.pop()]
 
+## [Offer-50. 第一个只出现一次的字符](https://leetcode-cn.com/problems/di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof/)
 
+**题目：**
+
+s = "abaccdeff"   返回 "b"
+
+s = ""   返回 " "
+
+**思路1：**
+
+1：哈希表
+
+\1.   先遍历字符串 s ，统计各字符数量是否 > 1，dic[c] = not c in dic，dic = {'a': False, 'b': True, 'c': False, 'd': True, 'e': True, 'f': False}
+
+\2.   再遍历字符串 s ，在哈希表中找到首个 “数量为 1 的字符”，并返回，if dic[c]，c
+
+复杂度分析：
+
+-   时间复杂度 O(N) ： N 为字符串 s 的长度；需遍历 s 两轮，使用 O(N) ；HashMap 查找操作的复杂度为 O(1) ；
+-   空间复杂度 O(1) ： 由于题目指出 s 只包含小写字母，因此最多有 26 个不同字符，HashMap 存储需占用 O(26) = O(1) 的额外空间。
+
+```python
+def firstUniqChar(s):
+    dic = {}
+    for c in s:
+        dic[c] = not c in dic
+    for c in s:
+        if dic[c]:
+            return c
+    return ''
+
+print(firstUniqChar('anaccdeff'))
+```
+
+**收获：**
+
+键值对是字符：在不在字典中出现可以是dic[c] = not c in dic
+
+如果出现，可以是if dic[c]:
+
+**思路2：**
+
+相比于方法一，方法二减少了第二轮遍历的循环次数。当字符串很长（重复字符很多）时，方法二则效率更高。
+
+时间和空间复杂度均与 “方法一” 相同，而具体分析：方法一 需遍历 s 两轮；方法二 遍历 s 一轮，遍历 dic 一轮（ dic 的长度不大于 26 ）。
+
+```python
+from collections import OrderedDict
+def firstUniqChar(s):
+    dic = OrderedDict()
+    for c in s:
+        dic[c] = not c in dic
+    for k,v in dic.items():
+        if v:
+            return k
+    return ''
+print(firstUniqChar('anaccdeff'))
+```
+
+**收获：**
+
+orderdic的使用
 
 # 列表
 
@@ -573,6 +778,98 @@ print(searchInsert([1, 3, 5, 6], 7))
 
 接下来就可以通过下标遍历nums，找到nums[i] >= val目标值的i，返回就行了。
 
+## LeetCode-66-加一
+
+**题目：**
+
+输入: [1,2,3]  输出: [1,2,4]
+ 输入: [4,3,2,1]  输出: [4,3,2,2]
+
+**思路：**
+
+直接从最后一位数起，如果是9，那就置为0，如果不是9，就是+1返回，
+
+如果遍历完了全都是9，那就手动把第一个变为1，然后结尾再添加一个0，注意添加的位置是在for循环结束以后。
+
+```python
+def plusOne(digits):
+    for i in reversed(range(len(digits))):
+        if digits[i] == 9:
+            digits[i] = 0
+        else: 
+            digits[i] += 1
+            return digits
+    digits[0] = 1
+    digits.append(0)
+    return digits
+        
+print(plusOne([1,1,9,9]))
+```
+
+**收获：**
+
+倒着遍历list，reversed(range(len(digits)))
+
+还有，分两种情况，要有2个return。
+
+## LeetCode-[88. 合并两个有序数组](https://leetcode-cn.com/problems/merge-sorted-array/)
+
+**题目：**
+
+nums1 = [1,2,3,0,0,0], m = 3
+
+nums2 = [2,5,6],    n = 3
+
+输出: [1,2,2,3,5,6]
+
+思路：
+
+从后往前合并。
+
+nums1[m-1]是第一个list除0外最后一个数，
+
+nums2[n-1]是第二个list最后一个数，
+
+nums1[m+n-1]是第一个list最后一个数
+
+比较大小，如果是第二个list的数比较大，那就把它放到第一个list最后的位置，然后第二个list的指针前移，
+
+否则的话第一个list最后一个数与最后一位的数换一下，然后第一个list的指针前移，
+
+一直循环，直到第一个list遍历完，m=0，然后剩下的前n个数复制到第一个list里。
+
+```python
+def merge(nums1, m, nums2, n):
+    while m>0 and n>0:
+        if nums1[m-1] < nums2[n-1]:
+            nums1[m+n-1] = nums2[n-1]
+            n -= 1
+        else:
+            nums1[m+n-1], nums1[m-1] = nums1[m-1],nums1[m+n-1]
+            m -= 1
+        if m == 0 and n > 0:
+            nums1[:n] = nums2[:n]
+    return nums1
+
+print(merge([2,3,0,0,0],2,[2,5,6],3))
+```
+
+**收获：**
+
+思路还是挺清晰的，明确三个变量是什么
+
+nums1[m-1]是第一个list除0外最后一个数，
+
+nums2[n-1]是第二个list最后一个数，
+
+nums1[m+n-1]是第一个list最后一个数
+
+然后比较大小，第一个list是换，第二个list是放置，
+
+最后别忘了剩下的数要复制到前边去。
+
+
+
 
 
 ## LeetCode-118杨辉三角-dp
@@ -634,6 +931,166 @@ print(triangle(5))
 >   以及二维数组里对数据更改是result[i][]再取值。
 >
 >   方法二学会了先设置一个dp矩阵，然后再动态的更改里面的数据，注意索引的范围
+
+## LeetCode-[121. 买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)
+
+**题目：**
+
+给定一个数组，它的第 i 个元素是一支给定股票第 i 天的价格，设计一个算法来计算你所能获取的最大利润。
+
+输入: [7,1,5,3,6,4]  输出: 5  解释: 在第 2 天（股票价格 = 1）的时候买入，在第 5 天（股票价格 = 6）的时候卖出，最大利润 = 6-1 = 5 。
+
+输入: [7,6,4,3,1]   输出: 0  解释: 在这种情况下, 没有交易完成, 所以最大利润为 0。
+
+**思路：**
+
+需要找到一个最好的卖出点：
+
+即当前价格和最小价格差值是最大的时候，max(max_profit, price-min_price)，
+
+用min(min_price, price)来记录每一轮的最小价格是多少，
+
+用max(max_profit, price-min_price)，来记录最大差值是多少。
+
+最后返回预先定义好的max_profit。
+
+```python
+def maxProfit(prices):
+    max_profit, min_price = 0, float('inf')
+    for price in prices:
+        min_price = min(price, min_price)
+        max_profit = max(max_profit, price-min_price)
+    return max_profit
+
+print(maxProfit([7,1,5,3,6,4]))
+```
+
+**收获：**
+
+一个无穷大的数可以用float("inf")表示，
+
+找到数组里最小的数可以用min(price, min_price)来比较，
+
+找到差值最大的数可以用max(max_prifit, price-min_price)来找到
+
+## LeetCode-[122. 买卖股票的最佳时机 II](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/)
+
+**题目：**
+
+给定一个数组，它的第 i 个元素是一支给定股票第 i 天的价格。设计一个算法来计算你所能获取的最大利润。你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+
+输入: [7,1,5,3,6,4]  输出: 7  解释: 在第 2 天（股票价格 = 1）的时候买入，在第 3 天（股票价格 = 5）的时候卖出, 这笔交易所能获得利润 = 5-1 = 4 。随后，在第 4 天（股票价格 = 3）的时候买入，在第 5 天（股票价格 = 6）的时候卖出, 这笔交易所能获得利润 = 6-3 = 3 。
+
+输入: [1,2,3,4,5]   输出: 4  解释: 在第 1 天（股票价格 = 1）的时候买入，在第 5 天 （股票价格 = 5）的时候卖出, 这笔交易所能获得利润 = 5-1 = 4 。
+
+输入: [7,6,4,3,1]   输出: 0  解释: 在这种情况下, 没有交易完成, 所以最大利润为 0。
+
+**思路：**
+
+如果后面的数要是比前面的数大，就把差值加到total里。
+
+可以用if prices[i] > prices[i-1]: total += prices[i]-prices[i-1]，得注意range是从range(1,len(prices)) 1开始的。
+
+```python
+def maxProfit(prices):
+    if len(prices) <= 1:
+        return 0
+    total = 0
+    for i in range(1, len(prices)):
+        if prices[i]>prices[i-1]:
+            total += prices[i]-prices[i-1]
+    return total
+
+print(maxProfit([7,1,5,3,6,4]))
+```
+
+**收获：**
+
+和思路一样，如果后面的数要是比前面的数大，就把差值加到total里。可以用if prices[i] > prices[i-1]: total += prices[i]-prices[i-1]表示。
+
+## LeetCode-[136. 只出现一次的数字](https://leetcode-cn.com/problems/single-number/)
+
+**题目：**
+
+给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。
+
+输入: [2,2,1]  输出: 1  输入: [4,1,2,1,2]  输出: 4
+
+**思路：**
+
+异或。两个相同的会是0，其余与0做异或是其本身，这样异或nums里的所有的数字，依次类推，单个的那个会留下来。
+
+```python
+def singleNumber(nums):
+    res = 0
+    for num in nums:
+        res ^= num
+    return res
+
+print(singleNumber([4,1,2,1,2]))
+```
+
+**收获：**
+
+异或，两个相同的数异或会是0，遍历一遍数组，单个的那个数会留下来。
+
+## [剑指 Offer 04. 二维数组中的查找](https://leetcode-cn.com/problems/er-wei-shu-zu-zhong-de-cha-zhao-lcof/)
+
+**题目：**
+
+输入一个二维数组和一个整数，判断数组中是否含有该整数。
+
+```
+[
+ [1,  4, 7, 11, 15],
+ [2,  5, 8, 12, 19],
+ [3,  6, 9, 16, 22],
+ [10, 13, 14, 17, 24],
+ [18, 21, 23, 26, 30]
+]
+```
+
+**思路：左下角定位法**
+
+定位左下角，按照行列索引确定matrix中的数字，
+
+起始行列i，j行列坐标分别为左下角的len(matirx)-1和0，
+
+然后开始循环，行索引i要逐渐的减小，直到i>=0，列索引要逐渐的增大，直到j<len(matix[0])，
+
+判断matrix中的数字[i] [j]与要找的数字大小的关系，进行行列索引的++–，找到了返回True，没有找到，出了循环返回False。
+
+```python
+def findNumberIn2DArray(matrix, target):
+    i, j = len(matrix)-1, 0
+    while i>=0 and j < len(matrix)-1:
+        if matrix[i][j] > target:
+            i -= 1
+        elif matrix[i][j] < target:
+            j += 1
+        else:
+            return True
+    return False
+    
+print(findNumberIn2DArray([[1,  4, 7, 11, 15],[2,  5, 8, 12, 19],[3,  6, 9, 16, 22],[10, 13, 14, 17, 24],[18, 21, 23, 26, 30]],16))
+```
+
+**收获：**
+
+左下角可以用len(matrix)-1, 0来表示，
+
+循环的判断条件是*while* i>=0 and j < len(*matrix*)-1:
+
+如果左下角数>target，那就行－1，
+
+若果左下角数<target，那就列+1，
+
+找到返回true，没找到返回false。
+
+
+
+-   时间复杂度 O(M+N) ：其中，N 和 M 分别为矩阵行数和列数，此算法最多循环 M+N次。
+-   空间复杂度 O(1) : i, j 指针使用常数大小额外空间。
 
 ## [Offer 10- II. 青蛙跳台阶问题](https://leetcode-cn.com/problems/qing-wa-tiao-tai-jie-wen-ti-lcof/)-dp
 
@@ -796,6 +1253,67 @@ print([1,2,3,4])
 >   奇数 & 1 = 1
 >   偶数 & 1 = 0
 
+## [Offer-29. 顺时针打印矩阵](https://leetcode-cn.com/problems/shun-shi-zhen-da-yin-ju-zhen-lcof/) [54. 螺旋矩阵](https://leetcode-cn.com/problems/spiral-matrix/)
+
+**题目：**
+
+输入：matrix = [[1,2,3],[4,5,6],[7,8,9]]    输出：[1,2,3,6,9,8,7,4,5]
+
+输入：matrix = [[1,2,3,4],[5,6,7,8],[9,10,11,12]]   输出：[1,2,3,4,8,12,11,10,9,5,6,7]
+
+解题思路：
+
+根据题目示例 matrix = [[1,2,3],[4,5,6],[7,8,9]] 的对应输出 [1,2,3,6,9,8,7,4,5] 可以发现，顺时针打印矩阵的顺序是 “从左向右、从上向下、从右向左、从下向上” 循环。
+
+复杂度分析：
+
+-   时间复杂度 O(MN) ： M, N分别为矩阵行数和列数。
+
+-   空间复杂度 O(1)： 四个边界 l , r , t , b 使用常数大小的 额外 空间（ res 为必须使用的空间）。
+
+```python
+def spiralOrder(matrix):
+    if not matrix:
+        return []
+    l, r, t, b, res = 0, len(matrix[0])-1, 0, len(matrix)-1, []
+    while True:
+        for i in range(l, r + 1): 
+            res.append(matrix[t][i]) # left to right                 
+        t += 1
+        if t > b: 
+            break
+        for i in range(t, b + 1): 
+            res.append(matrix[i][r]) # top to bottom                 
+        r -= 1
+        if l > r: 
+            break
+        for i in range(r, l - 1, -1): 
+            res.append(matrix[b][i]) # right to left                 
+        b -= 1
+        if t > b: 
+            break
+        for i in range(b, t - 1, -1): 
+            res.append(matrix[i][l]) # bottom to top                 
+        l += 1
+        if l > r: 
+            break
+    return res
+    
+print(spiralOrder([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]]))
+```
+
+**收获：**
+
+好绕，没仔细看~，没用代码的语言梳理语言。
+
+**思路2：**
+
+```python
+
+```
+
+**收获：**
+
 ## [Offer-40.最小的k个数](https://leetcode-cn.com/problems/zui-xiao-de-kge-shu-lcof/)
 
 **题目：**
@@ -811,7 +1329,7 @@ print([1,2,3,4])
     -   插入类：直接插入排序、shell 排序
     -   归并类：归并排序
 
-### 1. 交换类排序 – 冒泡排序
+### 1. 交换类排序 – 冒泡排序√
 
 -   思想：从无序序列头部开始，进行两两比较，根据大小交换位置，直到最后将最大（小）的数据元素交换到了无序队列的队尾，从而成为有序序列的一部分；下一次继续这个过程，直到所有数据元素都排好序。
 -   时间复杂度：O(n2),空间复杂度 O(1)
@@ -843,21 +1361,22 @@ s = Solution()
 print(s.getLeastNumbers([3, 2, 1, 4, 5, 6], 4))
 ```
 
+**收获：**
 
+写类方法，可以直接self.swap调用，而且不用写self
 
-### 2. 交换类排序 – 快速排序
+设置一个flag来设置是不是要交换
+
+第一层for循环是range(1,len(nums))，因为是从第二个数字开始比较的。
+
+第二层for循环是range(0,len(nums)-i)，是做了优化。
+
+还有就是主函数getLeastNumbers那里，学习一下初试条件判断。
+
+### 2. 交换类排序 – 快速排序√
 
 -   思想：分别从初始序列“6 1 2 7 9 3 4 5 10     8”两端开始“探测”。先从右往左找一个小于 6 的数，再从左往右找一个大于 6 的数，然后交换他们。这里可以用两个变量 i 和 j，分别指向序列最左边和最右边。我们为这两个变量起个好听的名字“哨兵 i”和“哨兵 j”。刚开始的时候让哨兵 i 指向序列的最左边（即 i=1），指向数字 6。让哨兵 j 指向序列的最右边（即 j=10），指向数字 8。
-
-首先哨兵 j 开始出动。因为此处设置的基准数是最左边的数，所以需要让哨兵 j 先出动，这一点非常重要（请自己想一想为什么）。哨兵 j 一步一步地向左挪动（即 j–），直到找到一个小于 6 的数停下来。接下来哨兵 i 再一步一步向右挪动（即 i++），直到找到一个数大于 6 的数停下来。最后哨兵 j 停在了数字 5 面前，哨兵 i 停在了数字 7 面前。
-
-现在交换哨兵 i 和哨兵 j 所指向的元素的值。交换之后的序列如下。6 1 2 5 9 3 4 7 10 8
-
-到此，第一次交换结束。接下来开始哨兵 j 继续向左挪动（再友情提醒，每次必须是哨兵 j 先出发）。他发现了 4（比基准数 6 要小，满足要求）之后停了下来。哨兵 i 也继续向右挪动的，他发现了 9（比基准数 6 要大，满足要求）之后停了下来。此时再次进行交换，交换之后的序列如下。 6 1 2 5 4 3 9 7 10 8
-
-第二次交换结束，“探测”继续。哨兵 j 继续向左挪动，他发现了 3（比基准数 6 要小，满足要求）之后又停了下来。哨兵 i 继续向右移动，糟啦！此时哨兵 i 和哨兵 j 相遇了，哨兵 i 和哨兵 j 都走到 3 面前。说明此时“探测”结束。我们将基准数 6 和 3 进行交换。交换之后的序列如下。 3 1 2 5 4 6 9 7 10 8
-
-每次排序的时候设置一个基准点，将小于等于基准点的数全部放到基准点的左边，将大于等于基准点的数全部放到基准点的右边。
+-   每次排序的时候设置一个基准点，将小于等于基准点的数全部放到基准点的左边，将大于等于基准点的数全部放到基准点的右边。
 
 -   时间复杂度：O(nlogn),空间复杂度 O(nlogn)
 -   稳定性： 不稳定
@@ -898,10 +1417,6 @@ s = Solution()
 print(s.getLeastNumbers([3, 2, 1, 4, 5, 6], 4))
 ```
 
-
-
-
-
 ### 3. 选择类排序 – 简单选择排序
 
 -   思想：每一趟从待排序的数据元素中选择最小（或最大）的一个元素作为首元素，直到所有元素排完为止
@@ -936,10 +1451,6 @@ class Solution:
 s = Solution()
 print(s.getLeastNumbers([3, 2, 1, 4, 5, 6], 4))
 ```
-
-
-
-
 
 ### 4. 选择类排序 – 堆排序
 
@@ -1015,10 +1526,6 @@ s = Solution()
 print(s.getLeastNumbers([3, 2, 1, 4, 5, 6], 4))
 ```
 
-
-
-
-
 ### 6. 插入类排序 – shell 排序
 
 -   [思想](https://www.cnblogs.com/chengxiao/p/6104371.html)：希尔排序是把记录按下标的一定增量分组，对每组使用直接插入排序算法排序；随着增量逐渐减少，每组包含的关键词越来越多，当增量减至1时，整个文件恰被分成一组，算法便终止。
@@ -1056,11 +1563,7 @@ s = Solution()
 print(s.getLeastNumbers([3, 2, 1, 4, 5, 6], 4))
 ```
 
-
-
-
-
-### 7. 归并类排序 – 归并排序
+### 7. 归并类排序 – 归并排序√
 
 -   [思想](https://www.cnblogs.com/chengxiao/p/6194356.html)：归并排序（MERGE-SORT）是利用归并的思想实现的排序方法，该算法采用经典的分治（divide-and-conquer）策略（分治法将问题分(divide)成一些小的问题然后递归求解，而治(conquer)的阶段则将分的阶段得到的各答案”修补”在一起，即分而治之)。
 -   时间复杂度：O(nlogn),空间复杂度 O(1)
@@ -1103,3 +1606,107 @@ s = Solution()
 print(s.getLeastNumbers([3, 2, 1, 4, 5, 6], 4))
 ```
 
+## [Offer-53 - I. 在排序数组中查找数字 I](https://leetcode-cn.com/problems/zai-pai-xu-shu-zu-zhong-cha-zhao-shu-zi-lcof/)
+
+**题目：**
+
+统计一个数字在排序数组中出现的次数。
+
+输入: nums = [5,7,7,8,8,10], target = 8   输出: 2   输入: nums = [5,7,7,8,8,10], target = 6   输出: 0
+
+**思路：**
+
+排序数组中的搜索问题，首先想到 二分法 解决。
+
+所有数字target形成一个窗口，使用二分法分别找到左边界left和右边界right ，易得数字target的数量为right - left - 1。
+
+**复杂度分析：**
+
+时间复杂度 O(log N)： 二分法为对数级别复杂度。
+
+空间复杂度 O(1)： 几个变量使用常数大小的额外空间。
+
+```python
+def search(nums, target):
+     # 搜索右边界 right         
+    i, j = 0, len(nums) - 1
+    while i <= j:
+        m = (i + j) // 2
+        if nums[m] <= target:
+            i = m + 1
+        else:
+            j = m - 1
+    right = i
+    # 若数组中无 target ，则提前返回         
+    if j >= 0 and nums[j] != target: 
+        return 0
+    # 搜索左边界 left         
+    i = 0
+    while i <= j:
+        m = (i + j) // 2
+        if nums[m] < target:
+            i = m + 1
+        else:
+            j = m - 1
+    left = j
+    return right - left - 1
+
+print(search([5, 7, 7, 8, 8, 10], 8))
+```
+
+二分法还没想明白😓
+
+```python
+不用二分法，最直接的想法
+def search(nums, target):
+    res = 0
+    for i in nums:
+        if i == target:
+            res += 1
+    return res
+print(search([5,7,7,8,8,10],8))
+```
+
+## [Offer 53 - II. 0～n-1中缺失的数字](https://leetcode-cn.com/problems/que-shi-de-shu-zi-lcof/)
+
+**题目：**
+
+输入: [0,1,3]  输出: 2   输入: [0,1,2,3,4,5,6,7,9]   输出: 8
+
+**思路：**
+
+二分法解决。
+
+左子数组： nums[i] = i ；
+
+右子数组： nums[i] ≠ i；
+
+缺失的数字等于 “右子数组的首位元素” 对应的索引；
+
+**复杂度分析：**
+
+时间复杂度 O(log N)： 二分法为对数级别复杂度。
+
+空间复杂度 O(1)： 几个变量使用常数大小的额外空间。
+
+```python
+def missingNumber(nums):
+    i, j = 0, len(nums)-1
+    while i <= j:
+        m = int(i+j)//2
+        if nums[m]==m:
+            i = m+1
+        else:
+            j = m-1
+    return i
+
+print(missingNumber([0, 1, 2, 3, 4, 5, 6, 7, 9]))
+```
+
+**收获：**
+
+if nums[m]==m，就是说下标上的数等于下标。
+
+如果相等，就说明缺失的数还在右边，那i 就往右走一步，否则的话，j就往左走一步。
+
+另外要注意，双指针，取中间值的时候，m=int(i+j)//2一定要写在while i<j 的循环里，要不然中间指针没有更新会陷入死循环。
