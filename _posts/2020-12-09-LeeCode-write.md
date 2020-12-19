@@ -95,8 +95,6 @@ print(isPalindrome(121))
 
 >判断条件可以正确的和大于零的数一起判断。
 
-
-
 **方法二：转化为字符串**
 
 ```python
@@ -111,7 +109,25 @@ print(isPalindrome(-123))
 
 >   转化为list之后直接反转比较
 
+JavaScript：
 
+```js
+var reverse = function(x) {
+    let result = 0;
+    while(x !== 0) {
+        result = result * 10 + x % 10;
+        x = (x / 10) | 0;
+    }
+    return (result | 0) === result ? result : 0;
+};
+```
+
+收获：
+
+-   `result * 10 + x % 10` 取出末位 `x % 10`（负数结果还是负数，无需关心正负），拼接到 `result` 中。
+-   `x / 10` 去除末位，`| 0` 强制转换为32位有符号整数。
+-   通过 `| 0` 取整，无论正负，只移除小数点部分（正数向下取整，负数向上取整）。
+-   `result | 0` 超过32位的整数转换结果不等于自身，可用作溢出判断。
 
 # 字符串
 
@@ -217,6 +233,34 @@ print(longestCommonPrefix(["flower", "flow", "flight"]))
 
 另外，因为写了个while True死循环，所以可以用try except来break跳出！
 
+JavaScript：
+
+```js
+var longestCommonPrefix = function(strs) {
+    if(strs.length == 0) 
+        return "";
+    let ans = strs[0];
+    for(let i =1;i<strs.length;i++) {
+        let j=0;
+        for(;j<ans.length && j < strs[i].length;j++) {
+            if(ans[j] != strs[i][j])
+                break;
+        }
+        ans = ans.substr(0, j);
+        if(ans === "")
+            return ans;
+    }
+    return ans;
+};
+```
+
+标签：链表
+当字符串数组长度为 0 时则公共前缀为空，直接返回
+令最长公共前缀 ans 的值为第一个字符串，进行初始化
+遍历后面的字符串，依次将其与 ans 进行比较，两两找出公共前缀，最终结果即为最长公共前缀
+如果查找过程中出现了 ans 为空的情况，则公共前缀不存在直接返回
+时间复杂度：O(s)，s 为所有字符串的长度之和
+
 ## LeetCode-[125. 验证回文串](https://leetcode-cn.com/problems/valid-palindrome/)
 
 **题目：**
@@ -260,6 +304,37 @@ print(isPalindrome("A man, a plan, a canal: Panama"))
 然后进行比较，记得加.lower() 
 
 如果不相等直接返回false，否则的话i，j分别往里走一步然后继续比较。
+
+JavaScript:
+
+思路：
+
+-   `\W`匹配，非数字、非字母和非下划线，`[\W|_]`，加上下划线
+-   如果`匹配到`，左指针左移，右指针右移。只要左右指针指到不等的数字或字母，返回`false`
+
+双指针
+
+```js
+var isPalindrome = function(s, l = 0, r = s.length - 1) {  
+    while(l < r) {
+        if (/[\W|_]/.test(s[l]) && ++l) continue
+        if (/[\W|_]/.test(s[r]) && r--) continue
+        if (s[l].toLowerCase() !== s[r].toLowerCase()) return false
+        l++, r--
+    }
+    return true
+};
+```
+
+先正则替换，再双指针
+
+```js
+var isPalindrome = function(s, l = -1, r) {  
+    r = (s = s.replace(/[\W|_]/g, '').toLowerCase()).length
+    while(++l < --r) if (s[l] !== s[r]) return false
+    return true
+};
+```
 
 ## [Offer 05. 替换空格](https://leetcode-cn.com/problems/ti-huan-kong-ge-lcof/)
 
@@ -305,6 +380,35 @@ def replaceSpace(s):
 
 print(replaceSpace("We are happy."))
 ```
+
+**JavaScript:**
+
+**解题思路**
+ 首先判断输入是否合法，参数是字符串类型，字符串长度不能太长。
+ 再通过split(' ')将空格隔开的单词变为字符串数组中的数组项
+ 最后通过join('%20')将各个数组项，也就是单词，连接起来完成空格的替换。
+
+**代码**
+
+```js
+/**
+ * @param {string} s
+ * @return {string}
+ */
+var replaceSpace = function(s) {
+      if (typeof s == "string" && s.length >= 0 && s.length <= 10000) {
+        return s.split(' ').join('%20');
+      }
+      return '';
+};
+
+正则
+var replaceSpace = function(s) {
+    return s.replace(/ /g, "%20");
+};
+```
+
+
 
 ## [Offer-58 - I. 翻转单词顺序](https://leetcode-cn.com/problems/fan-zhuan-dan-ci-shun-xu-lcof/) [151. 翻转字符串里的单词](https://leetcode-cn.com/problems/reverse-words-in-a-string/)
 
@@ -352,8 +456,6 @@ print(reverseWords('the sky is blue'))
 
 找到空格以后就可以把i指针再往前走一个，然后给了j，作为新的字符串的末尾。
 
-
-
 **思路二：用函数**
 
 ```python
@@ -361,6 +463,18 @@ def reverseWords(s):
     return ' '.join(s.strip().split(' ')[::-1])
 
 print(reverseWords('the sky is blue'))
+```
+
+JavaScript：
+
+解法：先用trim()把字符串两端空格去掉，split(' ')把字符串切割成以空格为界限的单词块，filter()过滤掉数组中的纯空格，reverse()进行数组反转，join(' ')把数组变成中间只带一个空格的字符串
+
+
+```js
+var reverseWords = function (s) {
+    var str = s.trim().split(' ').filter(item => item!='').reverse().join(' ')
+    console.log(str)
+};
 ```
 
 # 字典
@@ -470,7 +584,48 @@ print(roman2Int('IX'))
 >
 >   然后就是公式的判断了，因为前边res已经加过了numral_map[s[i]]，所以当找到后边的数比前边的数大的时候就要res += numral_map[s[i]] - 2 * numral_map[s[i-1]]
 
+JavaScript:
 
+思路
+首先将所有的组合可能性列出并添加到哈希表中
+然后对字符串进行遍历，由于组合只有两种，一种是 1 个字符，一种是 2 个字符，其中 2 个字符优先于 1 个字符
+先判断两个字符的组合在哈希表中是否存在，存在则将值取出加到结果 ans 中，并向后移2个字符。不存在则将判断当前 1 个字符是否存在，存在则将值取出加到结果 ans 中，并向后移 1 个字符
+遍历结束返回结果 ans
+
+```js
+/**
+ * @param {string} s
+ * @return {number}
+ */
+var romanToInt = function(s) {
+    const map = {
+        I : 1,
+        IV: 4,
+        V: 5,
+        IX: 9,
+        X: 10,
+        XL: 40,
+        L: 50,
+        XC: 90,
+        C: 100,
+        CD: 400,
+        D: 500,
+        CM: 900,
+        M: 1000
+    };
+    let ans = 0;
+    for(let i = 0;i < s.length;) {
+        if(i + 1 < s.length && map[s.substring(i, i+2)]) {
+            ans += map[s.substring(i, i+2)];
+            i += 2;
+        } else {
+            ans += map[s.substring(i, i+1)];
+            i ++;
+        }
+    }
+    return ans;
+};
+```
 
 ## LeetCode-20 有效的括号-dic[stack.pop()]
 
@@ -513,6 +668,47 @@ print(isValid("()(]{}"))
 **收获：**
 
 >学到了字典弹出一个数据是dic[strack.pop()]
+
+JavaScript
+
+判断括号的有效性可以使用「栈」这一数据结构来解决。
+
+我们对给定的字符串 ss 进行遍历，当我们遇到一个左括号时，我们会期望在后续的遍历中，有一个相同类型的右括号将其闭合。由于后遇到的左括号要先闭合，因此我们可以将这个左括号放入栈顶。
+
+当我们遇到一个右括号时，我们需要将一个相同类型的左括号闭合。此时，我们可以取出栈顶的左括号并判断它们是否是相同类型的括号。如果不是相同的类型，或者栈中并没有左括号，那么字符串 ss 无效，返回 \text{False}False。为了快速判断括号的类型，我们可以使用哈希映射（HashMap）存储每一种括号。哈希映射的键为右括号，值为相同类型的左括号。
+
+在遍历结束后，如果栈中没有左括号，说明我们将字符串 ss 中的所有左括号闭合，返回 \text{True}True，否则返回 \text{False}False。
+
+注意到有效字符串的长度一定为偶数，因此如果字符串的长度为奇数，我们可以直接返回 \text{False}False，省去后续的遍历判断过程。
+
+```js
+var isValid = function(s) {
+    const n = s.length;
+    if (n % 2 === 1) {
+        return false;
+    }
+    const pairs = new Map([
+        [')', '('],
+        [']', '['],
+        ['}', '{']
+    ]);
+    const stk = [];
+    s.split('').forEach(ch => {
+        if (pairs.has(ch)) {
+            if (!stk.length || stk[stk.length - 1] !== pairs.get(ch)) {
+                return false;
+            }
+            stk.pop();
+        } 
+        else {
+            stk.push(ch);
+        }
+    });
+    return !stk.length;
+};
+```
+
+
 
 ## [Offer-50. 第一个只出现一次的字符](https://leetcode-cn.com/problems/di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof/)
 
@@ -576,6 +772,23 @@ print(firstUniqChar('anaccdeff'))
 **收获：**
 
 orderdic的使用
+
+javascript
+
+Set + 正则
+
+```js
+var firstUniqChar = function(s) {
+  for (let char of new Set(s)) {
+    if (s.match(new RegExp(char, 'g')).length === 1) {
+      return char;
+    }
+  }
+  return ' ';
+};
+```
+
+
 
 # 列表
 
@@ -708,6 +921,36 @@ print(deldup([0,0,1,1,1,2,2,3,3,4]))
 
 >学到了用count=0记录一个新list，逐个1 2 3 4 5，在原数组上直接操作数据
 
+Javascript:
+
+思路
+
+-   用一个读指针，一个写指针遍历数组。
+-   遇到重复的元素 `读指针` 就继续前移。
+-   遇到不同的元素 `写指针` 就前移一步，写入那个元素。
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var removeDuplicates = function (nums) {
+    let p1 = 0,
+        p2 = 0;
+
+    while (p2 < nums.length) {
+        if (nums[p1] != nums[p2]) {
+            p1++;
+            nums[p1] = nums[p2];
+        }
+        p2++;
+    }
+    return p1 + 1;
+};
+```
+
+
+
 ## LeetCode-27-移除元素
 
 **题目：**
@@ -748,6 +991,64 @@ print(removeElement([0,1,2,2,3,0,4,2], 2))
 
 最后返回last+1，也就是删除元素之后的列表的长度。
 
+javascript
+
+第一种思路
+标签：拷贝覆盖
+主要思路是遍历数组 nums，每次取出的数字变量为 num，同时设置一个下标 ans
+在遍历过程中如果出现数字与需要移除的值不相同时，则进行拷贝覆盖 nums[ans] = num，ans 自增 1
+如果相同的时候，则跳过该数字不进行拷贝覆盖，最后 ans 即为新的数组长度
+这种思路在移除元素较多时更适合使用，最极端的情况是全部元素都需要移除，遍历一遍结束即可
+时间复杂度：O(n)，空间复杂度：O(1)
+
+```js
+/**
+ * @param {number[]} nums
+ * @param {number} val
+ * @return {number}
+ */
+var removeElement = function(nums, val) {
+    let ans = 0;
+    for(const num of nums) {
+        if(num != val) {
+            nums[ans] = num;
+            ans++;
+        }
+    }
+    return ans;
+};
+```
+
+第二种思路
+标签：交换移除
+主要思路是遍历数组 nums，遍历指针为 i，总长度为 ans
+在遍历过程中如果出现数字与需要移除的值不相同时，则i自增1，继续下一次遍历
+如果相同的时候，则将 nums[i]与nums[ans-1] 交换，即当前数字和数组最后一个数字进行交换，交换后就少了一个元素，故而 ans 自减 1
+这种思路在移除元素较少时更适合使用，最极端的情况是没有元素需要移除，遍历一遍结束即可
+时间复杂度：O(n)O(n)，空间复杂度：O(1)O(1)
+
+```js
+/**
+ * @param {number[]} nums
+ * @param {number} val
+ * @return {number}
+ */
+var removeElement = function(nums, val) {
+    let ans = nums.length;
+    for (let i = 0; i < ans;) {
+        if (nums[i] == val) {
+            nums[i] = nums[ans - 1];
+            ans--;
+        } else {
+            i++;
+        }
+    }
+    return ans;
+};
+```
+
+
+
 ## LeetCode-35-搜索插入位置
 
 **题目：**
@@ -777,6 +1078,27 @@ print(searchInsert([1, 3, 5, 6], 7))
 因为是排序数组，所以为了节省空间，先看看最后一个数和目标值的大小比较，如果小的话，直接返回数组长度就可以了。
 
 接下来就可以通过下标遍历nums，找到nums[i] >= val目标值的i，返回就行了。
+
+javascript
+
+```js
+var searchInsert = function(nums, target) {
+    const n = nums.length;
+    let left = 0, right = n - 1, ans = n;
+    while (left <= right) {
+        let mid = ((right - left) >> 1) + left;
+        if (target <= nums[mid]) {
+            ans = mid;
+            right = mid - 1;
+        } else {
+            left = mid + 1;
+        }
+    }
+    return ans;
+};
+```
+
+
 
 ## LeetCode-66-加一
 
@@ -811,6 +1133,38 @@ print(plusOne([1,1,9,9]))
 倒着遍历list，reversed(range(len(digits)))
 
 还有，分两种情况，要有2个return。
+
+JavaScript
+
+思路
+标签：数组遍历
+这道题需要整理出来有哪几种情况，在进行处理会更舒服
+末位无进位，则末位加一即可，因为末位无进位，前面也不可能产生进位，比如 45 => 46
+末位有进位，在中间位置进位停止，则需要找到进位的典型标志，即为当前位 %10后为 0，则前一位加 1，直到不为 0 为止，比如 499 => 500
+末位有进位，并且一直进位到最前方导致结果多出一位，对于这种情况，需要在第 2 种情况遍历结束的基础上，进行单独处理，比如 999 => 1000
+在下方的 Java 和 JavaScript 代码中，对于第三种情况，对其他位进行了赋值 0 处理，Java 比较 tricky 直接 new 数组即可，JavaScript 则使用了 ES6 语法进行赋值
+时间复杂度：O(n)
+
+```js
+/**
+ * @param {number[]} digits
+ * @return {number[]}
+ */
+var plusOne = function(digits) {
+    const len = digits.length;
+    for(let i = len - 1; i >= 0; i--) {
+        digits[i]++;
+        digits[i] %= 10;
+        if(digits[i]!=0)
+            return digits;
+    }
+    digits = [...Array(len + 1)].map(_=>0);;
+    digits[0] = 1;
+    return digits;
+};
+```
+
+
 
 ## LeetCode-[88. 合并两个有序数组](https://leetcode-cn.com/problems/merge-sorted-array/)
 
@@ -868,7 +1222,38 @@ nums1[m+n-1]是第一个list最后一个数
 
 最后别忘了剩下的数要复制到前边去。
 
+javascript
 
+思路
+标签：从后向前数组遍历
+因为 nums1 的空间都集中在后面，所以从后向前处理排序的数据会更好，节省空间，一边遍历一边将值填充进去
+设置指针 len1 和 len2 分别指向 nums1 和 nums2 的有数字尾部，从尾部值开始比较遍历，同时设置指针 len 指向 nums1 的最末尾，每次遍历比较值大小之后，则进行填充
+当 len1<0 时遍历结束，此时 nums2 中海油数据未拷贝完全，将其直接拷贝到 nums1 的前面，最后得到结果数组
+时间复杂度：O(m+n)O(m+n)
+
+```js
+/**
+ * @param {number[]} nums1
+ * @param {number} m
+ * @param {number[]} nums2
+ * @param {number} n
+ * @return {void} Do not return anything, modify nums1 in-place instead.
+ */
+var merge = function(nums1, m, nums2, n) {
+    let len1 = m - 1;
+    let len2 = n - 1;
+    let len = m + n - 1;
+    while(len1 >= 0 && len2 >= 0) {
+        // 注意--符号在后面，表示先进行计算再减1，这种缩写缩短了代码
+        nums1[len--] = nums1[len1] > nums2[len2] ? nums1[len1--] : nums2[len2--];
+    }
+    function arrayCopy(src, srcIndex, dest, destIndex, length) {
+        dest.splice(destIndex, length, ...src.slice(srcIndex, srcIndex + length));
+    }
+    // 表示将nums2数组从下标0位置开始，拷贝到nums1数组中，从下标0位置开始，长度为len2+1
+    arrayCopy(nums2, 0, nums1, 0, len2 + 1);
+};
+```
 
 
 
@@ -932,6 +1317,24 @@ print(triangle(5))
 >
 >   方法二学会了先设置一个dp矩阵，然后再动态的更改里面的数据，注意索引的范围
 
+javascript
+
+```js
+var generate = function(numRows) {
+    const ret = [];
+    for (let i = 0; i < numRows; i++) {
+        const row = new Array(i + 1).fill(1);
+        for (let j = 1; j < row.length - 1; j++) {
+            row[j] = ret[i - 1][j - 1] + ret[i - 1][j];
+        }
+        ret.push(row);
+    }
+    return ret;
+};
+```
+
+
+
 ## LeetCode-[121. 买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)
 
 **题目：**
@@ -973,6 +1376,92 @@ print(maxProfit([7,1,5,3,6,4]))
 
 找到差值最大的数可以用max(max_prifit, price-min_price)来找到
 
+javascript
+
+```js
+/**
+ * @param {number[]} prices
+ * @return {number}
+ */
+var maxProfit = function(prices) {
+    /*
+        思路一 双层遍历 O(n^2) 
+            a 外层遍历i 0~prices.length - 1
+            b 内层遍历j i + 1~prices.length - 1
+                c 找出大于当前项目 prices[i] 并 卖出 并 更新最大值
+            d 输出结果
+     */   
+    if (!prices || !prices.length) return 0
+    const len = prices.length
+    let max = 0, cur = 0, next = 0
+    for (let i = 0; i < len; i++) {
+        cur = prices[i]
+        for (let j = i + 1; j < len; j++) {
+            next = prices[j]
+            if (next > cur) {
+                max = Math.max(max, next - cur)
+            }
+        }
+    }
+    return max
+
+    /* 
+        思路二 DP  Time: O(n) + Space: O(n)
+        dp[i] 前i天卖出的最大利润
+        min : prices 前i项中的最小值
+        prices[i] - min: 当前位置卖出可得最大利润
+        dp[i - 1] : 前i-1项目卖出可得的最大利润
+        [7, 1, 5, 3, 6, 4] => dp[i] = Math.max( dp[i - 1], prices[i] - min )
+        [7]                [0, 0, 0, 0, 0, 0]
+        [7, 1]             [0, 0, 0, 0, 0, 0]
+        [7, 1, 5]          [0, 0, 4, 0, 0, 0]
+        [7, 1, 5, 3]       [0, 0, 4, 4, 0, 0]
+        [7, 1, 5, 3, 6]    [0, 0, 4, 4, 5, 0]
+        [7, 1, 5, 3, 6, 4] [0, 0, 4, 4, 5, 5]
+
+        输出结果 dp[len - 1]
+    */ 
+    if (!prices || !prices.length) return 0
+    const len = prices.length, dp = new Array(len).fill(0)
+    let min = prices[0] // 前i项的最小值
+    for (let i = 1, price; i < len; i++) {
+        price = prices[i]
+        min = Math.min(min, price)
+        dp[i] = Math.max(dp[i - 1], price - min )
+    }
+    return dp[len - 1]
+    
+    /* 
+        思路三 DP + 常量级变量 min max Time - O(n) + Space - O(1)
+        精简 我们只关心 max 与 min 故不需要再构建dp 数组
+    */
+    if (!prices || !prices.length) return 0
+    let min = Number.MAX_SAFE_INTEGER, max = 0
+    for (let i = 0, price; i < prices.length; i++) {
+        price = prices[i]
+        min = Math.min(min, price)
+        max = Math.max(max, price - min)
+    }
+    return max
+};
+
+var maxProfit = function(prices) {
+    /* 
+        思路四 极简版 一行代码 巧用reduce + [min, max] 本质上是思路三的一种简写方法 
+        虽然 只有一行代码 但是 可读性 与 推展性 不高 生产环境的话还是推荐 思路三
+        prices.reduce((p, v) => [
+            Math.min(p[0], v), // 更新最小值 
+            Math.max(p[1], v - p[0] ) // 更新最大值
+        ], [Number.MAX_SAFE_INTEGER, 0])[1]
+    */
+    return prices.reduce((p, v) => [Math.min(p[0], v), Math.max(p[1], v - p[0]) ], [Number.MAX_SAFE_INTEGER, 0])[1]
+}
+```
+
+
+
+
+
 ## LeetCode-[122. 买卖股票的最佳时机 II](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/)
 
 **题目：**
@@ -1008,6 +1497,21 @@ print(maxProfit([7,1,5,3,6,4]))
 
 和思路一样，如果后面的数要是比前面的数大，就把差值加到total里。可以用if prices[i] > prices[i-1]: total += prices[i]-prices[i-1]表示。
 
+javascript
+
+```js
+var maxProfit = function(prices) {
+    let ans = 0;
+    let n = prices.length;
+    for (let i = 1; i < n; ++i) {
+        ans += Math.max(0, prices[i] - prices[i - 1]);
+    }
+    return ans;
+};
+```
+
+
+
 ## LeetCode-[136. 只出现一次的数字](https://leetcode-cn.com/problems/single-number/)
 
 **题目：**
@@ -1033,6 +1537,24 @@ print(singleNumber([4,1,2,1,2]))
 **收获：**
 
 异或，两个相同的数异或会是0，遍历一遍数组，单个的那个数会留下来。
+
+javascript
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var singleNumber = function(nums) {
+    let ans = 0;
+    for(const num of nums) {
+        ans ^= num;
+    }
+    return ans;
+};
+```
+
+
 
 ## [剑指 Offer 04. 二维数组中的查找](https://leetcode-cn.com/problems/er-wei-shu-zu-zhong-de-cha-zhao-lcof/)
 

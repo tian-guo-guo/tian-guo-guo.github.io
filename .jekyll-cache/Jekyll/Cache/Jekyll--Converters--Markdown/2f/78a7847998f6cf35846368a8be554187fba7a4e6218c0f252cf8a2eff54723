@@ -1,6 +1,0 @@
-I"�<h1 id="服务器安装docker">服务器安装docker</h1>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl -sSL https://get.daocloud.io/docker | sh
-</code></pre></div></div>
-
-:ET
