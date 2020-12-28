@@ -1,0 +1,139 @@
+I"jB<h1 id="stanford-neural-machine-translation-systems-for-spoken-language-domains">Stanford Neural Machine Translation Systems for Spoken Language Domains</h1>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gf5w5macb0j30s0052mxs.jpg" alt="image-20200526153752016" /></p>
+
+<h1 id="abstract">Abstract</h1>
+
+<p>​		神经机器翻译（Neural MachineTranslation，NMT）虽然是最近才发展起来的，但在各种语言对上都显示出了 尽管如此，NMT只适用于大多数正式文本，例如WMT共享任务中的文本。 本研究通过参与2015年国际英语口语教学的MT项目，进一步探讨了NMT在口语领域的有效性。 <strong>我们考虑了两个场景:(a)如何使现有的NMT系统适应一个新的领域和(b)将NMT推广到低资源的语言对</strong>。 我们的结果表明，使用现有的NMT框架<a href="http://nlp.stanford.edu/projects/nmt/">1_nmt</a>，当从英语翻译到德语和越南语时，我们可以在上述场景中获得具有竞争力的结果。 值得注意的是，我们在IWSLT英德MT赛道上取得了先进的成绩，达到了5.2个蓝点数。</p>
+
+<h1 id="1-introduction">1 Introduction</h1>
+
+<p>​		神经机器翻译（NeuralMachineTranslation，NMT）是一种全新的使用深度神经网络教机器翻译的方法。 尽管NMT是去年才开发的[1，2]，但它已经在各种语言对的WMT翻译任务中取得了最先进的结果，如英语-法语[3]，英语-德语[4，5]和英语-捷克语[6]。 NMT之所以吸引人，是因为它概念简单。 NMT本质上是一个大的递归神经网络，可以进行端到端的训练，翻译如下。 它逐个通读给定的源词，直到结束，然后，开始一次发出一个目标词，直到产生一个特殊的句尾符号。 我们在图1中说明了这个过程。</p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gf5wlgmzrcj30ey08yaah.jpg" alt="image-20200526155305640" /></p>
+
+<p>图1:神经机器翻译–在[1]中提出的深度递归架构的例子，用于将一个源句子“I am a student”翻译成一个目标句子“Je suisétudiant”。 在这里，“_”表示句子的结尾。</p>
+
+<p>​		这种简单性带来了几个优点。 NMT只需要最少的领域知识:它只假设访问源词和目标词的序列作为训练数据，并学习将一个词直接映射到另一个词。 与标准MT[7]中高度复杂的解码器不同，从左到右生成字的NMT波束搜索解码器可以很容易地实现。 最后，递归神经网络的使用使得NMT能够很好地泛化到非常长的单词序列，而不必像标准MT那样显式地存储任何巨大的短语表或语言模型。</p>
+
+<p>​		尽管取得了很大的成功，但NMT已经被应用于大多数正式文本，就像WMT的翻译任务一样。 因此，通过IWSLT MT轨道来考察NMT在口语领域的有效性将是很有意义的。 本工作探索了两种场景，即NMT适配和NMT用于低资源翻译。 在第一个场景中，我们询问将一个已有的模型训练在一个领域上并使其适应另一个领域是否有用。 我们的研究结果表明，在英德翻译任务中，这种顺应是非常关键的，它使我们比没有顺应的模式提高了+3.8个BLEU点。 这有助于我们在英德MT赛道上取得最高5.2个蓝点数的最先进成绩。
+​		LISH-越南训练数据，用现成框架训练的NMT模型可以获得与IWSLT基线相比的竞争性性能。 值得指出的还有一项相关工作[8]，该工作在IWSLT中为低资源语言对土耳其语-英语取得了最好的效果。 然而，他们的工作利用了一个庞大的单语语料库–英语Gigaword。</p>
+
+<h1 id="2方法">2.方法</h1>
+
+<p>​		在讨论我们的模型选择之前，我们给出了关于NMT和注意机制的背景信息。</p>
+
+<h2 id="21-神经机器翻译">2.1. 神经机器翻译</h2>
+
+<p>​		神经机器翻译的目的是直接建立翻译源句子x1的条件概率p(yx)的模型。 。。，x n，到目标句子，y1，。 。。。，y m。 它通过编解码器框架[1，2]来实现这一目标。 编码器为每个源句子计算表示s。 基于该源表示，解码器生成翻译，每次一个目标字，并因此将条件概率分解为:</p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gf5w7s8zamj30fs01qt8r.jpg" alt="image-20200526153956697" /></p>
+
+<p>​		在解码器中对这样的分解建模的一个自然选择是使用递归神经网络(RNN)架构，这是最近大多数NMT工作的共同点。 然而，它们在所使用的RNN架构和编码器如何计算源表示S方面有所不同。</p>
+
+<p>​		Kalchbrenner和Blunsom[9]使用带有香草RNN单元的RNN作为解码器，使用卷积神经网络作为编码源。 另一方面，Sutskever等人。 [1]和Luong等人。 [3，5]用长短时存储器(LSTM)单元[10]构建了用于编码器和解码器的深度RNN。 Cho等人，[2]，Bahdanau等人，[11]和Jean等人。 [4，8]都采用了LSTM启发的隐藏单元，门控循环单元(GRU)，并使用双向RNN作为编码器。</p>
+
+<p>​		更详细地，考虑深度RNN体系结构中的顶部递归层，可以计算解码每个目标字y j的概率为:</p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gf5w8pq1i9j30fy018mx6.jpg" alt="image-20200526154050928" />
+		h j是当前目标隐藏状态，计算如下:</p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gf5w8wc98vj30fg016748.jpg" alt="image-20200526154100869" />
+		这里，给定先前状态hj-1，当前输入（通常是先前字yt-1)以及可选地源表示S，f导出当前状态。 f可以是香草RNN单元，GRU或LSTM。 早期的NMT方法[9，1，2，3]使用最后一个源隐藏状态s=’hn一次来初始化解码器隐藏状态，并在等式中设置s=[]。 （3）。</p>
+
+<p>​		培训目标制定如下:</p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gf5w946ffzj30fc01qaa2.jpg" alt="image-20200526154114171" /></p>
+
+<p>​		D是我们的并行训练语料库。</p>
+
+<h2 id="22-注意机制">2.2. 注意机制</h2>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gf5wn18kraj30bk0bw3za.jpg" alt="image-20200526155436448" /></p>
+
+<p>图2:注意机制–[11]中提出的注意机制的简化视图。 注意机制包括两个步骤:首先，根据前一个隐藏状态和所有源隐藏状态计算上下文向量； 其次，使用上下文向量作为一个附加信息来导出下一个隐藏状态。</p>
+
+<p>​		在这里，我们在一个深度RNN架构之上给出了[11]中提出的注意机制的简化版本，它接近于我们的实际模型。</p>
+
+<p>​		关于上述NMT方法，Bahdanau等人。 [11]观察到翻译质量随着句子变长而下降。 这主要是由于模型必须将整个源信息编码成单个固定维向量’hn，这对于长的变长句子来说是有问题的。 而Sutskever等人。 [1]通过提出源反转技巧来解决这个问题，以改进学习，一个更优雅的方法将是跟踪源隐藏状态的记忆，并且只在需要时引用相关的状态，这基本上是[11]中提出的注意机制的本质。</p>
+
+<p>​		具体地说，注意机制将在等式中设置s=[‘h1，…，’hn]。 （3）。 f函数现在由两个阶段组成:(a)注意上下文–以前的隐藏状态h j-1用于与s中的单个源隐藏状态进行比较，以学习一个对准向量a j； 然后根据a j导出上下文向量c j，作为源隐藏状态的加权平均值； 以及(b)扩展的RNN-当计算下一个隐藏状态h j时，RNN单元被扩展为不仅考虑先前隐藏状态h j-1，当前输入y j-1，而且还考虑上下文向量c j。 这些阶段如图2所示。</p>
+
+<h2 id="23-我们的模型">2.3. 我们的模型</h2>
+
+<p>​		我们遵循Luong等人提出的基于注意的NMT模型。 [5]其中包括两种类型的注意，即global和local。 全局模型与文献[11]中提出的模型相似，但作了一些简化。 另一方面，局部模型是一种新的模型，它具有更集中的注意力，即每次只将注意力放在源隐藏状态的一个子集上，与全局注意力方法相比，这导致了更好的性能。 我们训练这两种类型的模型，以便在[1]中提出的集成方法可以受益于具有多种模型来进行决策。</p>
+
+<h1 id="3-nmt-adaptation">3 NMT Adaptation</h1>
+
+<p>​		在这一节中，我们探讨了将先前在一个领域上训练的现有模型适配到一个新领域的可能性。</p>
+
+<h2 id="31-培训详细信息">3.1. 培训详细信息</h2>
+
+<p>​		首先，我们采用现有的最先进的英语-德语系统[5]，它由8个单独的模型组成，这些模型是在WMT数据上训练的，其中大部分是正式文本（450万个句子对）。 然后，我们对IWSLT 2015提供的英语-德语口语数据进行进一步的训练(200k句对）。 我们使用默认的摩西标记器。 词汇表仅限于每种语言的WMT数据中前50k个频繁词汇。 不在词汇表中的所有其他单词都由特殊标记<unk>表示。 我们使用TED tst2012作为早期停止的验证数据集，并在BLEU[12]中报告TED tst2013（开发期间）和tst2014，tst2015（评估期间）的结果。</unk></p>
+
+<p>​		我们的模型是具有1000维嵌入和LSTM单元的4层深度LSTM网络。 我们进一步训练现有模型12个历元，其中在第一个历元之后，学习率（最初设置为1.0）每两个历元减半。 应用了一些有效的技术，如删除[13]，源反转[1]，注意机制[11，5]和罕见词处理[3，4]。 这些技术和其他超参数的更多细节可以在[5]中找到。 在一辆特斯拉K40上训练一个模型大约需要3-5个小时。</p>
+
+<h2 id="32-结果">3.2. 结果</h2>
+
+<p>​		如表1所示，自适应对NMT非常有用，与使用原始模型而无需进一步训练相比，NMT给出了+3.8个BLEU点的绝对增益。 此外，通过集成多个模型，如[1]中所做的，我们可以在单个自适应模型的基础上获得+2.0BLEU点的另一个显著增益。 与IWSLT’14[14]中的最佳条目相比，我们将最先进的结果提高了+5.2个BLEU点。</p>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gf5waurctpj30bq05c3z7.jpg" alt="image-20200526154253519" /></p>
+
+<p>​		表1:TED TST2013-BLEU各系统得分上的英语-德语成绩。 括号中给出了我们系统之间的渐进式增益。</p>
+
+<p>​		此外，根据主办方提供的评估结果（表2），我们比IWSLT’15基线系统好了+10.0个BLEU点，比IWSLT’14最佳条目好了+4.3个BLEU点[14]。</p>
+
+<h1 id="4用于低资源翻译的nmt">4.用于低资源翻译的NMT</h1>
+
+<p>​		到目前为止，最先进的NMT系统都依赖于大量的平行语料库来成功地训练翻译模型，例如具有1200万到3600万个句子对的英-法[3，4]和具有450万个句子对的英-德[6，5]。 很少有研究低资源翻译方向的工作。 在文献[8]中，作者用160k个句子对研究了从土耳其语到英语的翻译，但使用了大量的单语数据，即英语Gigaword语料库。 在本工作中，我们考虑将NMT应用于IWSLT 2015中低资源的从英语到越南语的翻译任务中。</p>
+
+<h2 id="41-培训详细信息">4.1. 培训详细信息</h2>
+
+<p>​		我们使用提供的英越平行数据(133K句对）。 除了用默认的Moses标记器对语料库进行标记化之外，没有其他预处理步骤，例如，对越南语进行小写或运行分词器。 我们保留单词的大小写，并用<unk>替换那些频率小于5的单词。 因此，我们的英语和越南语词汇量分别为17K和7.7K。 我们使用TED tst2012作为早期停止的有效集合，并报告TED tst2013（开发期间）和TED tst2015（评估期间）的BLEU得分。</unk></p>
+
+<p>​		在如此小的数据规模下，我们无法像在英德案例中那样训练具有4层的深度LSTM。 相反，我们选择具有500维嵌入和LSTM单元的2层LSTM模型。 我们的其他超参数是:(a)我们使用普通SGD训练12个历元； (b)我们的学习率最初设定为1.0，8个历元后，我们开始每历元将学习率减半； (c)参数在[0.1，0.1]范围内统一初始化； (d)当梯度的标准超过5时，即按比例缩放梯度； (e)源句颠倒，这是已知的有助于学习[1]，(f)我们使用概率为0.2的dropout。 我们用各种注意力机制训练模型，全局的和局部的，详见[5]。 在一辆特斯拉K40上训练一个模型大约需要4-7个小时。</p>
+
+<h2 id="42-结果">4.2. 结果</h2>
+
+<p>​		我们在开发过程中的结果如表3所示。 与在英德案例中观察到的趋势相似，9个模型的组合显著提高了性能+3.6个BLEU点。 由于这是越南语首次被纳入IWSLT，因此还没有任何公布的数字可供我们对比。</p>
+
+<p>​		遗憾的是，对于最终评估，我们的系统落后于IWSLT基线，如表4所示。 不过，差距还是很小的，看看其他球队的表现还是很有趣的。 考察翻译输出，第一作者，作为一个母语为越南语的人，相当惊讶地发现，从现成的NMT框架中翻译出来的作品有多好。</p>
+
+<p>​		我们也注意到，在NMT[3，4]中，我们经常使用罕见的词语处理技巧，但对我们的情况却没有什么帮助。 我们期望通过使用越南语分词器或简单的启发式来组合并置词，如[15]中使用的公式，可以改善这一点。 其理由是，英语中的许多单词对应于越南语中的多字词，如“success”–“thành công”和“city”–“thành ph fuxuition”。 罕见的单词处理技术需要一个由无监督的对齐构建的单词词典，在我们的例子中，没有分词器，我们使用的是一个单词到字符的英语-越南语词典。 因此，当试图翻译Vietname对应词是多字符单词的英语单词时，该模型会失败。</p>
+
+<h1 id="5结论">5.结论</h1>
+
+<p>​		在这项工作中，我们探索了两个有趣的场景下神经机器翻译(NMT)在口语领域的使用，即NMT自适应和NMT用于低资源翻译。 我们表明NMT自适应是非常有效的:在一个领域的大量数据上训练的模型可以在另一个领域的少量数据上进行微调。 这使英德NMT系统的性能提高了3.8分。 这有助于提高在IWSLT英语-德国MT赛道的最先进的结果高达+5.2蓝点数。 对于后一种情况，我们证明了一个现成的NMT框架可以在很少的数据下获得具有竞争力的性能，就像在英越翻译方向的情况下一样。 对于未来的工作，我们希望在NMT中加入基于短语的单元，以补偿像越南语和汉语这样的语言经常需要一个分词器的事实。</p>
+
+<h1 id="参考文献">参考文献</h1>
+
+<p>[1] I. Sutskever, O. Vinyals, and Q. V. Le, “Sequence to sequence learning with neural networks,” in NIPS, 2014.</p>
+
+<p>[2 K. Cho, B van Merrienboer, C. Gulcehre, F. BougaresH. Schwenk, and Y. Bengio, “Learning phrase repre-sentations using Rnn encoder-decoder for statisticalmachine translation in EMNLP. 2014</p>
+
+<p>[3] M.-T. Luong, I. Sutskever, Q. V. Le, O. Vinyals, andW. Zaremba, “ Addressing the rare word problem in neural machine translation ““in ACL. 2015</p>
+
+<p>[4] S Jean, K Cho, R. Memisevic, and Y. Bengio, “ Onusing very large target vocabulary for neural machinetranslation ‘in acL. 2015</p>
+
+<p>[5]M.-T. Luong, H. Pham, and C. D. Manning, Effectiveapproaches to attention-based neural machine transla-tion in Emnlp. 2015</p>
+
+<p>[6] S Jean, O. Firat, K. Cho, R. Memisevic, and Y. Bengio,”Montreal neural machine translation systems forWMT15,” in WMT,2015</p>
+
+<p>[7] P. Koehn, F. J Och, and D. Marcu,”Statistical phrasebased translation “in NAACL. 2003</p>
+
+<p>[8]C. Guilcehre, O. Firat, K. Xu, K. Cho, L. Barrault,H Lin, F. Bougares, H. Schwenk, and Y Bengio, Onusing monolingual corpora in neural machine transla-tion,”CoRR,vol.abs/1503.03535,2015.</p>
+
+<p>[9 N. Kalchbrenner and P. Blunsom, “Recurrent continuous translation models “ in EMNLP. 2013</p>
+
+<p>[10] S. Hochreiter and J Schmidhuber, “Long short-termmemory, “Neural Computation, vol 9, no 8, pp. 17351780,1997</p>
+
+<p>[11] D. Bahdanau, K Cho, and Y Bengio, “ Neural machinetranslation by jointly learning to align and translate, inCLR,2015.</p>
+
+<p>[12]K. Papineni, s. Roukos, T. Ward, and w. jing Zhu,”Bleu a method for automatic evaluation of machinetranslation “ “in aCL. 2002</p>
+
+<p>[13] W. Zaremba, I. Sutskever, and O. vinyals,”Re-current neural network regularization, CORR, volabs/1409.2329,2014.</p>
+
+<p>[14] M. Freitag, J. Wuebker, S. Peitz, H. Ney, M. Huck,A. Birch. N. durrani. P. Koehn, M. Mediani, I. SlawikJ Niehues. E Cho. A. Waibel n. bertoldi. M. cettoloand m. federico, “ Combined spoken language translation in /WSLT. 2014.</p>
+
+<p>[15 T. Mikolov, I. Sutskever, K. Chen, G. Corrado, andJ. Dean “Distributed representations of words andphrases and their compositionality, “in NIPS, 2013</p>
+:ET

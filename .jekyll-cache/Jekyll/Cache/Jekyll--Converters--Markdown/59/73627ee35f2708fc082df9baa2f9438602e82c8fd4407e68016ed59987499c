@@ -1,0 +1,569 @@
+I",�<h1 id="2---learning-phrase-representations-using-rnn-encoder-decoder-for-statistical-machine-translation">2 - Learning Phrase Representations using RNN Encoder-Decoder for Statistical Machine Translation</h1>
+
+<p>In this second notebook on sequence-to-sequence models using PyTorch and TorchText, we’ll be implementing the model from <a href="https://arxiv.org/abs/1406.1078">Learning Phrase Representations using RNN Encoder-Decoder for Statistical Machine Translation</a>. This model will achieve improved test perplexity whilst only using a single layer RNN in both the encoder and the decoder.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>Let’s remind ourselves of the general encoder-decoder model.</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/blog/190915-seq2seq1.png" alt="190915-seq2seq1.png" /></p>
+
+<p>We use our encoder (green) over the source sequence to create a context vector (red). We then use that context vector with the decoder (blue) and a linear layer (purple) to generate the target sentence.</p>
+
+<p>In the previous model, we used an multi-layered LSTM as the encoder and decoder.</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/blog/190915-seq2seq4.png" alt="190915-seq2seq4.png" /></p>
+
+<p>One downside of the previous model is that the decoder is trying to cram lots of information into the hidden states. Whilst decoding, the hidden state will need to contain information about the whole of the source sequence, as well as all of the tokens have been decoded so far. By alleviating some of this information compression, we can create a better model!</p>
+
+<p>We’ll also be using a GRU (Gated Recurrent Unit) instead of an LSTM (Long Short-Term Memory). Why? Mainly because that’s what they did in the paper (this paper also introduced GRUs) and also because we used LSTMs last time. If you want to understand how GRUs (and LSTMs) differ from standard RNNS, check out <a href="https://colah.github.io/posts/2015-08-Understanding-LSTMs/">this</a> link. Is a GRU better than an LSTM? <a href="https://arxiv.org/abs/1412.3555">Research</a> has shown they’re pretty much the same, and both are better than standard RNNs.</p>
+
+<h2 id="preparing-data">Preparing Data</h2>
+
+<p>All of the data preparation will be (almost) the same as last time, so I’ll very briefly detail what each code block does. See the previous notebook if you’ve forgotten.</p>
+
+<p>We’ll import PyTorch, TorchText, spaCy and a few standard modules.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="n">nn</span>
+<span class="kn">import</span> <span class="nn">torch.optim</span> <span class="k">as</span> <span class="n">optim</span>
+
+<span class="kn">from</span> <span class="nn">torchtext.datasets</span> <span class="kn">import</span> <span class="n">TranslationDataset</span><span class="p">,</span> <span class="n">Multi30k</span>
+<span class="kn">from</span> <span class="nn">torchtext.data</span> <span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">BucketIterator</span>
+
+<span class="kn">import</span> <span class="nn">spacy</span>
+
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">time</span>
+</code></pre></div></div>
+
+<p>Then set a random seed for deterministic results/reproducability.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">SEED</span> <span class="o">=</span> <span class="mi">1234</span>
+
+<span class="n">random</span><span class="p">.</span><span class="n">seed</span><span class="p">(</span><span class="n">SEED</span><span class="p">)</span>
+<span class="n">torch</span><span class="p">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="n">SEED</span><span class="p">)</span>
+<span class="n">torch</span><span class="p">.</span><span class="n">backends</span><span class="p">.</span><span class="n">cudnn</span><span class="p">.</span><span class="n">deterministic</span> <span class="o">=</span> <span class="bp">True</span>
+</code></pre></div></div>
+
+<p>Instantiate our German and English spaCy models.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">spacy_de</span> <span class="o">=</span> <span class="n">spacy</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="s">'de'</span><span class="p">)</span>
+<span class="n">spacy_en</span> <span class="o">=</span> <span class="n">spacy</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="s">'en'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Previously we reversed the source (German) sentence, however in the paper we are implementing they don’t do this, so neither will we.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">tokenize_de</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="s">"""
+    Tokenizes German text from a string into a list of strings
+    """</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">tok</span><span class="p">.</span><span class="n">text</span> <span class="k">for</span> <span class="n">tok</span> <span class="ow">in</span> <span class="n">spacy_de</span><span class="p">.</span><span class="n">tokenizer</span><span class="p">(</span><span class="n">text</span><span class="p">)]</span>
+
+<span class="k">def</span> <span class="nf">tokenize_en</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="s">"""
+    Tokenizes English text from a string into a list of strings
+    """</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">tok</span><span class="p">.</span><span class="n">text</span> <span class="k">for</span> <span class="n">tok</span> <span class="ow">in</span> <span class="n">spacy_en</span><span class="p">.</span><span class="n">tokenizer</span><span class="p">(</span><span class="n">text</span><span class="p">)]</span>
+</code></pre></div></div>
+
+<p>Create our fields to process our data. This will append the “start of sentence” and “end of sentence” tokens as well as converting all words to lowercase.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">SRC</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">tokenize</span><span class="o">=</span><span class="n">tokenize_de</span><span class="p">,</span> 
+            <span class="n">init_token</span><span class="o">=</span><span class="s">'&lt;sos&gt;'</span><span class="p">,</span> 
+            <span class="n">eos_token</span><span class="o">=</span><span class="s">'&lt;eos&gt;'</span><span class="p">,</span> 
+            <span class="n">lower</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="n">TRG</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">tokenize</span> <span class="o">=</span> <span class="n">tokenize_en</span><span class="p">,</span> 
+            <span class="n">init_token</span><span class="o">=</span><span class="s">'&lt;sos&gt;'</span><span class="p">,</span> 
+            <span class="n">eos_token</span><span class="o">=</span><span class="s">'&lt;eos&gt;'</span><span class="p">,</span> 
+            <span class="n">lower</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Load our data.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">train_data</span><span class="p">,</span> <span class="n">valid_data</span><span class="p">,</span> <span class="n">test_data</span> <span class="o">=</span> <span class="n">Multi30k</span><span class="p">.</span><span class="n">splits</span><span class="p">(</span><span class="n">exts</span> <span class="o">=</span> <span class="p">(</span><span class="s">'.de'</span><span class="p">,</span> <span class="s">'.en'</span><span class="p">),</span> 
+                                                    <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="n">SRC</span><span class="p">,</span> <span class="n">TRG</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>We’ll also print out an example just to double check they’re not reversed.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">print</span><span class="p">(</span><span class="nb">vars</span><span class="p">(</span><span class="n">train_data</span><span class="p">.</span><span class="n">examples</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{'src': ['zwei', 'junge', 'weiße', 'männer', 'sind', 'im', 'freien', 'in', 'der', 'nähe', 'vieler', 'büsche', '.'], 'trg': ['two', 'young', ',', 'white', 'males', 'are', 'outside', 'near', 'many', 'bushes', '.']}
+</code></pre></div></div>
+
+<p>Then create our vocabulary, converting all tokens appearing less than twice into <code class="language-plaintext highlighter-rouge">&lt;unk&gt;</code> tokens.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">SRC</span><span class="p">.</span><span class="n">build_vocab</span><span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">min_freq</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">TRG</span><span class="p">.</span><span class="n">build_vocab</span><span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">min_freq</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Finally, define the <code class="language-plaintext highlighter-rouge">device</code> and create our iterators.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">device</span><span class="p">(</span><span class="s">'cuda'</span> <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s">'cpu'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">BATCH_SIZE</span> <span class="o">=</span> <span class="mi">128</span>
+
+<span class="n">train_iterator</span><span class="p">,</span> <span class="n">valid_iterator</span><span class="p">,</span> <span class="n">test_iterator</span> <span class="o">=</span> <span class="n">BucketIterator</span><span class="p">.</span><span class="n">splits</span><span class="p">(</span>
+    <span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">valid_data</span><span class="p">,</span> <span class="n">test_data</span><span class="p">),</span> 
+    <span class="n">batch_size</span> <span class="o">=</span> <span class="n">BATCH_SIZE</span><span class="p">,</span> 
+    <span class="n">device</span> <span class="o">=</span> <span class="n">device</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="building-the-seq2seq-model">Building the Seq2Seq Model</h2>
+
+<h3 id="encoder">Encoder</h3>
+
+<p>The encoder is similar to the previous one, with the multi-layer LSTM swapped for a single-layer GRU. We also don’t pass the dropout as an argument to the GRU as that dropout is used between each layer of a multi-layered RNN. As we only have a single layer, PyTorch will display a warning if we try and use pass a dropout value to it.</p>
+
+<p>Another thing to note about the GRU is that it only requires and returns a hidden state, there is no cell state like in the LSTM.</p>
+
+\[\begin{align*}
+h_t &amp;= \text{GRU}(x_t, h_{t-1})\\
+(h_t, c_t) &amp;= \text{LSTM}(x_t, (h_{t-1}, c_{t-1}))\\
+h_t &amp;= \text{RNN}(x_t, h_{t-1})
+\end{align*}\]
+
+<p>From the equations above, it looks like the RNN and the GRU are identical. Inside the GRU, however, is a number of <em>gating mechanisms</em> that control the information flow in to and out of the hidden state (similar to an LSTM). Again, for more info, check out <a href="https://colah.github.io/posts/2015-08-Understanding-LSTMs/">this</a> excellent post.</p>
+
+<p>The rest of the encoder should be very familar from the last tutorial, it takes in a sequence, $X = {x_1, x_2, … , x_T}$, recurrently calculates hidden states, $H = {h_1, h_2, …, h_T}$, and returns a context vector (the final hidden state), $z=h_T$.</p>
+
+\[h_t = \text{EncoderGRU}(x_t, h_{t-1})\]
+
+<p>This is identical to the encoder of the general seq2seq model, with all the “magic” happening inside the GRU (green squares).</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/blog/190915-seq2seq5.png" alt="190915-seq2seq5.png" /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Encoder</span><span class="p">(</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_dim</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">,</span> <span class="n">hid_dim</span><span class="p">,</span> <span class="n">dropout</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">().</span><span class="n">__init__</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">input_dim</span> <span class="o">=</span> <span class="n">input_dim</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">emb_dim</span> <span class="o">=</span> <span class="n">emb_dim</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">hid_dim</span> <span class="o">=</span> <span class="n">hid_dim</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">dropout</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Embedding</span><span class="p">(</span><span class="n">input_dim</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">)</span> <span class="c1">#no dropout as only one layer!
+</span>        
+        <span class="bp">self</span><span class="p">.</span><span class="n">rnn</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">GRU</span><span class="p">(</span><span class="n">emb_dim</span><span class="p">,</span> <span class="n">hid_dim</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)</span>
+        
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">):</span>
+        
+        <span class="c1">#src = [src sent len, batch size]
+</span>        
+        <span class="n">embedded</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">dropout</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">embedding</span><span class="p">(</span><span class="n">src</span><span class="p">))</span>
+        
+        <span class="c1">#embedded = [src sent len, batch size, emb dim]
+</span>        
+        <span class="n">outputs</span><span class="p">,</span> <span class="n">hidden</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">rnn</span><span class="p">(</span><span class="n">embedded</span><span class="p">)</span> <span class="c1">#no cell state!
+</span>        
+        <span class="c1">#outputs = [src sent len, batch size, hid dim * n directions]
+</span>        <span class="c1">#hidden = [n layers * n directions, batch size, hid dim]
+</span>        
+        <span class="c1">#outputs are always from the top hidden layer
+</span>        
+        <span class="k">return</span> <span class="n">hidden</span>
+</code></pre></div></div>
+
+<h2 id="decoder">Decoder</h2>
+
+<p>The decoder is where the implementation differs significantly from the previous model and we alleviate some of the information compression.</p>
+
+<p>Instead of the GRU in the decoder taking just the target token, $y_t$ and the previous hidden state $s_{t-1}$ as inputs, it also takes the context vector $z$.</p>
+
+\[s_t = \text{DecoderGRU}(y_t, s_{t-1}, z)\]
+
+<p>Note how this context vector, $z$, does not have a $t$ subscript, meaning we re-use the same context vector returned by the encoder for every time-step in the decoder.</p>
+
+<p>Before, we predicted the next token, $\hat{y}<em>{t+1}$, with the linear layer, $f$, only using the top-layer decoder hidden state at that time-step, $s_t$, as $\hat{y}</em>{t+1}=f(s_t^L)$. Now, we also pass the current token, $\hat{y}_t$ and the context vector, $z$ to the linear layer.</p>
+
+\[\hat{y}_{t+1} = f(y_t, s_t, z)\]
+
+<p>Thus, our decoder now looks something like this:</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/blog/190915-seq2seq6.png" alt="190915-seq2seq6.png" /></p>
+
+<p>Note, the initial hidden state, $s_0$, is still the context vector, $z$, so when generating the first token we are actually inputting two identical context vectors into the GRU.</p>
+
+<p>How do these two changes reduce the information compression? Well, hypothetically the decoder hidden states, $s_t$, no longer need to contain information about the source sequence as it is always available as an input. Thus, it only needs to contain information about what tokens it has generated so far. The addition of $y_t$ to the linear layer also means this layer can directly see what the token is, without having to get this information from the hidden state.</p>
+
+<p>However, this hypothesis is just a hypothesis, it is impossible to determine how the model actually uses the information provided to it (don’t listen to anyone that tells you differently). Nevertheless, it is a solid intuition and the results seem to indicate that this modifications are a good idea!</p>
+
+<p>Within the implementation, we will pass $y_t$ and $z$ to the GRU by concatenating them together, so the input dimensions to the GRU are now <code class="language-plaintext highlighter-rouge">emb_dim + hid_dim</code> (as context vector will be of size <code class="language-plaintext highlighter-rouge">hid_dim</code>). The linear layer will take $y_t, s_t$ and $z$ also by concatenating them together, hence the input dimensions are now <code class="language-plaintext highlighter-rouge">emb_dim + hid_dim*2</code>. We also don’t pass a value of dropout to the GRU as it only uses a single layer.</p>
+
+<p><code class="language-plaintext highlighter-rouge">forward</code> now takes a <code class="language-plaintext highlighter-rouge">context</code> argument. Inside of <code class="language-plaintext highlighter-rouge">forward</code>, we concatenate $y_t$ and $z$ as <code class="language-plaintext highlighter-rouge">emb_con</code> before feeding to the GRU, and we concatenate $y_t$, $s_t$ and $z$ together as <code class="language-plaintext highlighter-rouge">output</code> before feeding it through the linear layer to receive our predictions, $\hat{y}_{t+1}$.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Decoder</span><span class="p">(</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_dim</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">,</span> <span class="n">hid_dim</span><span class="p">,</span> <span class="n">dropout</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">().</span><span class="n">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="p">.</span><span class="n">emb_dim</span> <span class="o">=</span> <span class="n">emb_dim</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">hid_dim</span> <span class="o">=</span> <span class="n">hid_dim</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">output_dim</span> <span class="o">=</span> <span class="n">output_dim</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">dropout</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Embedding</span><span class="p">(</span><span class="n">output_dim</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">rnn</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">GRU</span><span class="p">(</span><span class="n">emb_dim</span> <span class="o">+</span> <span class="n">hid_dim</span><span class="p">,</span> <span class="n">hid_dim</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">out</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">emb_dim</span> <span class="o">+</span> <span class="n">hid_dim</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">output_dim</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)</span>
+        
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">hidden</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        
+        <span class="c1">#input = [batch size]
+</span>        <span class="c1">#hidden = [n layers * n directions, batch size, hid dim]
+</span>        <span class="c1">#context = [n layers * n directions, batch size, hid dim]
+</span>        
+        <span class="c1">#n layers and n directions in the decoder will both always be 1, therefore:
+</span>        <span class="c1">#hidden = [1, batch size, hid dim]
+</span>        <span class="c1">#context = [1, batch size, hid dim]
+</span>        
+        <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="p">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        
+        <span class="c1">#input = [1, batch size]
+</span>        
+        <span class="n">embedded</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">dropout</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">embedding</span><span class="p">(</span><span class="nb">input</span><span class="p">))</span>
+        
+        <span class="c1">#embedded = [1, batch size, emb dim]
+</span>                
+        <span class="n">emb_con</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">cat</span><span class="p">((</span><span class="n">embedded</span><span class="p">,</span> <span class="n">context</span><span class="p">),</span> <span class="n">dim</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
+            
+        <span class="c1">#emb_con = [1, batch size, emb dim + hid dim]
+</span>            
+        <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">rnn</span><span class="p">(</span><span class="n">emb_con</span><span class="p">,</span> <span class="n">hidden</span><span class="p">)</span>
+        
+        <span class="c1">#output = [sent len, batch size, hid dim * n directions]
+</span>        <span class="c1">#hidden = [n layers * n directions, batch size, hid dim]
+</span>        
+        <span class="c1">#sent len, n layers and n directions will always be 1 in the decoder, therefore:
+</span>        <span class="c1">#output = [1, batch size, hid dim]
+</span>        <span class="c1">#hidden = [1, batch size, hid dim]
+</span>        
+        <span class="n">output</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">cat</span><span class="p">((</span><span class="n">embedded</span><span class="p">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">hidden</span><span class="p">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">context</span><span class="p">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)),</span> 
+                           <span class="n">dim</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+        
+        <span class="c1">#output = [batch size, emb dim + hid dim * 2]
+</span>        
+        <span class="n">prediction</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">out</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+        
+        <span class="c1">#prediction = [batch size, output dim]
+</span>        
+        <span class="k">return</span> <span class="n">prediction</span><span class="p">,</span> <span class="n">hidden</span>
+</code></pre></div></div>
+
+<h2 id="seq2seq-model">Seq2Seq Model</h2>
+
+<p>Putting the encoder and decoder together, we get:</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/blog/190915-seq2seq7.png" alt="190915-seq2seq7.png" /></p>
+
+<p>Again, in this implementation we need to ensure the hidden dimensions in both the encoder and the decoder are the same.</p>
+
+<p>Briefly going over all of the steps:</p>
+
+<ul>
+  <li>the <code class="language-plaintext highlighter-rouge">outputs</code> tensor is created to hold all predictions, $\hat{Y}$</li>
+  <li>the source sequence, $X$, is fed into the encoder to receive a <code class="language-plaintext highlighter-rouge">context</code> vector</li>
+  <li>the initial decoder hidden state is set to be the <code class="language-plaintext highlighter-rouge">context</code> vector, $s_0 = z = h_T$</li>
+  <li>we use a batch of <code class="language-plaintext highlighter-rouge">&lt;sos&gt;</code> tokens as the first <code class="language-plaintext highlighter-rouge">input</code>, $y_1$</li>
+  <li>we then decode within a loop:
+    <ul>
+      <li>inserting the input token $y_t$, previous hidden state, $s_{t-1}$, and the context vector, $z$, into the decoder</li>
+      <li>receiving a prediction, $\hat{y}_{t+1}$, and a new hidden state, $s_t$</li>
+      <li>we then decide if we are going to teacher force or not, setting the next input as appropriate</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Seq2Seq</span><span class="p">(</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encoder</span><span class="p">,</span> <span class="n">decoder</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">().</span><span class="n">__init__</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">encoder</span> <span class="o">=</span> <span class="n">encoder</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">decoder</span> <span class="o">=</span> <span class="n">decoder</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+        
+        <span class="k">assert</span> <span class="n">encoder</span><span class="p">.</span><span class="n">hid_dim</span> <span class="o">==</span> <span class="n">decoder</span><span class="p">.</span><span class="n">hid_dim</span><span class="p">,</span> \
+            <span class="s">"Hidden dimensions of encoder and decoder must be equal!"</span>
+        
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">,</span> <span class="n">teacher_forcing_ratio</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">):</span>
+        
+        <span class="c1">#src = [src sent len, batch size]
+</span>        <span class="c1">#trg = [trg sent len, batch size]
+</span>        <span class="c1">#teacher_forcing_ratio is probability to use teacher forcing
+</span>        <span class="c1">#e.g. if teacher_forcing_ratio is 0.75 we use ground-truth inputs 75% of the time
+</span>        
+        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">trg</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">max_len</span> <span class="o">=</span> <span class="n">trg</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">trg_vocab_size</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">decoder</span><span class="p">.</span><span class="n">output_dim</span>
+        
+        <span class="c1">#tensor to store decoder outputs
+</span>        <span class="n">outputs</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">max_len</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">trg_vocab_size</span><span class="p">).</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">device</span><span class="p">)</span>
+        
+        <span class="c1">#last hidden state of the encoder is the context
+</span>        <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">encoder</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+        
+        <span class="c1">#context also used as the initial hidden state of the decoder
+</span>        <span class="n">hidden</span> <span class="o">=</span> <span class="n">context</span>
+        
+        <span class="c1">#first input to the decoder is the &lt;sos&gt; tokens
+</span>        <span class="nb">input</span> <span class="o">=</span> <span class="n">trg</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span>
+        
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_len</span><span class="p">):</span>
+            
+            <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">decoder</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">hidden</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+            <span class="n">outputs</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">output</span>
+            <span class="n">teacher_force</span> <span class="o">=</span> <span class="n">random</span><span class="p">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">teacher_forcing_ratio</span>
+            <span class="n">top1</span> <span class="o">=</span> <span class="n">output</span><span class="p">.</span><span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="nb">input</span> <span class="o">=</span> <span class="p">(</span><span class="n">trg</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="k">if</span> <span class="n">teacher_force</span> <span class="k">else</span> <span class="n">top1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">outputs</span>
+</code></pre></div></div>
+
+<h1 id="training-the-seq2seq-model">Training the Seq2Seq Model</h1>
+
+<p>The rest of this tutorial is very similar to the previous one.</p>
+
+<p>We initialise our encoder, decoder and seq2seq model (placing it on the GPU if we have one). As before, the embedding dimensions and the amount of dropout used can be different between the encoder and the decoder, but the hidden dimensions must remain the same.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">INPUT_DIM</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">SRC</span><span class="p">.</span><span class="n">vocab</span><span class="p">)</span>
+<span class="n">OUTPUT_DIM</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">TRG</span><span class="p">.</span><span class="n">vocab</span><span class="p">)</span>
+<span class="n">ENC_EMB_DIM</span> <span class="o">=</span> <span class="mi">256</span>
+<span class="n">DEC_EMB_DIM</span> <span class="o">=</span> <span class="mi">256</span>
+<span class="n">HID_DIM</span> <span class="o">=</span> <span class="mi">512</span>
+<span class="n">ENC_DROPOUT</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">DEC_DROPOUT</span> <span class="o">=</span> <span class="mf">0.5</span>
+
+<span class="n">enc</span> <span class="o">=</span> <span class="n">Encoder</span><span class="p">(</span><span class="n">INPUT_DIM</span><span class="p">,</span> <span class="n">ENC_EMB_DIM</span><span class="p">,</span> <span class="n">HID_DIM</span><span class="p">,</span> <span class="n">ENC_DROPOUT</span><span class="p">)</span>
+<span class="n">dec</span> <span class="o">=</span> <span class="n">Decoder</span><span class="p">(</span><span class="n">OUTPUT_DIM</span><span class="p">,</span> <span class="n">DEC_EMB_DIM</span><span class="p">,</span> <span class="n">HID_DIM</span><span class="p">,</span> <span class="n">DEC_DROPOUT</span><span class="p">)</span>
+
+<span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">device</span><span class="p">(</span><span class="s">'cuda'</span> <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s">'cpu'</span><span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">Seq2Seq</span><span class="p">(</span><span class="n">enc</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span> <span class="n">device</span><span class="p">).</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Next, we initialize our parameters. The paper states the parameters are initialized from a normal distribution with a mean of 0 and a standard deviation of 0.01, i.e. $\mathcal{N}(0, 0.01)$.</p>
+
+<p>It also states we should initialize the recurrent parameters to a special initialization, however to keep things simple we’ll also initialize them to $\mathcal{N}(0, 0.01)$.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">init_weights</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">m</span><span class="p">.</span><span class="n">named_parameters</span><span class="p">():</span>
+        <span class="n">nn</span><span class="p">.</span><span class="n">init</span><span class="p">.</span><span class="n">normal_</span><span class="p">(</span><span class="n">param</span><span class="p">.</span><span class="n">data</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+        
+<span class="n">model</span><span class="p">.</span><span class="nb">apply</span><span class="p">(</span><span class="n">init_weights</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Seq2Seq(
+  (encoder): Encoder(
+    (embedding): Embedding(7855, 256)
+    (rnn): GRU(256, 512)
+    (dropout): Dropout(p=0.5)
+  )
+  (decoder): Decoder(
+    (embedding): Embedding(5893, 256)
+    (rnn): GRU(768, 512)
+    (out): Linear(in_features=1280, out_features=5893, bias=True)
+    (dropout): Dropout(p=0.5)
+  )
+)
+
+</code></pre></div></div>
+
+<p>We print out the number of parameters.</p>
+
+<p>Even though we only have a single layer RNN for our encoder and decoder we actually have <strong>more</strong> parameters  than the last model. This is due to the increased size of the inputs to the GRU and the linear layer. However, it is not a significant amount of parameters and causes a minimal amount of increase in training time (~3 seconds per epoch extra).</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">count_parameters</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">numel</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">model</span><span class="p">.</span><span class="n">parameters</span><span class="p">()</span> <span class="k">if</span> <span class="n">p</span><span class="p">.</span><span class="n">requires_grad</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s">f'The model has </span><span class="si">{</span><span class="n">count_parameters</span><span class="p">(</span><span class="n">model</span><span class="p">):,</span><span class="si">}</span><span class="s"> trainable parameters'</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>The model has 14,220,293 trainable parameters
+
+</code></pre></div></div>
+
+<p>We initiaize our optimizer.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="p">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="n">parameters</span><span class="p">())</span>
+
+</code></pre></div></div>
+
+<p>We also initialize the loss function, making sure to ignore the loss on <code class="language-plaintext highlighter-rouge">&lt;pad&gt;</code> tokens.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">PAD_IDX</span> <span class="o">=</span> <span class="n">TRG</span><span class="p">.</span><span class="n">vocab</span><span class="p">.</span><span class="n">stoi</span><span class="p">[</span><span class="s">'&lt;pad&gt;'</span><span class="p">]</span>
+
+<span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">CrossEntropyLoss</span><span class="p">(</span><span class="n">ignore_index</span> <span class="o">=</span> <span class="n">PAD_IDX</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<p>We then create the training loop…</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">iterator</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">clip</span><span class="p">):</span>
+    
+    <span class="n">model</span><span class="p">.</span><span class="n">train</span><span class="p">()</span>
+    
+    <span class="n">epoch_loss</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">batch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">iterator</span><span class="p">):</span>
+        
+        <span class="n">src</span> <span class="o">=</span> <span class="n">batch</span><span class="p">.</span><span class="n">src</span>
+        <span class="n">trg</span> <span class="o">=</span> <span class="n">batch</span><span class="p">.</span><span class="n">trg</span>
+        
+        <span class="n">optimizer</span><span class="p">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        
+        <span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">)</span>
+        
+        <span class="c1">#trg = [trg sent len, batch size]
+</span>        <span class="c1">#output = [trg sent len, batch size, output dim]
+</span>        
+        <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="mi">1</span><span class="p">:].</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">output</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">trg</span> <span class="o">=</span> <span class="n">trg</span><span class="p">[</span><span class="mi">1</span><span class="p">:].</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        
+        <span class="c1">#trg = [(trg sent len - 1) * batch size]
+</span>        <span class="c1">#output = [(trg sent len - 1) * batch size, output dim]
+</span>        
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">trg</span><span class="p">)</span>
+        
+        <span class="n">loss</span><span class="p">.</span><span class="n">backward</span><span class="p">()</span>
+        
+        <span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">utils</span><span class="p">.</span><span class="n">clip_grad_norm_</span><span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">clip</span><span class="p">)</span>
+        
+        <span class="n">optimizer</span><span class="p">.</span><span class="n">step</span><span class="p">()</span>
+        
+        <span class="n">epoch_loss</span> <span class="o">+=</span> <span class="n">loss</span><span class="p">.</span><span class="n">item</span><span class="p">()</span>
+        
+    <span class="k">return</span> <span class="n">epoch_loss</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">iterator</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<p>…and the evaluation loop, remembering to set the model to <code class="language-plaintext highlighter-rouge">eval</code> mode and turn off teaching forcing.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">iterator</span><span class="p">,</span> <span class="n">criterion</span><span class="p">):</span>
+    
+    <span class="n">model</span><span class="p">.</span><span class="nb">eval</span><span class="p">()</span>
+    
+    <span class="n">epoch_loss</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="k">with</span> <span class="n">torch</span><span class="p">.</span><span class="n">no_grad</span><span class="p">():</span>
+    
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">batch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">iterator</span><span class="p">):</span>
+
+            <span class="n">src</span> <span class="o">=</span> <span class="n">batch</span><span class="p">.</span><span class="n">src</span>
+            <span class="n">trg</span> <span class="o">=</span> <span class="n">batch</span><span class="p">.</span><span class="n">trg</span>
+
+            <span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="c1">#turn off teacher forcing
+</span>
+            <span class="c1">#trg = [trg sent len, batch size]
+</span>            <span class="c1">#output = [trg sent len, batch size, output dim]
+</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="mi">1</span><span class="p">:].</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">output</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">trg</span> <span class="o">=</span> <span class="n">trg</span><span class="p">[</span><span class="mi">1</span><span class="p">:].</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="c1">#trg = [(trg sent len - 1) * batch size]
+</span>            <span class="c1">#output = [(trg sent len - 1) * batch size, output dim]
+</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">trg</span><span class="p">)</span>
+
+            <span class="n">epoch_loss</span> <span class="o">+=</span> <span class="n">loss</span><span class="p">.</span><span class="n">item</span><span class="p">()</span>
+        
+    <span class="k">return</span> <span class="n">epoch_loss</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">iterator</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<p>We’ll also define the function that calculates how long an epoch takes.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">epoch_time</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">end_time</span><span class="p">):</span>
+    <span class="n">elapsed_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
+    <span class="n">elapsed_mins</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">elapsed_time</span> <span class="o">/</span> <span class="mi">60</span><span class="p">)</span>
+    <span class="n">elapsed_secs</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">elapsed_time</span> <span class="o">-</span> <span class="p">(</span><span class="n">elapsed_mins</span> <span class="o">*</span> <span class="mi">60</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">elapsed_mins</span><span class="p">,</span> <span class="n">elapsed_secs</span>
+
+</code></pre></div></div>
+
+<p>Then, we train our model, saving the parameters that give us the best validation loss.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">N_EPOCHS</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">CLIP</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">best_valid_loss</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s">'inf'</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_EPOCHS</span><span class="p">):</span>
+    
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span>
+    
+    <span class="n">train_loss</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">train_iterator</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">CLIP</span><span class="p">)</span>
+    <span class="n">valid_loss</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">valid_iterator</span><span class="p">,</span> <span class="n">criterion</span><span class="p">)</span>
+    
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span>
+    
+    <span class="n">epoch_mins</span><span class="p">,</span> <span class="n">epoch_secs</span> <span class="o">=</span> <span class="n">epoch_time</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">end_time</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">valid_loss</span> <span class="o">&lt;</span> <span class="n">best_valid_loss</span><span class="p">:</span>
+        <span class="n">best_valid_loss</span> <span class="o">=</span> <span class="n">valid_loss</span>
+        <span class="n">torch</span><span class="p">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s">'tut2-model.pt'</span><span class="p">)</span>
+    
+    <span class="k">print</span><span class="p">(</span><span class="s">f'Epoch: </span><span class="si">{</span><span class="n">epoch</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="mi">02</span><span class="si">}</span><span class="s"> | Time: </span><span class="si">{</span><span class="n">epoch_mins</span><span class="si">}</span><span class="s">m </span><span class="si">{</span><span class="n">epoch_secs</span><span class="si">}</span><span class="s">s'</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">f'</span><span class="se">\t</span><span class="s">Train Loss: </span><span class="si">{</span><span class="n">train_loss</span><span class="p">:.</span><span class="mi">3</span><span class="n">f</span><span class="si">}</span><span class="s"> | Train PPL: </span><span class="si">{</span><span class="n">math</span><span class="p">.</span><span class="n">exp</span><span class="p">(</span><span class="n">train_loss</span><span class="p">):</span><span class="mf">7.3</span><span class="n">f</span><span class="si">}</span><span class="s">'</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">f'</span><span class="se">\t</span><span class="s"> Val. Loss: </span><span class="si">{</span><span class="n">valid_loss</span><span class="p">:.</span><span class="mi">3</span><span class="n">f</span><span class="si">}</span><span class="s"> |  Val. PPL: </span><span class="si">{</span><span class="n">math</span><span class="p">.</span><span class="n">exp</span><span class="p">(</span><span class="n">valid_loss</span><span class="p">):</span><span class="mf">7.3</span><span class="n">f</span><span class="si">}</span><span class="s">'</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Epoch: 01 | Time: 0m 27s
+	Train Loss: 5.086 | Train PPL: 161.806
+	 Val. Loss: 5.285 |  Val. PPL: 197.400
+Epoch: 02 | Time: 0m 25s
+	Train Loss: 4.445 | Train PPL:  85.169
+	 Val. Loss: 5.182 |  Val. PPL: 178.115
+Epoch: 03 | Time: 0m 26s
+	Train Loss: 4.103 | Train PPL:  60.538
+	 Val. Loss: 4.690 |  Val. PPL: 108.874
+Epoch: 04 | Time: 0m 26s
+	Train Loss: 3.740 | Train PPL:  42.112
+	 Val. Loss: 4.254 |  Val. PPL:  70.352
+Epoch: 05 | Time: 0m 26s
+	Train Loss: 3.358 | Train PPL:  28.737
+	 Val. Loss: 3.999 |  Val. PPL:  54.557
+Epoch: 06 | Time: 0m 26s
+	Train Loss: 3.028 | Train PPL:  20.654
+	 Val. Loss: 3.752 |  Val. PPL:  42.612
+Epoch: 07 | Time: 0m 26s
+	Train Loss: 2.757 | Train PPL:  15.760
+	 Val. Loss: 3.630 |  Val. PPL:  37.718
+Epoch: 08 | Time: 0m 26s
+	Train Loss: 2.497 | Train PPL:  12.151
+	 Val. Loss: 3.525 |  Val. PPL:  33.948
+Epoch: 09 | Time: 0m 27s
+	Train Loss: 2.272 | Train PPL:   9.699
+	 Val. Loss: 3.521 |  Val. PPL:  33.807
+Epoch: 10 | Time: 0m 26s
+	Train Loss: 2.108 | Train PPL:   8.230
+	 Val. Loss: 3.563 |  Val. PPL:  35.260
+
+</code></pre></div></div>
+
+<p>Finally, we test the model on the test set using these “best” parameters.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">model</span><span class="p">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="s">'tut2-model.pt'</span><span class="p">))</span>
+
+<span class="n">test_loss</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">test_iterator</span><span class="p">,</span> <span class="n">criterion</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s">f'| Test Loss: </span><span class="si">{</span><span class="n">test_loss</span><span class="p">:.</span><span class="mi">3</span><span class="n">f</span><span class="si">}</span><span class="s"> | Test PPL: </span><span class="si">{</span><span class="n">math</span><span class="p">.</span><span class="n">exp</span><span class="p">(</span><span class="n">test_loss</span><span class="p">):</span><span class="mf">7.3</span><span class="n">f</span><span class="si">}</span><span class="s"> |'</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>| Test Loss: 3.490 | Test PPL:  32.787 |
+
+</code></pre></div></div>
+
+<p>Just looking at the test loss, we get better performance. This is a pretty good sign that this model architecture is doing something right! Relieving the information compression seems like the way forard, and in the next tutorial we’ll expand on this even further with <em>attention</em>.</p>
+:ET

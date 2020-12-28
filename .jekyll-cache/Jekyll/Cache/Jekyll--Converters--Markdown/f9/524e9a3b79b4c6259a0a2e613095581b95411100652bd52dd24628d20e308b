@@ -1,0 +1,511 @@
+I"��<h1 id="5---convolutional-sequence-to-sequence-learning">5 - Convolutional Sequence to Sequence Learning</h1>
+
+<p>In this notebook we’ll be implementing the <a href="https://arxiv.org/abs/1705.03122">Convolutional Sequence to Sequence Learning</a> model.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<h2 id="preparing-the-data">Preparing the Data</h2>
+
+<p>First, let’s import all the required modules and set the random seeds for reproducability.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="n">nn</span>
+<span class="kn">import</span> <span class="nn">torch.optim</span> <span class="k">as</span> <span class="n">optim</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="n">F</span>
+
+<span class="kn">from</span> <span class="nn">torchtext.datasets</span> <span class="kn">import</span> <span class="n">TranslationDataset</span><span class="p">,</span> <span class="n">Multi30k</span>
+<span class="kn">from</span> <span class="nn">torchtext.data</span> <span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">BucketIterator</span>
+
+<span class="kn">import</span> <span class="nn">spacy</span>
+
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">time</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">SEED</span> <span class="o">=</span> <span class="mi">1234</span>
+
+<span class="n">random</span><span class="p">.</span><span class="n">seed</span><span class="p">(</span><span class="n">SEED</span><span class="p">)</span>
+<span class="n">torch</span><span class="p">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="n">SEED</span><span class="p">)</span>
+<span class="n">torch</span><span class="p">.</span><span class="n">backends</span><span class="p">.</span><span class="n">cudnn</span><span class="p">.</span><span class="n">deterministic</span> <span class="o">=</span> <span class="bp">True</span>
+</code></pre></div></div>
+
+<p>Next, we’ll load the spaCy models and define the tokenizers for the source and target languages.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">spacy_de</span> <span class="o">=</span> <span class="n">spacy</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="s">'de'</span><span class="p">)</span>
+<span class="n">spacy_en</span> <span class="o">=</span> <span class="n">spacy</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="s">'en'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">tokenize_de</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="s">"""
+    Tokenizes German text from a string into a list of strings
+    """</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">tok</span><span class="p">.</span><span class="n">text</span> <span class="k">for</span> <span class="n">tok</span> <span class="ow">in</span> <span class="n">spacy_de</span><span class="p">.</span><span class="n">tokenizer</span><span class="p">(</span><span class="n">text</span><span class="p">)]</span>
+
+<span class="k">def</span> <span class="nf">tokenize_en</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="s">"""
+    Tokenizes English text from a string into a list of strings
+    """</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">tok</span><span class="p">.</span><span class="n">text</span> <span class="k">for</span> <span class="n">tok</span> <span class="ow">in</span> <span class="n">spacy_en</span><span class="p">.</span><span class="n">tokenizer</span><span class="p">(</span><span class="n">text</span><span class="p">)]</span>
+</code></pre></div></div>
+
+<p>Next, we’ll set up the <code class="language-plaintext highlighter-rouge">Field</code>s which decide how the data will be processed. By default RNN models in PyTorch require the sequence to be a tensor of shape <strong>[sequence length, batch size]</strong> so TorchText will, by default, return batches of tensors in the same shape. However in this notebook we are using CNNs which expect the batch dimension to be first. We tell TorchText to have batches be <strong>[batch size, sequence length]</strong> by setting <code class="language-plaintext highlighter-rouge">batch_first = True</code>.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">SRC</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">tokenize</span><span class="o">=</span><span class="n">tokenize_de</span><span class="p">,</span> 
+            <span class="n">init_token</span> <span class="o">=</span> <span class="s">'&lt;sos&gt;'</span><span class="p">,</span> 
+            <span class="n">eos_token</span> <span class="o">=</span> <span class="s">'&lt;eos&gt;'</span><span class="p">,</span> 
+            <span class="n">lower</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> 
+            <span class="n">batch_first</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+
+<span class="n">TRG</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">tokenize</span><span class="o">=</span><span class="n">tokenize_en</span><span class="p">,</span> 
+            <span class="n">init_token</span> <span class="o">=</span> <span class="s">'&lt;sos&gt;'</span><span class="p">,</span> 
+            <span class="n">eos_token</span> <span class="o">=</span> <span class="s">'&lt;eos&gt;'</span><span class="p">,</span> 
+            <span class="n">lower</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> 
+            <span class="n">batch_first</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Then, we load our dataset.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">train_data</span><span class="p">,</span> <span class="n">valid_data</span><span class="p">,</span> <span class="n">test_data</span> <span class="o">=</span> <span class="n">Multi30k</span><span class="p">.</span><span class="n">splits</span><span class="p">(</span><span class="n">exts</span><span class="o">=</span><span class="p">(</span><span class="s">'.de'</span><span class="p">,</span> <span class="s">'.en'</span><span class="p">),</span> 
+                                                    <span class="n">fields</span><span class="o">=</span><span class="p">(</span><span class="n">SRC</span><span class="p">,</span> <span class="n">TRG</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>We build our vocabulary as before, by converting any tokens that appear less than 2 times into <code class="language-plaintext highlighter-rouge">&lt;unk&gt;</code> tokens.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">SRC</span><span class="p">.</span><span class="n">build_vocab</span><span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">min_freq</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">TRG</span><span class="p">.</span><span class="n">build_vocab</span><span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">min_freq</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>The final bit of data preparation is defining the device and then building the iterator.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">device</span><span class="p">(</span><span class="s">'cuda'</span> <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s">'cpu'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">BATCH_SIZE</span> <span class="o">=</span> <span class="mi">128</span>
+
+<span class="n">train_iterator</span><span class="p">,</span> <span class="n">valid_iterator</span><span class="p">,</span> <span class="n">test_iterator</span> <span class="o">=</span> <span class="n">BucketIterator</span><span class="p">.</span><span class="n">splits</span><span class="p">(</span>
+    <span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">valid_data</span><span class="p">,</span> <span class="n">test_data</span><span class="p">),</span> 
+     <span class="n">batch_size</span> <span class="o">=</span> <span class="n">BATCH_SIZE</span><span class="p">,</span>
+     <span class="n">device</span> <span class="o">=</span> <span class="n">device</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="building-the-model">Building the Model</h2>
+
+<h3 id="encoder">Encoder</h3>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/blog/190915-convseq2seq1.png" alt="190915-convseq2seq1.png" /></p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/blog/190915-convseq2seq2.png" alt="190915-convseq2seq2.png" /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Encoder</span><span class="p">(</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_dim</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">,</span> <span class="n">hid_dim</span><span class="p">,</span> <span class="n">n_layers</span><span class="p">,</span> <span class="n">kernel_size</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">().</span><span class="n">__init__</span><span class="p">()</span>
+        
+        <span class="k">assert</span> <span class="n">kernel_size</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s">"Kernel size must be odd!"</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">input_dim</span> <span class="o">=</span> <span class="n">input_dim</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">emb_dim</span> <span class="o">=</span> <span class="n">emb_dim</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">hid_dim</span> <span class="o">=</span> <span class="n">hid_dim</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">kernel_size</span> <span class="o">=</span> <span class="n">kernel_size</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">dropout</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="n">FloatTensor</span><span class="p">([</span><span class="mf">0.5</span><span class="p">])).</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">tok_embedding</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Embedding</span><span class="p">(</span><span class="n">input_dim</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">pos_embedding</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Embedding</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">emb2hid</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">emb_dim</span><span class="p">,</span> <span class="n">hid_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">hid2emb</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hid_dim</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">convs</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">ModuleList</span><span class="p">([</span><span class="n">nn</span><span class="p">.</span><span class="n">Conv1d</span><span class="p">(</span><span class="n">in_channels</span> <span class="o">=</span> <span class="n">hid_dim</span><span class="p">,</span> 
+                                              <span class="n">out_channels</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">hid_dim</span><span class="p">,</span> 
+                                              <span class="n">kernel_size</span> <span class="o">=</span> <span class="n">kernel_size</span><span class="p">,</span> 
+                                              <span class="n">padding</span> <span class="o">=</span> <span class="p">(</span><span class="n">kernel_size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
+                                    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_layers</span><span class="p">)])</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)</span>
+        
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">):</span>
+        
+        <span class="c1">#src = [batch size, src sent len]
+</span>        
+        <span class="c1">#create position tensor
+</span>        <span class="n">pos</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">src</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]).</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="n">repeat</span><span class="p">(</span><span class="n">src</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">).</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">device</span><span class="p">)</span>
+        
+        <span class="c1">#pos = [batch size, src sent len]
+</span>        
+        <span class="c1">#embed tokens and positions
+</span>        <span class="n">tok_embedded</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">tok_embedding</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+        <span class="n">pos_embedded</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">pos_embedding</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+        
+        <span class="c1">#tok_embedded = pos_embedded = [batch size, src sent len, emb dim]
+</span>        
+        <span class="c1">#combine embeddings by elementwise summing
+</span>        <span class="n">embedded</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">tok_embedded</span> <span class="o">+</span> <span class="n">pos_embedded</span><span class="p">)</span>
+        
+        <span class="c1">#embedded = [batch size, src sent len, emb dim]
+</span>        
+        <span class="c1">#pass embedded through linear layer to go through emb dim -&gt; hid dim
+</span>        <span class="n">conv_input</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">emb2hid</span><span class="p">(</span><span class="n">embedded</span><span class="p">)</span>
+        
+        <span class="c1">#conv_input = [batch size, src sent len, hid dim]
+</span>        
+        <span class="c1">#permute for convolutional layer
+</span>        <span class="n">conv_input</span> <span class="o">=</span> <span class="n">conv_input</span><span class="p">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> 
+        
+        <span class="c1">#conv_input = [batch size, hid dim, src sent len]
+</span>        
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">conv</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">convs</span><span class="p">):</span>
+        
+            <span class="c1">#pass through convolutional layer
+</span>            <span class="n">conved</span> <span class="o">=</span> <span class="n">conv</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">conv_input</span><span class="p">))</span>
+
+            <span class="c1">#conved = [batch size, 2*hid dim, src sent len]
+</span>
+            <span class="c1">#pass through GLU activation function
+</span>            <span class="n">conved</span> <span class="o">=</span> <span class="n">F</span><span class="p">.</span><span class="n">glu</span><span class="p">(</span><span class="n">conved</span><span class="p">,</span> <span class="n">dim</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="c1">#conved = [batch size, hid dim, src sent len]
+</span>            
+            <span class="c1">#apply residual connection
+</span>            <span class="n">conved</span> <span class="o">=</span> <span class="p">(</span><span class="n">conved</span> <span class="o">+</span> <span class="n">conv_input</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="p">.</span><span class="n">scale</span>
+
+            <span class="c1">#conved = [batch size, hid dim, src sent len]
+</span>            
+            <span class="c1">#set conv_input to conved for next loop iteration
+</span>            <span class="n">conv_input</span> <span class="o">=</span> <span class="n">conved</span>
+        
+        <span class="c1">#permute and convert back to emb dim
+</span>        <span class="n">conved</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">hid2emb</span><span class="p">(</span><span class="n">conved</span><span class="p">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        
+        <span class="c1">#conved = [batch size, src sent len, emb dim]
+</span>        
+        <span class="c1">#elementwise sum output (conved) and input (embedded) to be used for attention
+</span>        <span class="n">combined</span> <span class="o">=</span> <span class="p">(</span><span class="n">conved</span> <span class="o">+</span> <span class="n">embedded</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="p">.</span><span class="n">scale</span>
+        
+        <span class="c1">#combined = [batch size, src sent len, emb dim]
+</span>        
+        <span class="k">return</span> <span class="n">conved</span><span class="p">,</span> <span class="n">combined</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Decoder</span><span class="p">(</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_dim</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">,</span> <span class="n">hid_dim</span><span class="p">,</span> <span class="n">n_layers</span><span class="p">,</span> <span class="n">kernel_size</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">pad_idx</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">().</span><span class="n">__init__</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">output_dim</span> <span class="o">=</span> <span class="n">output_dim</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">emb_dim</span> <span class="o">=</span> <span class="n">emb_dim</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">hid_dim</span> <span class="o">=</span> <span class="n">hid_dim</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">kernel_size</span> <span class="o">=</span> <span class="n">kernel_size</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">dropout</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">pad_idx</span> <span class="o">=</span> <span class="n">pad_idx</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="n">FloatTensor</span><span class="p">([</span><span class="mf">0.5</span><span class="p">])).</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">tok_embedding</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Embedding</span><span class="p">(</span><span class="n">output_dim</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">pos_embedding</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Embedding</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">emb2hid</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">emb_dim</span><span class="p">,</span> <span class="n">hid_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">hid2emb</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hid_dim</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">attn_hid2emb</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hid_dim</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">attn_emb2hid</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">emb_dim</span><span class="p">,</span> <span class="n">hid_dim</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">out</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">emb_dim</span><span class="p">,</span> <span class="n">output_dim</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">convs</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">ModuleList</span><span class="p">([</span><span class="n">nn</span><span class="p">.</span><span class="n">Conv1d</span><span class="p">(</span><span class="n">hid_dim</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">hid_dim</span><span class="p">,</span> <span class="n">kernel_size</span><span class="p">)</span>
+                                    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_layers</span><span class="p">)])</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)</span>
+      
+    <span class="k">def</span> <span class="nf">calculate_attention</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">embedded</span><span class="p">,</span> <span class="n">conved</span><span class="p">,</span> <span class="n">encoder_conved</span><span class="p">,</span> <span class="n">encoder_combined</span><span class="p">):</span>
+        
+        <span class="c1">#embedded = [batch size, trg sent len, emb dim]
+</span>        <span class="c1">#conved = [batch size, hid dim, trg sent len]
+</span>        <span class="c1">#encoder_conved = encoder_combined = [batch size, src sent len, emb dim]
+</span>        
+        <span class="c1">#permute and convert back to emb dim
+</span>        <span class="n">conved_emb</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">attn_hid2emb</span><span class="p">(</span><span class="n">conved</span><span class="p">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        
+        <span class="c1">#conved_emb = [batch size, trg sent len, emb dim]
+</span>        
+        <span class="n">combined</span> <span class="o">=</span> <span class="p">(</span><span class="n">embedded</span> <span class="o">+</span> <span class="n">conved_emb</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="p">.</span><span class="n">scale</span>
+        
+        <span class="c1">#combined = [batch size, trg sent len, emb dim]
+</span>                
+        <span class="n">energy</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">combined</span><span class="p">,</span> <span class="n">encoder_conved</span><span class="p">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        
+        <span class="c1">#energy = [batch size, trg sent len, src sent len]
+</span>        
+        <span class="n">attention</span> <span class="o">=</span> <span class="n">F</span><span class="p">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        
+        <span class="c1">#attention = [batch size, trg sent len, src sent len]
+</span>            
+        <span class="n">attended_encoding</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">attention</span><span class="p">,</span> <span class="p">(</span><span class="n">encoder_conved</span> <span class="o">+</span> <span class="n">encoder_combined</span><span class="p">))</span>
+        
+        <span class="c1">#attended_encoding = [batch size, trg sent len, emd dim]
+</span>        
+        <span class="c1">#convert from emb dim -&gt; hid dim
+</span>        <span class="n">attended_encoding</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">attn_emb2hid</span><span class="p">(</span><span class="n">attended_encoding</span><span class="p">)</span>
+        
+        <span class="c1">#attended_encoding = [batch size, trg sent len, hid dim]
+</span>        
+        <span class="n">attended_combined</span> <span class="o">=</span> <span class="p">(</span><span class="n">conved</span> <span class="o">+</span> <span class="n">attended_encoding</span><span class="p">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="bp">self</span><span class="p">.</span><span class="n">scale</span>
+        
+        <span class="c1">#attended_combined = [batch size, hid dim, trg sent len]
+</span>        
+        <span class="k">return</span> <span class="n">attention</span><span class="p">,</span> <span class="n">attended_combined</span>
+        
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trg</span><span class="p">,</span> <span class="n">encoder_conved</span><span class="p">,</span> <span class="n">encoder_combined</span><span class="p">):</span>
+        
+        <span class="c1">#trg = [batch size, trg sent len]
+</span>        <span class="c1">#encoder_conved = encoder_combined = [batch size, src sent len, emb dim]
+</span>                
+        <span class="c1">#create position tensor
+</span>        <span class="n">pos</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">trg</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]).</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="n">repeat</span><span class="p">(</span><span class="n">trg</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">).</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        
+        <span class="c1">#pos = [batch size, trg sent len]
+</span>        
+        <span class="c1">#embed tokens and positions
+</span>        <span class="n">tok_embedded</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">tok_embedding</span><span class="p">(</span><span class="n">trg</span><span class="p">)</span>
+        <span class="n">pos_embedded</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">pos_embedding</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+        
+        <span class="c1">#tok_embedded = [batch size, trg sent len, emb dim]
+</span>        <span class="c1">#pos_embedded = [batch size, trg sent len, emb dim]
+</span>        
+        <span class="c1">#combine embeddings by elementwise summing
+</span>        <span class="n">embedded</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">tok_embedded</span> <span class="o">+</span> <span class="n">pos_embedded</span><span class="p">)</span>
+        
+        <span class="c1">#embedded = [batch size, trg sent len, emb dim]
+</span>        
+        <span class="c1">#pass embedded through linear layer to go through emb dim -&gt; hid dim
+</span>        <span class="n">conv_input</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">emb2hid</span><span class="p">(</span><span class="n">embedded</span><span class="p">)</span>
+        
+        <span class="c1">#conv_input = [batch size, trg sent len, hid dim]
+</span>        
+        <span class="c1">#permute for convolutional layer
+</span>        <span class="n">conv_input</span> <span class="o">=</span> <span class="n">conv_input</span><span class="p">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> 
+        
+        <span class="c1">#conv_input = [batch size, hid dim, trg sent len]
+</span>        
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">conv</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">convs</span><span class="p">):</span>
+        
+            <span class="c1">#apply dropout
+</span>            <span class="n">conv_input</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">conv_input</span><span class="p">)</span>
+        
+            <span class="c1">#need to pad so decoder can't "cheat"
+</span>            <span class="n">padding</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">conv_input</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">conv_input</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="p">.</span><span class="n">kernel_size</span><span class="o">-</span><span class="mi">1</span><span class="p">).</span><span class="n">fill_</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">pad_idx</span><span class="p">).</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+            <span class="n">padded_conv_input</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">cat</span><span class="p">((</span><span class="n">padding</span><span class="p">,</span> <span class="n">conv_input</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        
+            <span class="c1">#padded_conv_input = [batch size, hid dim, trg sent len + kernel size - 1]
+</span>        
+            <span class="c1">#pass through convolutional layer
+</span>            <span class="n">conved</span> <span class="o">=</span> <span class="n">conv</span><span class="p">(</span><span class="n">padded_conv_input</span><span class="p">)</span>
+
+            <span class="c1">#conved = [batch size, 2*hid dim, trg sent len]
+</span>            
+            <span class="c1">#pass through GLU activation function
+</span>            <span class="n">conved</span> <span class="o">=</span> <span class="n">F</span><span class="p">.</span><span class="n">glu</span><span class="p">(</span><span class="n">conved</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="c1">#conved = [batch size, hid dim, trg sent len]
+</span>            
+            <span class="n">attention</span><span class="p">,</span> <span class="n">conved</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">calculate_attention</span><span class="p">(</span><span class="n">embedded</span><span class="p">,</span> <span class="n">conved</span><span class="p">,</span> <span class="n">encoder_conved</span><span class="p">,</span> <span class="n">encoder_combined</span><span class="p">)</span>
+            
+            <span class="c1">#attention = [batch size, trg sent len, src sent len]
+</span>            <span class="c1">#conved = [batch size, hid dim, trg sent len]
+</span>            
+            <span class="c1">#apply residual connection
+</span>            <span class="n">conved</span> <span class="o">=</span> <span class="p">(</span><span class="n">conved</span> <span class="o">+</span> <span class="n">conv_input</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="p">.</span><span class="n">scale</span>
+            
+            <span class="c1">#conved = [batch size, hid dim, trg sent len]
+</span>            
+            <span class="c1">#set conv_input to conved for next loop iteration
+</span>            <span class="n">conv_input</span> <span class="o">=</span> <span class="n">conved</span>
+            
+        <span class="n">conved</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">hid2emb</span><span class="p">(</span><span class="n">conved</span><span class="p">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+         
+        <span class="c1">#conved = [batch size, trg sent len, hid dim]
+</span>            
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">out</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">conved</span><span class="p">))</span>
+        
+        <span class="c1">#output = [batch size, trg sent len, output dim]
+</span>            
+        <span class="k">return</span> <span class="n">output</span><span class="p">,</span> <span class="n">attention</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Seq2Seq</span><span class="p">(</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encoder</span><span class="p">,</span> <span class="n">decoder</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">().</span><span class="n">__init__</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">encoder</span> <span class="o">=</span> <span class="n">encoder</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">decoder</span> <span class="o">=</span> <span class="n">decoder</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+        
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">):</span>
+        
+        <span class="c1">#src = [batch size, src sent len]
+</span>        <span class="c1">#trg = [batch size, trg sent len]
+</span>           
+        <span class="c1">#calculate z^u (encoder_conved) and e (encoder_combined)
+</span>        <span class="c1">#encoder_conved is output from final encoder conv. block
+</span>        <span class="c1">#encoder_combined is encoder_conved plus (elementwise) src embedding plus positional embeddings 
+</span>        <span class="n">encoder_conved</span><span class="p">,</span> <span class="n">encoder_combined</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">encoder</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+            
+        <span class="c1">#encoder_conved = [batch size, src sent len, emb dim]
+</span>        <span class="c1">#encoder_combined = [batch size, src sent len, emb dim]
+</span>        
+        <span class="c1">#calculate predictions of next words
+</span>        <span class="c1">#output is a batch of predictions for each word in the trg sentence
+</span>        <span class="c1">#attention a batch of attention scores across the src sentence for each word in the trg sentence
+</span>        <span class="n">output</span><span class="p">,</span> <span class="n">attention</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">decoder</span><span class="p">(</span><span class="n">trg</span><span class="p">,</span> <span class="n">encoder_conved</span><span class="p">,</span> <span class="n">encoder_combined</span><span class="p">)</span>
+        
+        <span class="c1">#output = [batch size, trg sent len, output dim]
+</span>        <span class="c1">#attention = [batch size, trg sent len, src sent len]
+</span>        
+        <span class="k">return</span> <span class="n">output</span><span class="p">,</span> <span class="n">attention</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">INPUT_DIM</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">SRC</span><span class="p">.</span><span class="n">vocab</span><span class="p">)</span>
+<span class="n">OUTPUT_DIM</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">TRG</span><span class="p">.</span><span class="n">vocab</span><span class="p">)</span>
+<span class="n">EMB_DIM</span> <span class="o">=</span> <span class="mi">256</span>
+<span class="n">HID_DIM</span> <span class="o">=</span> <span class="mi">512</span>
+<span class="n">ENC_LAYERS</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">DEC_LAYERS</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">ENC_KERNEL_SIZE</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">DEC_KERNEL_SIZE</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">ENC_DROPOUT</span> <span class="o">=</span> <span class="mf">0.25</span>
+<span class="n">DEC_DROPOUT</span> <span class="o">=</span> <span class="mf">0.25</span>
+<span class="n">PAD_IDX</span> <span class="o">=</span> <span class="n">TRG</span><span class="p">.</span><span class="n">vocab</span><span class="p">.</span><span class="n">stoi</span><span class="p">[</span><span class="s">'&lt;pad&gt;'</span><span class="p">]</span>
+    
+<span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">device</span><span class="p">(</span><span class="s">'cuda'</span> <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s">'cpu'</span><span class="p">)</span>
+    
+<span class="n">enc</span> <span class="o">=</span> <span class="n">Encoder</span><span class="p">(</span><span class="n">INPUT_DIM</span><span class="p">,</span> <span class="n">EMB_DIM</span><span class="p">,</span> <span class="n">HID_DIM</span><span class="p">,</span> <span class="n">ENC_LAYERS</span><span class="p">,</span> <span class="n">ENC_KERNEL_SIZE</span><span class="p">,</span> <span class="n">ENC_DROPOUT</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+<span class="n">dec</span> <span class="o">=</span> <span class="n">Decoder</span><span class="p">(</span><span class="n">OUTPUT_DIM</span><span class="p">,</span> <span class="n">EMB_DIM</span><span class="p">,</span> <span class="n">HID_DIM</span><span class="p">,</span> <span class="n">DEC_LAYERS</span><span class="p">,</span> <span class="n">DEC_KERNEL_SIZE</span><span class="p">,</span> <span class="n">DEC_DROPOUT</span><span class="p">,</span> <span class="n">PAD_IDX</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">Seq2Seq</span><span class="p">(</span><span class="n">enc</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span> <span class="n">device</span><span class="p">).</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">count_parameters</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">numel</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">model</span><span class="p">.</span><span class="n">parameters</span><span class="p">()</span> <span class="k">if</span> <span class="n">p</span><span class="p">.</span><span class="n">requires_grad</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s">f'The model has </span><span class="si">{</span><span class="n">count_parameters</span><span class="p">(</span><span class="n">model</span><span class="p">):,</span><span class="si">}</span><span class="s"> trainable parameters'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="p">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="n">parameters</span><span class="p">())</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">CrossEntropyLoss</span><span class="p">(</span><span class="n">ignore_index</span> <span class="o">=</span> <span class="n">PAD_IDX</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">iterator</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">clip</span><span class="p">):</span>
+    
+    <span class="n">model</span><span class="p">.</span><span class="n">train</span><span class="p">()</span>
+    
+    <span class="n">epoch_loss</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">batch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">iterator</span><span class="p">):</span>
+        
+        <span class="n">src</span> <span class="o">=</span> <span class="n">batch</span><span class="p">.</span><span class="n">src</span>
+        <span class="n">trg</span> <span class="o">=</span> <span class="n">batch</span><span class="p">.</span><span class="n">trg</span>
+        
+        <span class="n">optimizer</span><span class="p">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        
+        <span class="n">output</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">[:,:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        
+        <span class="c1">#output = [batch size, trg sent len - 1, output dim]
+</span>        <span class="c1">#trg = [batch size, trg sent len]
+</span>        
+        <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="p">.</span><span class="n">contiguous</span><span class="p">().</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">output</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">trg</span> <span class="o">=</span> <span class="n">trg</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:].</span><span class="n">contiguous</span><span class="p">().</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        
+        <span class="c1">#output = [batch size * trg sent len - 1, output dim]
+</span>        <span class="c1">#trg = [batch size * trg sent len - 1]
+</span>        
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">trg</span><span class="p">)</span>
+        
+        <span class="n">loss</span><span class="p">.</span><span class="n">backward</span><span class="p">()</span>
+        
+        <span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">utils</span><span class="p">.</span><span class="n">clip_grad_norm_</span><span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">clip</span><span class="p">)</span>
+        
+        <span class="n">optimizer</span><span class="p">.</span><span class="n">step</span><span class="p">()</span>
+        
+        <span class="n">epoch_loss</span> <span class="o">+=</span> <span class="n">loss</span><span class="p">.</span><span class="n">item</span><span class="p">()</span>
+        
+    <span class="k">return</span> <span class="n">epoch_loss</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">iterator</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">iterator</span><span class="p">,</span> <span class="n">criterion</span><span class="p">):</span>
+    
+    <span class="n">model</span><span class="p">.</span><span class="nb">eval</span><span class="p">()</span>
+    
+    <span class="n">epoch_loss</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="k">with</span> <span class="n">torch</span><span class="p">.</span><span class="n">no_grad</span><span class="p">():</span>
+    
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">batch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">iterator</span><span class="p">):</span>
+
+            <span class="n">src</span> <span class="o">=</span> <span class="n">batch</span><span class="p">.</span><span class="n">src</span>
+            <span class="n">trg</span> <span class="o">=</span> <span class="n">batch</span><span class="p">.</span><span class="n">trg</span>
+
+            <span class="n">output</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">[:,:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        
+            <span class="c1">#output = [batch size, trg sent len - 1, output dim]
+</span>            <span class="c1">#trg = [batch size, trg sent len]
+</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="p">.</span><span class="n">contiguous</span><span class="p">().</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">output</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">trg</span> <span class="o">=</span> <span class="n">trg</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:].</span><span class="n">contiguous</span><span class="p">().</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="c1">#output = [batch size * trg sent len - 1, output dim]
+</span>            <span class="c1">#trg = [batch size * trg sent len - 1]
+</span>            
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">trg</span><span class="p">)</span>
+
+            <span class="n">epoch_loss</span> <span class="o">+=</span> <span class="n">loss</span><span class="p">.</span><span class="n">item</span><span class="p">()</span>
+        
+    <span class="k">return</span> <span class="n">epoch_loss</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">iterator</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">epoch_time</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">end_time</span><span class="p">):</span>
+    <span class="n">elapsed_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
+    <span class="n">elapsed_mins</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">elapsed_time</span> <span class="o">/</span> <span class="mi">60</span><span class="p">)</span>
+    <span class="n">elapsed_secs</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">elapsed_time</span> <span class="o">-</span> <span class="p">(</span><span class="n">elapsed_mins</span> <span class="o">*</span> <span class="mi">60</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">elapsed_mins</span><span class="p">,</span> <span class="n">elapsed_secs</span>
+
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">N_EPOCHS</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">CLIP</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">best_valid_loss</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s">'inf'</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_EPOCHS</span><span class="p">):</span>
+    
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span>
+    
+    <span class="n">train_loss</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">train_iterator</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">CLIP</span><span class="p">)</span>
+    <span class="n">valid_loss</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">valid_iterator</span><span class="p">,</span> <span class="n">criterion</span><span class="p">)</span>
+    
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span>
+    
+    <span class="n">epoch_mins</span><span class="p">,</span> <span class="n">epoch_secs</span> <span class="o">=</span> <span class="n">epoch_time</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">end_time</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">valid_loss</span> <span class="o">&lt;</span> <span class="n">best_valid_loss</span><span class="p">:</span>
+        <span class="n">best_valid_loss</span> <span class="o">=</span> <span class="n">valid_loss</span>
+        <span class="n">torch</span><span class="p">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s">'tut5-model.pt'</span><span class="p">)</span>
+    
+    <span class="k">print</span><span class="p">(</span><span class="s">f'Epoch: </span><span class="si">{</span><span class="n">epoch</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="mi">02</span><span class="si">}</span><span class="s"> | Time: </span><span class="si">{</span><span class="n">epoch_mins</span><span class="si">}</span><span class="s">m </span><span class="si">{</span><span class="n">epoch_secs</span><span class="si">}</span><span class="s">s'</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">f'</span><span class="se">\t</span><span class="s">Train Loss: </span><span class="si">{</span><span class="n">train_loss</span><span class="p">:.</span><span class="mi">3</span><span class="n">f</span><span class="si">}</span><span class="s"> | Train PPL: </span><span class="si">{</span><span class="n">math</span><span class="p">.</span><span class="n">exp</span><span class="p">(</span><span class="n">train_loss</span><span class="p">):</span><span class="mf">7.3</span><span class="n">f</span><span class="si">}</span><span class="s">'</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">f'</span><span class="se">\t</span><span class="s"> Val. Loss: </span><span class="si">{</span><span class="n">valid_loss</span><span class="p">:.</span><span class="mi">3</span><span class="n">f</span><span class="si">}</span><span class="s"> |  Val. PPL: </span><span class="si">{</span><span class="n">math</span><span class="p">.</span><span class="n">exp</span><span class="p">(</span><span class="n">valid_loss</span><span class="p">):</span><span class="mf">7.3</span><span class="n">f</span><span class="si">}</span><span class="s">'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">model</span><span class="p">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="s">'tut5-model.pt'</span><span class="p">))</span>
+
+<span class="n">test_loss</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">test_iterator</span><span class="p">,</span> <span class="n">criterion</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s">f'| Test Loss: </span><span class="si">{</span><span class="n">test_loss</span><span class="p">:.</span><span class="mi">3</span><span class="n">f</span><span class="si">}</span><span class="s"> | Test PPL: </span><span class="si">{</span><span class="n">math</span><span class="p">.</span><span class="n">exp</span><span class="p">(</span><span class="n">test_loss</span><span class="p">):</span><span class="mf">7.3</span><span class="n">f</span><span class="si">}</span><span class="s"> |'</span><span class="p">)</span>
+</code></pre></div></div>
+
+:ET

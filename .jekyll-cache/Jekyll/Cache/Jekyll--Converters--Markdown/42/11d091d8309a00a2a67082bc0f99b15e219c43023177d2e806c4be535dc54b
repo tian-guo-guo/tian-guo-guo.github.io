@@ -1,0 +1,305 @@
+I"6-<h1 id="css中的pxemrem-详解"><a href="https://juejin.im/post/6844903733042610184">css中的px、em、rem 详解</a></h1>
+
+<h3 id="概念介绍">概念介绍：</h3>
+
+<h5 id="1px-pixel像素">1、px (pixel，像素)：</h5>
+
+<p>是一个虚拟长度单位，是计算机系统的数字化图像长度单位，如果px要换算成物理长度，需要指定精度DPI(Dots Per Inch，每英寸像素数)，在扫描打印时一般都有DPI可选。Windows系统默认是96dpi，Apple系统默认是72dpi。</p>
+
+<h5 id="2em相对长度单位相对于当前对象内文本的字体尺寸">2、em(相对长度单位，相对于当前对象内文本的字体尺寸)：</h5>
+
+<p>是一个相对长度单位，最初是指字母M的宽度，故名em。现指的是字符宽度的倍数，用法类似百分比，如：0.8em, 1.2em,2em等。通常1em=16px。</p>
+
+<h5 id="3pt-point磅">3、pt (point，磅)：</h5>
+
+<p>是一个物理长度单位，指的是72分之一英寸。pt=1/72(英寸), px=1/dpi(英寸)</p>
+
+<h5 id="4remroot-em根em">4、rem（root em，根em）：</h5>
+
+<p>是CSS3新增的一个相对单位，这个单位引起了广泛关注。这个单位与em有什么区别呢？区别在于使用rem为元素设定字体大小时，仍然是相对大小，但相对的只是HTML根元素。这个单位可谓集相对大小和绝对大小的优点于一身，通过它既可以做到只修改根元素就成比例地调整所有字体大小，又可以避免字体大小逐层复合的连锁反应。目前，除了IE8及更早版本外，所有浏览器均已支持rem。对于不支持它的浏览器，应对方法也很简单，就是多写一个绝对单位的声明。这些浏览器会忽略用rem设定的字体大小。</p>
+
+<h3 id="1em与px的问题">1、em与px的问题</h3>
+
+<h6 id="px是何物">px是何物？</h6>
+
+<p>px像素（Pixel）。相对长度单位。像素px是相对于显示器屏幕分辨率而言的。(引自CSS2.0手册) em是相对长度单位。相对于当前对象内文本的字体尺寸。如当前对行内文本的字体尺寸未被人为设置，则相对于浏览器的默认字体尺寸。(引自CSS2.0手册) PX特点</p>
+
+<ol>
+  <li>IE无法调整那些使用px作为单位的字体大小；</li>
+  <li>国外的大部分网站能够调整的原因在于其使用了em或rem作为字体单位；</li>
+  <li>Firefox能够调整px和em，rem，但是96%以上的中国网民使用IE浏览器(或内核)。</li>
+</ol>
+
+<h6 id="em是何物">em是何物？</h6>
+
+<p>em 指字体高，任意浏览器的默认字体高都是16px。所以未经调整的浏览器都符合: 1em=16px。那么12px=0.75em, 10px=0.625em。为了简化font -size的换算，需要在css中的body选择器中声明Font-size=62.5%，这就使em值变为16px*62.5%=10px, 这样12px=1.2em, 10px=1em, 也就是说只需要将你的原来的px数值除以10，然后换上em作为单位就行了。</p>
+
+<h6 id="em特点">em特点：</h6>
+
+<p>1em指的是一个字体的大小，它会继承父级元素的字体大小，因此并不是一个固定的值。任何浏览器的默认字体大小都是16px。因此，12px = 0.75em。实际应用中为了方便换算，通常会如下设置样式： CSS代码</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>html { font-size: 62.5%; }
+复制代码
+</code></pre></div></div>
+
+<p>这样，1em = 10px。我们常用的1.2em理论上就是12px。但是，这个换算在IE浏览器下不成立，1.2em会比12px稍大一些，解决办法是把html标签样式中的62.5%改成63%，即： CSS代码</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>html { font-size: 63%; }
+复制代码
+</code></pre></div></div>
+
+<p>在 中文的文章中，一般会在段首空两格。如果用px作为单位，对12px字体来说需要空出24px，对14px字体来说需要空出28px……这样换算非常不通 用。如果用上em单位，这个问题就很好解决了，1个字的大小就是1em，那两个字的大小就是2em。因此，只需这样定义就行了： CSS代码</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>p { text-indent: 2em; }
+复制代码
+</code></pre></div></div>
+
+<h3 id="em和px两种字体单位的区别">em和px两种字体单位的区别</h3>
+
+<p>字体单位应该用em而不用px，原因简单来说就是支持IE6下的字体缩放，在页面中按ctrl+滚轮，字体以px为单位的网站没有反应。px是绝对单位，不支持IE的缩放，em是相对单位。 我在调整本blog的时候，发现不仅仅是字体，将行距(line-height)，和纵向高度的单位都用em。保证缩放时候的整体性。</p>
+
+<h6 id="em有如下特点">em有如下特点：</h6>
+
+<ol>
+  <li>em的值并不是固定的；</li>
+  <li>em会继承父级元素的字体大小。</li>
+</ol>
+
+<h6 id="em重写步骤">em重写步骤：</h6>
+
+<ol>
+  <li>body选择器中声明Font-size=62.5%；</li>
+  <li>将你的原来的px数值除以10，然后换上em作为单位； 简 单吧，如果只需要以上两步就能解决问题的话，可能就没人用px了。经过以上两步，你会发现你的网站字体大得出乎想象。因为em的值不固定，又会继承父级 元素的大小，你可能会在content这个div里把字体大小设为1.2em, 也就是12px。然后你又把选择器p的字体大小也设为1.2em，但如果p属于content的子级的话，p的字体大小就不是12px，而是1.2em= 1.2 * 12px=14.4px。这是因为content的字体大小被设为1.2em，这个em值继承其父级元素body的大小，也就是16px * 62.5% * 1.2=12px, 而p作为其子级，em则继承content的字体高，也就是12px。所以p的1.2em就不再是12px，而是14.4px。</li>
+  <li>重新计算那些被放大的字体的em数值。避免字体大小的重复声明，也就是避免以上提到的1.2 * 1.2= 1.44的现象。比如说你在#content中声明了字体大小为1.2em，那么在声明p的字体大小时就只能是1em，而不是1.2em, 因为此em非彼em，它因继承#content的字体高而变为了1em=12px。</li>
+</ol>
+
+<h6 id="ie中的12px汉字">IE中的12px汉字：</h6>
+
+<p>完成 em转换时还发现了一个诡异的现象，就是由以上方法得到的12px(1.2em)大小的汉字在IE中并不等于直接用12px定义的字体大小，而 是稍大一点。你只需在body选择器中把62.5%换成63%就能正常显示了。原因可能是IE处理汉字时，对于浮点的取值精确度有 限。本现象只发生在12px的汉字，英文不存在此现象。解决方法就是把style.css中的62.5%换 为63%。</p>
+
+<h6 id="一个pxempt单位转换工具">一个px、em、pt单位转换工具：</h6>
+
+<p>地址：<a href="http://pxtoem.com/">pxtoem.com/</a></p>
+
+<h3 id="2rem特点">2、rem特点</h3>
+
+<p>rem是CSS3新增的一个相对单位（root em，根em），这个单位引起了广泛关注。这个单位与em有什么区别呢？区别在于使用rem为元素设定字体大小时，仍然是相对大小，但相对的只是HTML根元素。这个单位可谓集相对大小和绝对大小的优点于一身，通过它既可以做到只修改根元素就成比例地调整所有字体大小，又可以避免字体大小逐层复合的连锁反应。目前，除了IE8及更早版本外，所有浏览器均已支持rem。对于不支持它的浏览器，应对方法也很简单，就是多写一个绝对单位的声明。这些浏览器会忽略用rem设定的字体大小。 举例：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>p {font-size:14px; font-size:.875rem;}
+复制代码
+</code></pre></div></div>
+
+<blockquote>
+  <p>注意： 选择使用什么字体单位主要由你的项目来决定，如果你的用户群都使用最新版的浏览器，那推荐使用rem，如果要考虑兼容性，那就使用px,或者两者同时使用。</p>
+</blockquote>
+
+<h3 id="3字体换算表">3、字体换算表</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>字号</th>
+      <th>pt</th>
+      <th>px</th>
+      <th>em</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>初号</td>
+      <td>42pt</td>
+      <td>56px</td>
+      <td>3.5em</td>
+    </tr>
+    <tr>
+      <td>小初</td>
+      <td>36pt</td>
+      <td>48px</td>
+      <td>3em</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td>34pt</td>
+      <td>45px</td>
+      <td>2.75em</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td>32pt</td>
+      <td>42px</td>
+      <td>2.55em</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td>30pt</td>
+      <td>40px</td>
+      <td>2.45em</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td>29pt</td>
+      <td>38px</td>
+      <td>2.35em</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td>28pt</td>
+      <td>37px</td>
+      <td>2.3em</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td>27pt</td>
+      <td>36px</td>
+      <td>2.25em</td>
+    </tr>
+    <tr>
+      <td>一号</td>
+      <td>26pt</td>
+      <td>35px</td>
+      <td>2.2em</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td>25pt</td>
+      <td>34px</td>
+      <td>2.125em</td>
+    </tr>
+    <tr>
+      <td>小一</td>
+      <td>24pt</td>
+      <td>32px</td>
+      <td>2em</td>
+    </tr>
+    <tr>
+      <td>二号</td>
+      <td>22pt</td>
+      <td>29px</td>
+      <td>1.8em</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td>20pt</td>
+      <td>26px</td>
+      <td>1.6em</td>
+    </tr>
+    <tr>
+      <td>小二</td>
+      <td>18pt</td>
+      <td>24px</td>
+      <td>1.5em</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td>17pt</td>
+      <td>23px</td>
+      <td>1.45em</td>
+    </tr>
+    <tr>
+      <td>三号</td>
+      <td>16pt</td>
+      <td>22px</td>
+      <td>1.4em</td>
+    </tr>
+    <tr>
+      <td>小三</td>
+      <td>15pt</td>
+      <td>21px</td>
+      <td>1.3em</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td>14.5pt</td>
+      <td>20px</td>
+      <td>1.25em</td>
+    </tr>
+    <tr>
+      <td>四号</td>
+      <td>14pt</td>
+      <td>19px</td>
+      <td>1.2em</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td>13.5pt</td>
+      <td>18px</td>
+      <td>1.125em</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td>13pt</td>
+      <td>17px</td>
+      <td>1.05em</td>
+    </tr>
+    <tr>
+      <td>小四</td>
+      <td>12pt</td>
+      <td>16px</td>
+      <td>1em</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td>11pt</td>
+      <td>15px</td>
+      <td>0.95em</td>
+    </tr>
+    <tr>
+      <td>五号</td>
+      <td>10.5pt</td>
+      <td>14px</td>
+      <td>0.875em</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td>10pt</td>
+      <td>13px</td>
+      <td>0.8em</td>
+    </tr>
+    <tr>
+      <td>小五</td>
+      <td>9pt</td>
+      <td>12px</td>
+      <td>0.75em</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td>8pt</td>
+      <td>11px</td>
+      <td>0.7em</td>
+    </tr>
+    <tr>
+      <td>六号</td>
+      <td>7.5pt</td>
+      <td>10px</td>
+      <td>0.625em</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td>7pt</td>
+      <td>9px</td>
+      <td>0.55em</td>
+    </tr>
+    <tr>
+      <td>小六</td>
+      <td>6.5pt</td>
+      <td>8px</td>
+      <td>0.5em</td>
+    </tr>
+    <tr>
+      <td>七号</td>
+      <td>5.5pt</td>
+      <td>7px</td>
+      <td>0.4375em</td>
+    </tr>
+    <tr>
+      <td>八号</td>
+      <td>5pt</td>
+      <td>6px</td>
+      <td>0.375em</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><a href="https://juejin.im/post/6844903733042610184">Link</a></p>
+
+:ET

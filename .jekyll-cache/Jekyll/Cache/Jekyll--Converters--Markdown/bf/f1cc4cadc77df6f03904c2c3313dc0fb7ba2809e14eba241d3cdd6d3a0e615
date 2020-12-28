@@ -1,0 +1,282 @@
+I"�O<h1 id="清除浮动的四种方式及其原理理解"><a href="https://juejin.im/post/6844903504545316877">清除浮动的四种方式及其原理理解</a></h1>
+
+<p>本文介绍了四种清除浮动的方法，并尝试解释其原理。在理解了各种清除浮动的原理之后，你会发现，很多清除浮动的方法本质上其实是一样的。掌握这些原理，相信你可以根据场景和需求，灵活运用原则发展出不同的清除浮动的方法，而不再死记或拘泥于文中提到的方法。</p>
+
+<h2 id="一为什么要清除浮动">一、为什么要清除浮动</h2>
+
+<p>在讲清除浮动的方法之前，我们先来了解一下为什么要清除浮动，清除浮动的目的是什么，即，要解决什么样的问题。来看一个浮动的例子(略去了文字内容)：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;div class="topDiv"&gt;
+    &lt;div class="floatDiv"&gt;float left&lt;/div&gt;
+    &lt;div class="textDiv"&gt;...&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="bottomDiv"&gt;...&lt;/div&gt;复制代码
+</code></pre></div></div>
+
+<p>其样式为：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.topDiv {
+    width: 500px;
+    border: 2px solid black;
+}
+.floatDiv {
+    width: 100px;
+    height: 100px;
+    border: 2px dotted red;
+    color: red;
+    margin: 4px;
+    float: left;
+}
+.bottomDiv {
+    width: 500px;
+    height: 100px;
+    margin: 5px 0;
+    border: 2px dotted black;
+}
+.textDiv {
+    color: blue;
+    border: 2px solid blue;
+}复制代码
+</code></pre></div></div>
+
+<p>在chrome中渲染的效果如下图所示：</p>
+
+<p><img src="https://user-gold-cdn.xitu.io/2017/10/18/2af797ffc0918352ac8d381994ff1a27?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="浮动效果" />浮动效果</p>
+
+<p>这肯定不是我们想要的渲染效果，它可能存在如下问题：</p>
+
+<ol>
+  <li>文字围绕浮动元素排版，但我们可能希望文字（<code class="language-plaintext highlighter-rouge">.textDiv</code>）排列在浮动元素下方，或者，我们并不希望<code class="language-plaintext highlighter-rouge">.textDiv</code>两边有浮动元素存在。</li>
+  <li>浮动元素排版超出了其父级元素（<code class="language-plaintext highlighter-rouge">.topDiv</code>），父元素的高度出现了塌缩，若没有文字高度的支撑，不考虑边框，父级元素高度会塌缩成零。</li>
+  <li>浮动元素甚至影响到了其父元素的兄弟元素（<code class="language-plaintext highlighter-rouge">.bottomDiv</code>）排版。因为浮动元素脱离了文档流，<code class="language-plaintext highlighter-rouge">.bottomDiv</code>在计算元素位置的时候会忽略其影响，紧接着上一个元素的位置继续排列。</li>
+</ol>
+
+<p>解决第一个问题，需要清除<code class="language-plaintext highlighter-rouge">.textDiv</code>周围的浮动，而解决第二个问题，因为父元素的兄弟元素位置只受父元素位置的影响，就需要一种方法将父级元素的高度撑起来，将浮动元素包裹在其中，避免浮动元素影响父元素外部的元素排列。</p>
+
+<p>接下来开始介绍清除浮动的方法。</p>
+
+<h2 id="二清除浮动的方法">二、清除浮动的方法</h2>
+
+<h3 id="1-利用clear样式">1. 利用clear样式</h3>
+
+<p>还是开篇的例子，我们给需要清除浮动的元素添加如下样式：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.textDiv {
+    color: blue;
+    border: 2px solid blue;
+
+    clear: left;
+}复制代码
+</code></pre></div></div>
+
+<p>清除浮动后的渲染效果如下：</p>
+
+<p><img src="https://user-gold-cdn.xitu.io/2017/10/18/23e815f13d70590629b3a9d2020b955b?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="img" /></p>
+
+<p>解释一下：</p>
+
+<p>通过上面的样式，<code class="language-plaintext highlighter-rouge">.textDiv</code>告诉浏览器，我的左边不允许有浮动的元素存在，请清除掉我左边的浮动元素。然而，因为浮动元素（<code class="language-plaintext highlighter-rouge">.floatDiv</code>）位置已经确定，浏览器在计算<code class="language-plaintext highlighter-rouge">.textDiv</code>的位置时，为满足其需求，将<code class="language-plaintext highlighter-rouge">.textDiv</code>渲染在浮动元素下方，保证了<code class="language-plaintext highlighter-rouge">.textDiv</code>左边没有浮动元素。同时可以看出，父元素的高度也被撑起来了，其兄弟元素的渲染也不再受到浮动的影响，这是因为<code class="language-plaintext highlighter-rouge">.textDiv</code>仍然在文档流中，它必须在父元素的边界内，父元素只有增加其高度才能达到此目的，可以说是一个意外收获。(<code class="language-plaintext highlighter-rouge">clear</code>的值为<code class="language-plaintext highlighter-rouge">both</code>也有相同的效果，通俗理解就是，哪边不允许有浮动元素，clear就是对应方向的值，两边都不允许就是<code class="language-plaintext highlighter-rouge">both</code>)</p>
+
+<p>但是，如果我们把HTML中的<code class="language-plaintext highlighter-rouge">.floatDiv</code>和<code class="language-plaintext highlighter-rouge">.textDiv</code>交换一下位置呢？</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;div class="topDiv"&gt;
+    &lt;div class="textDiv"&gt;...&lt;/div&gt;
+    &lt;div class="floatDiv"&gt;float left&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="bottomDiv"&gt;...&lt;/div&gt;复制代码
+</code></pre></div></div>
+
+<p>无论<code class="language-plaintext highlighter-rouge">.textDiv</code>是否应用清除浮动，情况都是下面的样子：</p>
+
+<p><img src="https://user-gold-cdn.xitu.io/2017/10/18/c386d881a22444597e7ecb14f69b1c39?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="img" /></p>
+
+<p><code class="language-plaintext highlighter-rouge">.textDiv</code>的位置先确定了，于是浮动元素就紧接着<code class="language-plaintext highlighter-rouge">.textDiv</code>下方渲染在父元素的左侧。然而，父元素的高度并没有被撑起来，没有将浮动影响“内化”，导致浮动影响到了接下来的元素排版。</p>
+
+<p>看来，为达到撑起父元素高度的目的，使用<code class="language-plaintext highlighter-rouge">clear</code>清除浮动的方法还是有适用范围的。我们需要更加通用和可靠的方法。</p>
+
+<p>（这里澄清一下，单从元素清除浮动的角度，<code class="language-plaintext highlighter-rouge">clear</code>完全已经达到了目的，它已经使得<code class="language-plaintext highlighter-rouge">.textDiv</code>特定的方向上不再有浮动元素，清除浮动其实仅仅针对需要清除浮动的元素本身而言，只关注自身需求是否达到，和外界没有什么关系，它不关注浮动是否超出父元素，以及浮动是否影响到后续元素排列。我们只是利用了浮动的一些特性达到某些目的，但这不是清除浮动关心的问题，只不过，相对于清除浮动，我们可能更加关心这些特性能为我们做些什么而已。我的理解是，清除浮动和撑起父元素高度其实是两个不同的问题，在这里，可以简单地理解为工具和目的之间的关系，接下来要讨论的两个方法都是在利用清除浮动这个工具在解决问题，它并不是清除浮动这个工具本身。不过，我们经常将两者混为一谈。sorry，有点啰嗦，看不懂就是我没表达清楚，跳过即可。。。）</p>
+
+<h3 id="2-父元素结束标签之前插入清除浮动的块级元素">2. 父元素结束标签之前插入清除浮动的块级元素</h3>
+
+<p>HTML结构如下，在有浮动的父级元素的末尾插入了一个没有内容的块级元素div：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;div class="topDiv"&gt;
+    &lt;div class="textDiv"&gt;...&lt;/div&gt;
+    &lt;div class="floatDiv"&gt;float left&lt;/div&gt;
+    &lt;div class="blankDiv"&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="bottomDiv"&gt;...&lt;/div&gt;复制代码
+</code></pre></div></div>
+
+<p>应用样式：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.topDiv {
+    width: 500px;
+    border: 2px solid black;
+}
+.floatDiv {
+    width: 100px;
+    height: 100px;
+    border: 2px dotted red;
+    color: red;
+    margin: 4px;
+    float: left;
+}
+.bottomDiv {
+    width: 500px;
+    height: 100px;
+    margin: 5px 0;
+    border: 2px dotted black;
+}
+.textDiv {
+    color: blue;
+    border: 2px solid blue;
+}
+// 区别在这里
+.blankDiv {
+    clear: both; // or left
+}复制代码
+</code></pre></div></div>
+
+<p>渲染效果如下：</p>
+
+<p><img src="https://user-gold-cdn.xitu.io/2017/10/18/7e3621e15592ac42f86c70734fe4e1dc?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="img" /></p>
+
+<p>原理无需多讲，和第一个例子里<code class="language-plaintext highlighter-rouge">.textDiv</code>应用clear清除浮动，撑起父级元素高度的原理完全一样。这里强调一点，即，在父级元素末尾添加的元素必须是一个<strong>块级元素</strong>，否则无法撑起父级元素高度。</p>
+
+<h3 id="3-利用伪元素clearfix">3. 利用伪元素（clearfix）</h3>
+
+<p>HTML结构如下，为了惯例相符，在<code class="language-plaintext highlighter-rouge">.topDiv</code>的div上再添加一个<code class="language-plaintext highlighter-rouge">clearfix</code>类：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;div class="topDiv clearfix"&gt;
+    &lt;div class="textDiv"&gt;...&lt;/div&gt;
+    &lt;div class="floatDiv"&gt;float left&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="bottomDiv"&gt;...&lt;/div&gt;复制代码
+</code></pre></div></div>
+
+<p>样式应用如下：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// 省略基本的样式
+// 区别在这里
+.clearfix:after {
+    content: '.';
+    height: 0;
+    display: block;
+    clear: both;
+}复制代码
+</code></pre></div></div>
+
+<p>该样式在<code class="language-plaintext highlighter-rouge">clearfix</code>，即父级元素的最后，添加了一个<code class="language-plaintext highlighter-rouge">:after</code>伪元素，通过清除伪元素的浮动，达到撑起父元素高度的目的。注意到该伪元素的<code class="language-plaintext highlighter-rouge">display</code>值为<code class="language-plaintext highlighter-rouge">block</code>，即，它是一个不可见的块级元素（有的地方使用<code class="language-plaintext highlighter-rouge">table</code>，因为<code class="language-plaintext highlighter-rouge">table</code>也是一个块级元素）。你可能已经意识到，这也只不过是前一种清除浮动方法（添加空白div）的另一种变形，其底层逻辑也是完全一样的。前面的三种方法，其本质上是一样的。</p>
+
+<h3 id="4-利用overflow清除浮动">4. 利用overflow清除浮动</h3>
+
+<p>首先直观地看看，<code class="language-plaintext highlighter-rouge">overflow</code>是如何清除浮动的。</p>
+
+<p>HTML结构如下：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;div class="topDiv"&gt;
+    &lt;div class="floatDiv"&gt;float left&lt;/div&gt;
+    &lt;div class="textDiv"&gt;...&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="bottomDiv"&gt;...&lt;/div&gt;复制代码
+</code></pre></div></div>
+
+<p>样式应用如下：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.topDiv {
+    width: 500px;
+    padding: 4px;
+    border: 2px solid black;
+
+    // 区别在这里
+    overflow: auto;
+}
+.floatDiv {
+    width: 100px;
+    height: 100px;
+    border: 2px dotted red;
+    color: red;
+    margin: 4px;
+    float: left;
+}
+.bottomDiv {
+    width: 500px;
+    height: 100px;
+    margin: 5px 0;
+    border: 2px dotted black;
+    clear: both;
+}
+.textDiv {
+    color: blue;
+    border: 2px solid blue;
+}复制代码
+</code></pre></div></div>
+
+<p>不应用上面标识出来的CSS时，渲染结果和本文开始的第一个图形效果相同，应用CSS后的渲染效果如下：</p>
+
+<p><img src="https://user-gold-cdn.xitu.io/2017/10/18/cb75fb0469d3316e2ca6192f8316f7cb?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="img" /></p>
+
+<p>仅仅只在父级元素上添加了一个值为auto的overflow属性，父元素的高度立即被撑起，将浮动元素包裹在内。看起来，浮动被清除了，浮动不再会影响到后续元素的渲染（严格讲，这和清除浮动没有一点关系，因为不存在哪个元素的浮动被清除，不纠结这个问题）。其实，这里的overflow值，还可以是除了”visible”之外的任何有效值，它们都能达到撑起父元素高度，清除浮动的目的。不过，有的值可能会带来副作用，比如，scroll值会导致滚动条始终可见，hidden会使得超出边框部分不可见等。那它们是如何做到浮动清除的呢？</p>
+
+<p>要讲清楚这个解决方案的原理，有一个概念始终是绕不过去，那就是<a href="https://developer.mozilla.org/zh-CN/docs/Web/Guide/CSS/Block_formatting_context">块格式化上下文(BFC)</a>,然而这又是一个非常抽象的概念，如果要清楚地把这个概念讲出来，恐怕需要非常大的篇幅，这里仅提及和理解该问题相关的内容。</p>
+
+<p>这是从<a href="https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Block_formatting_context">MDN</a>上摘下来的BFC定义：</p>
+
+<blockquote>
+  <p>A block formatting context is a part of a visual CSS rendering of a Web page. It is the region in which the layout of block boxes occurs and in which floats interact with each other.</p>
+</blockquote>
+
+<p>翻译过来就是：块级格式化上下文是CSS可视化渲染的一部分。它是一块区域，规定了内部块盒的渲染方式，以及浮动相互之间的影响关系。</p>
+
+<p>块格式化上下文（BFC）有下面几个特点：</p>
+
+<ol>
+  <li>BFC是就像一道屏障，隔离出了BFC内部和外部，内部和外部区域的渲染相互之间不影响。BFC有自己的一套内部子元素渲染的规则，不影响外部渲染，也不受外部渲染影响。</li>
+  <li>BFC的区域不会和外部浮动盒子的外边距区域发生叠加。也就是说，外部任何浮动元素区域和BFC区域是泾渭分明的，不可能重叠。</li>
+  <li>BFC在计算高度的时候，内部浮动元素的高度也要计算在内。也就是说，即使BFC区域内只有一个浮动元素，BFC的高度也不会发生塌缩，高度是大于等于浮动元素的高度的。</li>
+  <li>HTML结构中，当构建BFC区域的元素紧接着一个浮动盒子时，即，是该浮动盒子的兄弟节点，BFC区域会首先尝试在浮动盒子的旁边渲染，但若宽度不够，就在浮动元素的下方渲染。[<a href="https://www.w3.org/TR/CSS2/visuren.html#bfc-next-to-float">看这里]</a></li>
+</ol>
+
+<p>有了这几点，就可以尝试解释为什么<code class="language-plaintext highlighter-rouge">overflow</code>（值不为<code class="language-plaintext highlighter-rouge">visible</code>）可以清除浮动了。</p>
+
+<p>当元素设置了<code class="language-plaintext highlighter-rouge">overflow</code>样式，且值不为<code class="language-plaintext highlighter-rouge">visible</code>时，该元素就建构了一个BFC(哪些情况下，元素可以建构出BFC，可以看查看CSS文档对<a href="https://www.w3.org/TR/CSS2/visuren.html#block-formatting">BFC的定义</a>)。在我们的例子中，<code class="language-plaintext highlighter-rouge">.topDiv</code>因设置了值为<code class="language-plaintext highlighter-rouge">auto</code>的<code class="language-plaintext highlighter-rouge">overflow</code>样式，所以该元素建构出一个BFC，按照第三个特点，BFC的高度是要包括浮动元素的，所以<code class="language-plaintext highlighter-rouge">.topDiv</code>的高度被撑起来，达到了清除浮动影响的目的。(至于为什么值为<code class="language-plaintext highlighter-rouge">visible</code>的<code class="language-plaintext highlighter-rouge">overflow</code>不能建构BFC，<a href="https://stackoverflow.com/questions/9943503/why-does-css2-1-define-overflow-values-other-than-visible-to-establish-a-new-b?answertab=votes#tab-top">这个答案</a>给了一个解释)</p>
+
+<p>其实，这里overflow的作用就是为了构建一个BFC区域，让内部浮动的影响都得以“内化”。如果你看了<a href="https://www.w3.org/TR/CSS2/visuren.html#block-formatting">BFC的定义</a>，你会发现，构建一个BFC区域的方法有很多种，<code class="language-plaintext highlighter-rouge">overflow</code>只是其中的一种，那在这里，我们是否也可以利用其它的方式构建BFC，且同样能达到清除浮动的目的呢？</p>
+
+<p>BFC定义中说，<code class="language-plaintext highlighter-rouge">inline-block</code>同样也能构建BFC，那我们就用该样式来试试：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.topDiv {
+    width: 500px;
+    padding: 4px;
+    border: 2px solid black;
+
+    // 区别在这里
+    display: inline-block;
+}
+// 其他样式相同，省略复制代码
+</code></pre></div></div>
+
+<p>渲染效果如下：</p>
+
+<p><img src="https://user-gold-cdn.xitu.io/2017/10/18/aa859ff15404ede93450f03430b2d3ba?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="img" /></p>
+
+<p>效果完全一样！只要我们理解了原理，就可以灵活演变出不同的清除浮动的方法，而不必死记某种手段。</p>
+
+<p>当然，要说明的是，在实际项目中选择采用哪种方式构建BFC是要具体问题具体分析的，因为要考虑到选用的样式自身的作用和影响。这个例子中，选用<code class="language-plaintext highlighter-rouge">inline-block</code>和选用<code class="language-plaintext highlighter-rouge">overflow</code>效果完全一样，没有看出有什么副作用，但不代表在其他项目中一样能行得通。甚至对<code class="language-plaintext highlighter-rouge">overflow</code>值的选择也要考虑其表现和影响。在各种构建BFC的方式中，<code class="language-plaintext highlighter-rouge">overflow</code>方式可能是外部影响更可控的一种，我猜想这也许就是为什么普遍采用<code class="language-plaintext highlighter-rouge">overflow</code>来清除浮动的原因吧。</p>
+
+<p>到这里，我要分享的清除浮动的方法已经讲完了。其实，如果在不同的使用场景下，对这几个方法进行拆分组合(其实是对底层原理的拆分组合)，还可以实现其他形式不同的清除浮动的方法，最重要的还是对底层原理的把握。知其然，亦知其所以然才是最有效的学习方式。</p>
+
+<p>下面是文中涉及的链接汇总：</p>
+
+<ol>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Block_formatting_context">MDN对BFC的定义</a></li>
+  <li><a href="https://www.w3.org/TR/CSS2/visuren.html#block-formatting">CSS文档对BFC的定义和解释，BFC如何创建，BFC内部渲染规则</a></li>
+  <li><a href="https://stackoverflow.com/questions/9943503/why-does-css2-1-define-overflow-values-other-than-visible-to-establish-a-new-b?answertab=votes#tab-top">为什么overflow的值为visible时，无法清除浮动，而其他值可以，Stack Overflow上的一个回答</a></li>
+  <li><a href="https://www.w3.org/TR/CSS2/visuren.html#bfc-next-to-float">BFC紧跟浮动元素时如何渲染</a></li>
+</ol>
+
+<p>水平有限，文章中难免会出现不准确，甚至错误的地方，期待你的宝贵意见！</p>
+
+<p><a href="https://juejin.im/post/6844903504545316877">Link</a></p>
+:ET

@@ -1,0 +1,75 @@
+I"/<h1 id="python_inf一些用法">Python_inf一些用法</h1>
+
+<p>Python中可以用如下方式表示正负无穷：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>float("inf"), float("-inf")
+</code></pre></div></div>
+
+<p>利用 inf 做简单加、乘算术运算仍会得到 inf</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt;&gt;&gt; 1 + float('inf')
+inf
+&gt;&gt;&gt; 2 * float('inf')
+inf
+</code></pre></div></div>
+
+<p>但是利用 inf 乘以0会得到 not-a-number(NaN)：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt;&gt;&gt; 0 * float("inf")
+nan
+</code></pre></div></div>
+
+<p>除了inf外的其他数除以inf，会得到0</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt;&gt;&gt; 889 / float('inf')
+0.0
+&gt;&gt;&gt; float('inf')/float('inf')
+nan
+</code></pre></div></div>
+
+<p>通常的运算是不会得到 inf值的</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt;&gt;&gt; 2.0**2
+4.0
+&gt;&gt;&gt; _**2
+16.0
+&gt;&gt;&gt; _**2
+256.0
+&gt;&gt;&gt; _**2
+65536.0
+&gt;&gt;&gt; _**2
+4294967296.0
+&gt;&gt;&gt; _**2
+1.8446744073709552e+19
+&gt;&gt;&gt; _**2
+3.4028236692093846e+38
+&gt;&gt;&gt; _**2
+1.157920892373162e+77
+&gt;&gt;&gt; _**2
+1.3407807929942597e+154
+&gt;&gt;&gt; _**2
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in ?
+OverflowError: (34, 'Numerical result out of range')
+</code></pre></div></div>
+
+<p>inf的运算规则遵从 <a href="http://en.wikipedia.org/wiki/IEEE_754-1985">IEEE-754 standard</a></p>
+
+<p><strong>不等式：</strong></p>
+
+<p>当涉及 &gt; 和 &lt; 运算时，</p>
+
+<ul>
+  <li>所有数都比-inf大</li>
+  <li>所有数都比+inf小</li>
+</ul>
+
+<p><strong>等式：</strong></p>
+
+<p>+inf 和 +inf相等</p>
+
+<p>-inf 和 -inf相等</p>
+
+<p><a href="https://blog.csdn.net/SHENNONGZHAIZHU/article/details/51997887">Link</a></p>
+
+:ET

@@ -1,0 +1,515 @@
+I"jd<h1 id="npm-包管理工具"><a href="https://juejin.im/entry/6844903455312576519">npm 包管理工具</a></h1>
+
+<p>包其实就是一些模块组织到一起，放到一个目录中的一个称呼，叫包或者模块都行。Node Package Manager: npm 是一个用来安装和管理Node包和前端包的一个工具</p>
+
+<h2 id="npm-有两层含义">npm 有两层含义：</h2>
+
+<ul>
+  <li>npm 官方网站
+    <ul>
+      <li>提供了一个用来共性或者检索的一个平台</li>
+      <li>一是托管 node 环境或者浏览器环境用的的一些第三方包</li>
+    </ul>
+  </li>
+  <li>是一个命令行管理工具，可以用来下载 npm 网站上托管的包
+    <ul>
+      <li>CLI: Command Line Interface 命令行窗口</li>
+      <li>GUI: 图形化界面</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="安装-npm">安装 npm</h2>
+
+<p>Node 是一个执行环境，Node 可以用来执行 JavaScript 代码，（这里的JS指的是 ECMAScript），npm 基于 node 环境的 API（网络操作API、文件操作API）编写的工具，可以用来下载第三方包到指定的目录中。</p>
+
+<p>必须要安装 node 环境，测试是否有 node 环境：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>node -v
+</code></pre></div></div>
+
+<p>安装node环境的时候，已经自动安装了 npm 命令行工具，不需要单独安装。可以通过 <code class="language-plaintext highlighter-rouge">npm -v</code> 测试npm是否可用</p>
+
+<h2 id="npm-基本使用">npm 基本使用</h2>
+
+<h3 id="本地安装">本地安装</h3>
+
+<p>一般是在项目中，安装项目使用的依赖包，例如 underscore、less、jQuery，可以在终端中，切换到项目的根目录，然后执行 <code class="language-plaintext highlighter-rouge">npm install 包名</code>，比如：<code class="language-plaintext highlighter-rouge">npm install jquery</code>npm 工具会自动将 jQuery 这个包下载，然后放到 <code class="language-plaintext highlighter-rouge">node_modules</code> 目录中。node_modules 目录如果不存在会新建，如果已存在，则直接将下载的包放到该目录中。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ npm install [--save] 包名
+</code></pre></div></div>
+
+<p>这行命令跟包说明文件<code class="language-plaintext highlighter-rouge">package.json</code> 有千丝万缕的关系</p>
+
+<h3 id="包说明文件packagejson">包说明文件：package.json</h3>
+
+<p>包说明文件其实就是一个产品的说明书：<code class="language-plaintext highlighter-rouge">package.json</code> 文件。该文件一般只存在于项目的根路径下，定义了这个项目所需要的各种模块，以及项目的配置信息（比如名称、版本、依赖项等信息）。可以通过 <code class="language-plaintext highlighter-rouge">npm init [-y]</code> 命令使用向导的形式创建该文件。</p>
+
+<p>该文件中描述了项目的一些元数据，例如 <code class="language-plaintext highlighter-rouge">name、version、author</code> 等信息。</p>
+
+<p>其中有一个非常重要的属性，叫做：<code class="language-plaintext highlighter-rouge">dependencies</code>，该属性是一个对象，里面保存了当前项目的依赖项，该字段一般不要手动修改，它需要结合 <code class="language-plaintext highlighter-rouge">npm install --save 包名</code> 来使用，只要在安装的时候加上 <code class="language-plaintext highlighter-rouge">--save</code> 参数就会自动将包依赖项添加到该属性中，很方便。</p>
+
+<p>甚至还可以完全把 <code class="language-plaintext highlighter-rouge">node_modules</code> 目录删除掉，只要 <code class="language-plaintext highlighter-rouge">package.json</code> 文件还在，就可以执行 <code class="language-plaintext highlighter-rouge">npm install</code> 安装包说明文件中的所有的依赖项。执行 <code class="language-plaintext highlighter-rouge">npm install</code> 命令的时候，它会自动查询当前目录下的 <code class="language-plaintext highlighter-rouge">package.json</code> 文件，然后找到里面的 <code class="language-plaintext highlighter-rouge">dependencies</code> 属性，依次下载到 <code class="language-plaintext highlighter-rouge">node_modules</code> 目录下。</p>
+
+<p>建议：以后使用 npm 的时候，首先用 <code class="language-plaintext highlighter-rouge">npm init -y</code> 初始化一个 <code class="language-plaintext highlighter-rouge">package.json</code>， 然后使用 <code class="language-plaintext highlighter-rouge">npm install 包名 --save</code></p>
+
+<p>总的来讲，有以下几个步骤，重要组成：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">npm init [-y]</code></li>
+  <li>main</li>
+  <li>dependencies
+    <ul>
+      <li>当前项目或者说包的依赖项</li>
+      <li>npm install 的时候，会自动查找当前目录下的 package.json 文件中的 dependencies 属性</li>
+      <li>然后依次下载</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="本地安装常用命令">本地安装常用命令</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cd Desktop\code`
+`npm init`
+`cls` 清屏
+`npm install bootstrap --save`
+`npm install --save jquery`
+`npm install
+</code></pre></div></div>
+
+<h3 id="全局安装">全局安装</h3>
+
+<p>全局安装： 一般用于安装一些命令行工具（这些工具也是基于Node开发的）全局安装使用 <code class="language-plaintext highlighter-rouge">npm install --global 包名（工具名）</code>，在任意目录执行该命令都可以。</p>
+
+<p>比如：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm i -g less
+npm install -g less
+</code></pre></div></div>
+
+<h4 id="常用命令">常用命令</h4>
+
+<ul>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">npm help</code> 查看 npm 命令列表</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">npm -l</code> 查看各个命名的简单用法</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">npm -v</code> 查看 npm 的版本</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">npm root -g</code> 查看全局包安装目录。</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">npm init [-y]</code>：初始化一个 package.json 文件</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">npm info</code> 包名 [字段名]：查看指定模块的 package.json 信息</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">npm search</code> 包名：该命令用于搜索 npm 仓库</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">npm list</code> 以树型结构列出当前项目安装的所有模块，以及它们依赖的模块</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">npm list</code> 包名：列出单个模块</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">npm list -g</code> 列出全局安装的模块</p>
+  </li>
+  <li>
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm install [--save] 包名[#版本号]
+</code></pre></div>    </div>
+
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">npm install 包名</code> 安装包到当前项目下的 node_modules 目录下</li>
+      <li><code class="language-plaintext highlighter-rouge">npm install|i --save|-S 包名</code> 安装包的同时把依赖项保存到 包说明文件中</li>
+      <li>本地项目安装：目的是为了辅助你的代码功能开发</li>
+    </ul>
+  </li>
+  <li>
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm uninstall [--save] 包名
+</code></pre></div>    </div>
+
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">npm uninstall 包名</code> 删除包，但是如果包说明文件中有依赖项，那么不会删除</li>
+      <li><code class="language-plaintext highlighter-rouge">npm uninstall --save 包名</code> 删除包，同时将 package.json 文件中的依赖项也删除</li>
+    </ul>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">npm install</code></p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">npm install -g 包名</code></p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">npm uninstall -g 包名</code></p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">npm install -g http-server --registry=http://192.168.32.59:7001</code> 设置服务器镜像源地址</p>
+  </li>
+  <li>
+    <p>npm config</p>
+
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">npm config list</code> 查看 npm 配置项</li>
+      <li><code class="language-plaintext highlighter-rouge">npm config set init.author.name $name</code> 使用 npm init 时，默认的 name</li>
+      <li><code class="language-plaintext highlighter-rouge">npm config set init.author.email $email</code> 使用 npm init 时，默认的 email</li>
+      <li><code class="language-plaintext highlighter-rouge">npm congig set prefix "路径"</code> 改变全局包安装路径</li>
+      <li><code class="language-plaintext highlighter-rouge">npm config set registry</code> “镜像路径”</li>
+    </ul>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">http-server</code> 开启服务器</p>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">http-server-o</code> 开启服务器并直接在浏览器中打开</li>
+</ul>
+
+<h2 id="启动一个服务器">启动一个服务器</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ npm install -g http-server
+</code></pre></div></div>
+
+<p>然后需要打开文件的目录下，打开终端：输入 <code class="language-plaintext highlighter-rouge">http-server</code>，这样启动了默认端口是 8080，<code class="language-plaintext highlighter-rouge">http-server -p 6060</code> 指定服务器的端口。</p>
+
+<h2 id="如何将包发布到-npm-网站上并且通过-npm-install---global-包名-安装">如何将包发布到 npm 网站上并且通过 <code class="language-plaintext highlighter-rouge">npm install --global 包名</code> 安装</h2>
+
+<h3 id="配置原理">配置原理</h3>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">npm root -g</code></li>
+  <li>模拟该目录下 nrm 下的 cli.js (入口文件) 文件中，在第一行加入了 <code class="language-plaintext highlighter-rouge">#!/usr/bin/env node</code></li>
+  <li>得到路径：<code class="language-plaintext highlighter-rouge">C:\Users\mhq\AppData\Roaming\npm\node_modules</code></li>
+  <li>在此路径下新建 以 需要发布的包的包名命名的文件： 比如 <code class="language-plaintext highlighter-rouge">mCopy</code>;</li>
+  <li>将所需要发布的 js 文件放到这个文件下， 比如 <code class="language-plaintext highlighter-rouge">08_copy.js</code>;</li>
+  <li>在该文件的上一级目录下，<code class="language-plaintext highlighter-rouge">C:\Users\mhq\AppData\Roaming\npm</code> 下，复制一个 nrm.cmd 副本</li>
+  <li>重名名该副本文件为 <code class="language-plaintext highlighter-rouge">mCopy.cmd</code>, 现在这个文件长这样：</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@IF EXIST "%~dp0\node.exe" (
+  "%~dp0\node.exe"  "%~dp0\node_modules\nrm\cli.js" %*
+) ELSE (
+  @SETLOCAL
+  @SET PATHEXT=%PATHEXT:;.JS;=;%
+  node  "%~dp0\node_modules\nrm\cli.js" %*
+)
+</code></pre></div></div>
+
+<p>配置完这一步之后就可以在 cmd 中直接使用 mCopy src des 命令来复制文件了</p>
+
+<h3 id="node-提供了一个更方便的方式自动生成-cmd-文件以及和需要发布的文件产生关联">node 提供了一个更方便的方式自动生成 .cmd 文件以及和需要发布的文件产生关联</h3>
+
+<ul>
+  <li>现在将原理中介绍的过程产生的文件删除，重新使用 Node 方式配置</li>
+  <li>在桌面新建 <code class="language-plaintext highlighter-rouge">mCopy</code> 文件</li>
+  <li>win+R –&gt; cmd –&gt; cd Desktop –&gt; cd mCopy</li>
+  <li>新建一个 .js 的入口文件，在第一行加入了 <code class="language-plaintext highlighter-rouge">#!/usr/bin/env node</code>，这叫设绑；</li>
+  <li>在 package.json 文件中加入 bin 字段，
+    <ul>
+      <li>bin 字段是一个对象</li>
+      <li>该对象的第一个属性就是执行脚本文件的命令， 比如 “mCopy”，用来生成 .cmd 文件</li>
+      <li>该对象的第一个属性的值就是要执行的脚本文件</li>
+    </ul>
+  </li>
+</ul>
+
+<p>package.json 文件如下：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+  "name": "mcopy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "mcopy": "./index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" &amp;&amp; exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>最后，打开终端，进入当前项目的根路径，执行：</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm link
+</code></pre></div>    </div>
+
+    <ul>
+      <li>执行完该命令之后， node 会自动去全局安装创建路径对应的 .cmd 文件</li>
+      <li>这样就开发了命令行工具</li>
+      <li>如果想卸载掉，使用命令 <code class="language-plaintext highlighter-rouge">npm unlink</code></li>
+      <li>新建一个 .js 文件，将需要发布的包的代码放进去；比如：<code class="language-plaintext highlighter-rouge">copy.js</code></li>
+    </ul>
+  </li>
+</ul>
+
+<p>copy.js 文件</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>const fs = require('fs');
+// 暴露接口
+module.exports = function (src, des, callback) {
+    fs.readFile(src, (err, data) =&gt; {
+        if (err) {
+            return callback(err);
+        }
+        fs.writeFile(des, data, err =&gt; {
+            return callback(err);
+        });
+        callback(null);
+    });
+};
+</code></pre></div></div>
+
+<p>index.js 文件</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#!/usr/bin/env node
+const copy = require('./copy');
+const args = process.argv.slice(2);
+console.log(args);
+copy(args[0], args[1], err =&gt; {
+  if (err) {
+    return console.log('Copy Fail');
+  }
+  console.log('Copy Success');
+});
+</code></pre></div></div>
+
+<ul>
+  <li>发布
+    <ul>
+      <li>发布之前先去 npmjs.com 上验证一下你的 package.json 中的 name 是否被占用</li>
+      <li>如果被占用，则修改 name</li>
+      <li>注意：改了名字之后就无法卸载。
+        <ul>
+          <li>一种方式是直接删掉</li>
+          <li>一种方式是把 package.json 文件下的 name 改回原来的然后再使用 <code class="language-plaintext highlighter-rouge">npm unlink</code> 卸载</li>
+          <li>然后把 name 改成线上没有的名字</li>
+        </ul>
+      </li>
+      <li>去 <a href="https://www.npmjs.com/">www.npmjs.com</a> 官网注册一个账号，或者通过 npm adduser 注册一个账户</li>
+      <li>注意：这里一定要确保使用的镜像源地址是 npm 官方的镜像源</li>
+      <li><code class="language-plaintext highlighter-rouge">npm login</code> 登陆</li>
+      <li><code class="language-plaintext highlighter-rouge">npm publish</code> 发布</li>
+      <li>支持 README.md 文档
+        <ul>
+          <li>添加文档之后再发布</li>
+          <li>需要更新 package.json 中的版本号</li>
+          <li>修改 package.json 下的 <code class="language-plaintext highlighter-rouge">"description"</code> 为 “A copy tool of a command line”,`</li>
+        </ul>
+      </li>
+      <li><code class="language-plaintext highlighter-rouge">npm version patch</code> 更新</li>
+      <li><code class="language-plaintext highlighter-rouge">npm install -g hqcopy</code> 全局安装到本地</li>
+      <li><code class="language-plaintext highlighter-rouge">npm unpublish</code> 删除</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="install-说明文档-readmemd">Install 说明文档 README.md</h3>
+
+<p>h1 hqcopy</p>
+
+<p>h2 Install</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ npm install --global mcopy
+</code></pre></div></div>
+
+<p>h3 Usage</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ mcopy src des
+</code></pre></div></div>
+
+<h3 id="将这个包改造为本地和全局两种形式">将这个包改造为本地和全局两种形式</h3>
+
+<p>作为命令行 和 项目安装</p>
+
+<p>即：在命令行中执行的是： index.js，而在代码中执行的是： copy.js，因此，有以下操作：</p>
+
+<ul>
+  <li>将 package.json 包下的 “main” 改成 “copy.js”</li>
+  <li>将已上传的 hqcopy 下载到本地项目中，</li>
+  <li>打开之后发现 package.json 文件中的 main 属性是 “index.js”</li>
+  <li>当前项目下 新建 .js 文件, 然后使用下面代码引入，目前只限错误</li>
+  <li>因为目前只能当做命令行使用</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>const hqcopy = require('hqcopy');
+</code></pre></div></div>
+
+<ul>
+  <li>加载机制，首先去当前项目的 node_modules,</li>
+  <li>找到 hqcopy，</li>
+  <li>找到 package.json 文件</li>
+  <li>找到 main 属性，发现是 index.js</li>
+  <li>应当判断是全局命令行调用，还是代码调用</li>
+  <li>修改 package.json 文件的 <code class="language-plaintext highlighter-rouge">main</code> 属性为 copy.js, 这样，如果是代码调用，默认调用 copy.js文件</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+  "name": "hqcopy",
+  "version": "1.0.2",
+  "description": "A copy tool of a command line",
+  "main": "copy.js",
+  "bin": {
+    "mcopy": "./index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" &amp;&amp; exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
+</code></pre></div></div>
+
+<ul>
+  <li>npm version patch</li>
+  <li>npm publish</li>
+</ul>
+
+<p>新建 test.js 进行测试</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">npm install --save hqcopy</code></li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>const hqcopy = require('hqcopy');
+hqcopy('README.md','a.md', err =&gt; {
+  if (err) {
+    throw err;
+  }
+  console.log('copy success');
+});
+</code></pre></div></div>
+
+<p>现在的这个包就既可以安装到本地也可以全局安装，安装到本地项目可以使用该包暴露的 API 接口，安装到全局就可以使用该包提供的全局命令工具。</p>
+
+<h2 id="解决-npm-被墙的问题使用镜像源地址">解决 npm 被墙的问题，使用镜像源地址</h2>
+
+<p>国内的淘宝：克隆了国外的服务器，跟国外的 npm 每10分钟保持同步一次；</p>
+
+<ul>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">npm install 包名 --registry=https://registry.npm.taobao.org</code> 国内淘宝镜像源地址</p>
+  </li>
+  <li>
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm config set registry=https://registry.npm.taobao.org
+</code></pre></div>    </div>
+
+    <ul>
+      <li>
+        <p>这是将 npm 的下载镜像源地址改为淘宝的 cpnm 镜像源</p>
+      </li>
+      <li>
+        <p>这样执行该命令，以后所有的 install 都会通过指定的地址下载</p>
+      </li>
+      <li>
+        <p>还提供了 cnpm 命令</p>
+      </li>
+      <li>
+        <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm install -g cnpm
+</code></pre></div>        </div>
+
+        <ul>
+          <li>安装了 cnpm 之后，就可以使用 cnmp 命令安装和管理包了</li>
+          <li>cnpm 默认 就会走淘宝的 npm 镜像源地址</li>
+          <li><code class="language-plaintext highlighter-rouge">cnpm install -g 包名</code></li>
+          <li><code class="language-plaintext highlighter-rouge">cnpm install 包名</code></li>
+          <li>npm 的命令都可以通过 cnpm 来代替</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>实际上，在用户目录下生成了.npmrc 文件，保存了镜像源地址</p>
+  </li>
+  <li>
+    <p>还有一个工具，如果在局域网内，局域网的包，这样又需要改镜像源地址：</p>
+
+    <ul>
+      <li>
+        <p>安装和管理多个镜像源地址</p>
+      </li>
+      <li>
+        <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm install -g nrm
+</code></pre></div>        </div>
+
+        <p>下载安装</p>
+
+        <ul>
+          <li>nrm 即 nmp registry manager</li>
+          <li>nrm 可以用来管理多个镜像源地址，切换多个镜像源地址</li>
+          <li>nrm 是基于 node 开发的</li>
+          <li><code class="language-plaintext highlighter-rouge">nrm ls</code> 列出所有的镜像源地址</li>
+          <li><code class="language-plaintext highlighter-rouge">nrm current</code> 显示当前使用的镜像源地址</li>
+          <li><code class="language-plaintext highlighter-rouge">nrm use 镜像源名称</code> 切换到指定的镜像源地址</li>
+          <li><code class="language-plaintext highlighter-rouge">nrm add 镜像源名称 镜像源地址</code> 添加指定的镜像源地址</li>
+          <li><code class="language-plaintext highlighter-rouge">nrm del 镜像源名称</code> 从本地删除指定的镜像源地址</li>
+          <li>配置文件都在用户目录下，叫 .nrmrc， 直接修改此文件也可配置；</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="配置-packagejson-文件中的-script">配置 package.json 文件中的 script</h2>
+
+<p>在package.json 文件中的 “script” 下 添加一条需要使用 <code class="language-plaintext highlighter-rouge">npm 命令</code> 来启动项目程序的属性， 比如： <code class="language-plaintext highlighter-rouge">"start": node ./app.js</code></p>
+
+<p>这样就可以利用终端，使用命令 <code class="language-plaintext highlighter-rouge">npm start</code> 来启动项目。</p>
+
+<h2 id="项目初始化">项目初始化</h2>
+
+<p>利用命令自动化管理</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">npm install</code></li>
+  <li><code class="language-plaintext highlighter-rouge">npm install --save-dev brower-sync</code> 直接把开发依赖内置,把安装到项目依赖中.</li>
+  <li>找到 <code class="language-plaintext highlighter-rouge">package.json</code>，在 <code class="language-plaintext highlighter-rouge">"scripts"</code> 字段中添加: <code class="language-plaintext highlighter-rouge">"start": "hs -o"</code></li>
+  <li>找到 <code class="language-plaintext highlighter-rouge">package.json</code>，在 <code class="language-plaintext highlighter-rouge">"scripts"</code> 字段下添加<code class="language-plaintext highlighter-rouge">"dev": "hs -o"</code>，<code class="language-plaintext highlighter-rouge">"postinstall": "npm run dev"</code>，然后自动执行。</li>
+  <li><code class="language-plaintext highlighter-rouge">npm run dev</code></li>
+  <li>那么，服务器的开启过程就是： .bin 目录下 hs 执行 node-modules 下的 http-server。</li>
+</ul>
+
+<p>package.json 文件中的配置。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+  "script":{
+    "prestart": "npm install"
+    "start": "hs -o"
+    "dev":"hs -o"
+    "postinstall":""
+  }
+}
+</code></pre></div></div>
+
+<p>另外一种配置 <code class="language-plaintext highlighter-rouge">package.json</code> 启动项目的方法</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+  "scripts": {
+    "prestart": "npm install",
+    "start": "hs -o",
+    "predev": "npm install",
+    "dev": "hs -o"
+  }
+}
+</code></pre></div></div>
+
+<p>感谢您的支持！</p>
+
+<p>https://www.google.com/search?newwindow=1&amp;sxsrf=ALeKk02LH5aVNcNcJhVBKD4OjEH11Li4Mw%3A1602656577816&amp;ei=QZmGX4SyMauZ4-EPtImZ2AM&amp;q=%E5%8C%97%E6%A3%AE%E5%89%8D%E7%AB%AF%E9%9D%A2%E7%BB%8F&amp;oq=%E5%8C%97%E6%A3%AE%E5%89%8D%E7%AB%AF%E9%9D%A2%E7%BB%8F&amp;gs_lcp=CgZwc3ktYWIQA1DrhARYxYsEYIuNBGgBcAB4AYAB9wOIAaEYkgEHMy01LjIuMZgBAKABAaoBB2d3cy13aXrAAQE&amp;sclient=psy-ab&amp;ved=0ahUKEwjE1pGAubPsAhWrzDgGHbREBjsQ4dUDCA0&amp;uact=5</p>
+
+<p>https://www.kanzhun.com/gsm658967.html</p>
+
+<p>https://blog.csdn.net/qq_36593772/article/details/80169747</p>
+
+<p>https://vickydyy.github.io/2019/06/03/%E5%8C%97%E6%A3%AE%E9%9D%A2%E7%BB%8F%EF%BC%88%E4%B8%80%E9%9D%A2%EF%BC%89/</p>
+
+:ET

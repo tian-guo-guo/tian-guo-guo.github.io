@@ -1,0 +1,28 @@
+I"�	<h1 id="vs-code关闭eslint的语法检查">VS Code关闭eslint的语法检查</h1>
+
+<h2 id="vs-code">VS Code</h2>
+
+<p>在文件-&gt;首选项-&gt;设置中添加<code class="language-plaintext highlighter-rouge">"eslint.enable": false</code>配置即可</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20201214212656.png" alt="img" /></p>
+
+<p>image.png</p>
+
+<p>右侧用户设置会自动覆盖左侧的默认设置</p>
+
+<h2 id="vue工程中">vue工程中</h2>
+
+<p>在webpack.base.conf.js配置文件中删除有关<code class="language-plaintext highlighter-rouge">loader: 'eslint-loader',</code>的配置，如下：</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">createLintingRule</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">({</span>
+  <span class="na">test</span><span class="p">:</span> <span class="sr">/</span><span class="se">\.(</span><span class="sr">js|vue</span><span class="se">)</span><span class="sr">$/</span><span class="p">,</span>
+  <span class="na">loader</span><span class="p">:</span> <span class="dl">'</span><span class="s1">eslint-loader</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">enforce</span><span class="p">:</span> <span class="dl">'</span><span class="s1">pre</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">include</span><span class="p">:</span> <span class="p">[</span><span class="nx">resolve</span><span class="p">(</span><span class="dl">'</span><span class="s1">src</span><span class="dl">'</span><span class="p">),</span> <span class="nx">resolve</span><span class="p">(</span><span class="dl">'</span><span class="s1">test</span><span class="dl">'</span><span class="p">)],</span>
+  <span class="na">options</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">formatter</span><span class="p">:</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">eslint-friendly-formatter</span><span class="dl">'</span><span class="p">),</span>
+    <span class="na">emitWarning</span><span class="p">:</span> <span class="o">!</span><span class="nx">config</span><span class="p">.</span><span class="nx">dev</span><span class="p">.</span><span class="nx">showEslintErrorsInOverlay</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+</code></pre></div></div>
+:ET

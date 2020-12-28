@@ -1,0 +1,897 @@
+I"��<h2 id="csscss3">CSS&amp;CSS3</h2>
+
+<h3 id="页面重构怎么操作">页面重构怎么操作？</h3>
+
+<p>编写 CSS、让页面结构更合理化， 提升用户体验，实 现良好的页面效果和提升性能。</p>
+
+<h3 id="为什么要初始化-css-样式">为什么要初始化 CSS 样式。</h3>
+
+<p>因为浏览器的兼容问题，不同浏览器对有些标签的默</p>
+
+<p>认值是不同的，如果没对 CSS 初始化往往会出现浏览 器之间的页面显示差异。</p>
+
+<p>最简单的初始化方法就是： * {padding: 0; margin: 0;}</p>
+
+<h3 id="css的三种样式">CSS的三种样式</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>样式表</th>
+      <th>优点</th>
+      <th>缺点</th>
+      <th>使用情况</th>
+      <th>控制范围</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>行内样式表</td>
+      <td>书写方便，权重高</td>
+      <td>没有实现样式和结构相分离</td>
+      <td>较少</td>
+      <td>控制一个标签（少）</td>
+    </tr>
+    <tr>
+      <td>内部样式表</td>
+      <td>部分结构和样式相分离</td>
+      <td>没有彻底分离</td>
+      <td>较多</td>
+      <td>控制一个页面（中）</td>
+    </tr>
+    <tr>
+      <td>外部样式表</td>
+      <td>完全实现结构和样式相分离</td>
+      <td>需要引入</td>
+      <td>最多，强烈推荐</td>
+      <td>控制整个站点（多）</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="css-选择符有哪些哪些属性可以继承优先级-算法如何计算-css3新增伪类有那些">CSS 选择符有哪些？哪些属性可以继承？优先级 算法如何计算？ CSS3新增伪类有那些？</h3>
+
+<p>标签的权重为 1，class 的权重 为 10， id 的权重为 100。</p>
+
+<p>1.id选择器（ # myid）</p>
+
+<p>2.类选择器（.myclassname）</p>
+
+<p>3.标签选择器（div, h1, p）</p>
+
+<p>4.相邻选择器（h1 + p）</p>
+
+<p>5.子选择器（ul &lt; li）</p>
+
+<p>6.后代选择器（li a）</p>
+
+<p>7.通配符选择器（ * ）</p>
+
+<p>8.属性选择器（a[rel = “external”]）</p>
+
+<p>9.伪类选择器（a: hover, li: nth - child）</p>
+
+<p>可继承： font-size font-family color, UL LI DL DD DT;</p>
+
+<p>不可继承 ：border paddingmarginwidth height ;</p>
+
+<p>优先级就近原则，样式定义最近者为准;</p>
+
+<p>载入样式以最后载入的定位为准; 优先级为:!important &gt; id &gt; class &gt; tag</p>
+
+<p>CSS3新增伪类举例：</p>
+
+<ul>
+  <li>p:first-of-type 选择属于其父元素的首个 &lt;p&gt; 元素的每个 &lt;p&gt; 元素。</li>
+  <li>p:last-of-type 选择属于其父元素的最后 &lt;p&gt; 元素的每个 &lt;p&gt; 元素。</li>
+  <li>p:only-of-type 选择属于其父元素唯一的 &lt;p&gt; 元素的每个 &lt;p&gt; 元素。</li>
+  <li>p:only-child 选择属于其父元素的唯一子元 素的每个 &lt;p&gt; 元素。</li>
+  <li>p:nth-child(2) 选择属于其父元素的第二个子元素的每个 &lt;p&gt; 元素。</li>
+  <li>:enabled、:disabled 控制表单控件的禁用状 态。</li>
+  <li>:checked， 单选框或复选框被选中。</li>
+</ul>
+
+<h3 id="font及css外观属性总结">font及CSS外观属性总结</h3>
+
+<p>选择器 { font: font-style  font-weight  font-size/line-height  font-family;}</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">属性</th>
+      <th style="text-align: left">表示</th>
+      <th style="text-align: left">注意点</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">color</td>
+      <td style="text-align: left">颜色</td>
+      <td style="text-align: left">我们通常用  十六进制   比如 而且是简写形式 #fff</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">line-height</td>
+      <td style="text-align: left">行高</td>
+      <td style="text-align: left">控制行与行之间的距离</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">text-align</td>
+      <td style="text-align: left">水平对齐</td>
+      <td style="text-align: left">可以设定文字水平的对齐方式</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">text-indent</td>
+      <td style="text-align: left">首行缩进</td>
+      <td style="text-align: left">通常我们用于段落首行缩进2个字的距离   text-indent: 2em;</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">text-decoration</td>
+      <td style="text-align: left">文本修饰</td>
+      <td style="text-align: left">记住 添加 下划线  underline  取消下划线  none</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="css复合选择器总结">CSS复合选择器总结</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>选择器</th>
+      <th>作用</th>
+      <th>特征</th>
+      <th>使用情况</th>
+      <th>隔开符号及用法</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>后代选择器</td>
+      <td>用来选择元素后代</td>
+      <td>是选择所有的子孙后代</td>
+      <td>较多</td>
+      <td>符号是<strong>空格</strong> .nav a</td>
+    </tr>
+    <tr>
+      <td>子代选择器</td>
+      <td>选择 最近一级元素</td>
+      <td>只选亲儿子</td>
+      <td>较少</td>
+      <td>符号是<strong>&gt;</strong>   .nav&gt;p</td>
+    </tr>
+    <tr>
+      <td>交集选择器</td>
+      <td>选择两个标签交集的部分</td>
+      <td>既是 又是</td>
+      <td>较少</td>
+      <td><strong>没有符号</strong>  p.one</td>
+    </tr>
+    <tr>
+      <td>并集选择器</td>
+      <td>选择某些相同样式的选择器</td>
+      <td>可以用于集体声明</td>
+      <td>较多</td>
+      <td>符号是<strong>逗号</strong> .nav, .header</td>
+    </tr>
+    <tr>
+      <td>链接伪类选择器</td>
+      <td>给链接更改状态</td>
+      <td> </td>
+      <td>较多</td>
+      <td>重点记住 a{} 和 a:hover  实际开发的写法</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="三种标签显示模式display总结区别">三种标签显示模式display总结区别</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>元素模式</th>
+      <th>元素排列</th>
+      <th>设置样式</th>
+      <th>默认宽度</th>
+      <th>包含</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>块级元素</td>
+      <td>一行只能放一个块级元素</td>
+      <td>可以设置宽度高度</td>
+      <td>容器的100%</td>
+      <td>容器级可以包含任何标签</td>
+    </tr>
+    <tr>
+      <td>行内元素</td>
+      <td>一行可以放多个行内元素</td>
+      <td>不可以直接设置宽度高度</td>
+      <td>它本身内容的宽度</td>
+      <td>容纳文本或则其他行内元素</td>
+    </tr>
+    <tr>
+      <td>行内块元素</td>
+      <td>一行放多个行内块元素</td>
+      <td>可以设置宽度和高度</td>
+      <td>它本身内容的宽度</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="css背景总结">CSS背景总结</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>属性</th>
+      <th style="text-align: left">作用</th>
+      <th style="text-align: left">值</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>background-color</td>
+      <td style="text-align: left">背景颜色</td>
+      <td style="text-align: left">预定义的颜色值/十六进制/RGB代码</td>
+    </tr>
+    <tr>
+      <td>background-image</td>
+      <td style="text-align: left">背景图片</td>
+      <td style="text-align: left">url(图片路径)</td>
+    </tr>
+    <tr>
+      <td>background-repeat</td>
+      <td style="text-align: left">是否平铺</td>
+      <td style="text-align: left">repeat/no-repeat/repeat-x/repeat-y</td>
+    </tr>
+    <tr>
+      <td>background-position</td>
+      <td style="text-align: left">背景位置</td>
+      <td style="text-align: left">length/position    分别是x  和 y坐标， 切记 如果有 精确数值单位，则必须按照先X 后Y 的写法</td>
+    </tr>
+    <tr>
+      <td>background-attachment</td>
+      <td style="text-align: left">背景固定还是滚动</td>
+      <td style="text-align: left">scroll/fixed</td>
+    </tr>
+    <tr>
+      <td>背景简写</td>
+      <td style="text-align: left">更简单</td>
+      <td style="text-align: left">背景颜色 背景图片地址 背景平铺 背景滚动 背景位置;  他们没有顺序</td>
+    </tr>
+    <tr>
+      <td>背景透明</td>
+      <td style="text-align: left">让盒子半透明</td>
+      <td style="text-align: left">background: rgba(0,0,0,0.3);   后面必须是 4个值</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="css优先级-权重计算公式">CSS优先级 权重计算公式</h3>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>不同级别：总结排序：!important &gt; 行内样式&gt;ID选择器 &gt; 类选择器 &gt; 标签 &gt; 通配符 &gt; 继承 &gt; 浏览器默认属性
+	1.属性后面加!import 会覆盖页面内任何位置定义的元素样式
+	2.作为style属性写在元素内的样式
+	3.id选择器
+	4.类选择器
+	5.标签选择器
+	6.通配符选择器（*）
+	7.浏览器自定义或继承
+**同一级别：后写的会覆盖先写的**
+</code></pre></div></div>
+
+<blockquote>
+  <p>css选择器的解析原则：选择器定位DOM元素是从右往左的方向，这样可以尽早的过滤掉一些不必要的样式规则和元素</p>
+</blockquote>
+
+<table>
+  <thead>
+    <tr>
+      <th>标签选择器</th>
+      <th>计算权重公式</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>继承或者 *</td>
+      <td>0,0,0,0</td>
+    </tr>
+    <tr>
+      <td>每个元素（标签选择器）</td>
+      <td>0,0,0,1</td>
+    </tr>
+    <tr>
+      <td>每个类，伪类</td>
+      <td>0,0,1,0</td>
+    </tr>
+    <tr>
+      <td>每个ID</td>
+      <td>0,1,0,0</td>
+    </tr>
+    <tr>
+      <td>每个行内样式 style=””</td>
+      <td>1,0,0,0</td>
+    </tr>
+    <tr>
+      <td>每个!important  重要的</td>
+      <td>∞ 无穷大</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="css属性书写顺序">CSS属性书写顺序</h3>
+
+<p>建议遵循以下顺序：</p>
+
+<ol>
+  <li>布局定位属性：display / position / float / clear / visibility / overflow（建议 display 第一个写，毕竟关系到模式）</li>
+  <li>自身属性：width / height / margin / padding / border / background</li>
+  <li>文本属性：color / font / text-decoration / text-align / vertical-align / white- space / break-word</li>
+  <li>其他属性（CSS3）：content / cursor / border-radius / box-shadow / text-shadow / background:linear-gradient …</li>
+</ol>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.jdc</span> <span class="p">{</span>
+    <span class="nl">display</span><span class="p">:</span> <span class="nb">block</span><span class="p">;</span>
+    <span class="nl">position</span><span class="p">:</span> <span class="nb">relative</span><span class="p">;</span>
+    <span class="nl">float</span><span class="p">:</span> <span class="nb">left</span><span class="p">;</span>
+    <span class="nl">width</span><span class="p">:</span> <span class="m">100px</span><span class="p">;</span>
+    <span class="nl">height</span><span class="p">:</span> <span class="m">100px</span><span class="p">;</span>
+    <span class="nl">margin</span><span class="p">:</span> <span class="m">0</span> <span class="m">10px</span><span class="p">;</span>
+    <span class="nl">padding</span><span class="p">:</span> <span class="m">20px</span> <span class="m">0</span><span class="p">;</span>
+    <span class="nl">font-family</span><span class="p">:</span> <span class="n">Arial</span><span class="p">,</span> <span class="s2">'Helvetica Neue'</span><span class="p">,</span> <span class="n">Helvetica</span><span class="p">,</span> <span class="nb">sans-serif</span><span class="p">;</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="m">#333</span><span class="p">;</span>
+    <span class="nl">background</span><span class="p">:</span> <span class="n">rgba</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="m">.5</span><span class="p">);</span>
+    <span class="nl">-webkit-border-radius</span><span class="p">:</span> <span class="m">10px</span><span class="p">;</span>
+    <span class="nl">-moz-border-radius</span><span class="p">:</span> <span class="m">10px</span><span class="p">;</span>
+    <span class="nl">-o-border-radius</span><span class="p">:</span> <span class="m">10px</span><span class="p">;</span>
+    <span class="nl">-ms-border-radius</span><span class="p">:</span> <span class="m">10px</span><span class="p">;</span>
+    <span class="nl">border-radius</span><span class="p">:</span> <span class="m">10px</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="css中-link-和import-的区别是"><strong>CSS中 link 和@import 的区别是？</strong></h3>
+
+<p>（1）、link 属于 XHTML标签， 而@import是 CSS提供的;</p>
+
+<p>（2）、页面被加载的时，link会同时被加载，而 @import引用的 CSS会等到页面被加载完再加载;</p>
+
+<p>（3）、import 只在 IE5 以上才能识别，而 link 是 XHTML标签，无兼容问题;</p>
+
+<p>（4）、link 方式的样式的权重 高于@import 的权重.</p>
+
+<h3 id="position的四个属性值">position的四个属性值</h3>
+
+<p>Static  relative  fixed  absolute  sticky CSS 定位详解</p>
+
+<h3 id="position的值-relative和-absolute定位原点是">position的值， relative和 absolute定位原点是？</h3>
+
+<ul>
+  <li>absolute 生成绝对定位的元素，相对于 static 定位以 外的第一个父元素进行定位。</li>
+  <li>fixed （老 IE不支持） 生成绝对定位的元素，相对于浏览器窗口进行 定位。</li>
+  <li>
+    <p>relative 生成相对定位的元素，相对于其正常位置进行 定位。</p>
+  </li>
+  <li>static默认值。没有定位，元素出现在正常的流中</li>
+  <li>inherit 规定从父元素继承</li>
+</ul>
+
+<h3 id="列出-display的值说明他们的作用">列出 display的值，说明他们的作用。</h3>
+
+<ol>
+  <li>block 象块类型元素一样显示。</li>
+  <li>none 缺省值。向行内元素类型一样显示。</li>
+  <li>inline-block 象行内元素一样显示，但其内容象块 类型元素一样显示。</li>
+  <li>list-item 象块类型元素一样显示，并添加样式列表 标记。</li>
+</ol>
+
+<h3 id="显示与隐藏display-visibility-overflow">显示与隐藏display visibility overflow</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>属性</th>
+      <th>区别</th>
+      <th>用途</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>display</strong></td>
+      <td>隐藏对象，不保留位置</td>
+      <td>配合后面js做特效，比如下拉菜单，原先没有，鼠标经过，显示下拉菜单， 应用极为广泛</td>
+    </tr>
+    <tr>
+      <td><strong>visibility</strong></td>
+      <td>隐藏对象，保留位置</td>
+      <td>使用较少</td>
+    </tr>
+    <tr>
+      <td><strong>overflow</strong></td>
+      <td>只是隐藏超出大小的部分</td>
+      <td>1. 可以清除浮动 2. 保证盒子里面的内容不会超出该盒子范围</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="text-overflow-文字溢出">text-overflow 文字溢出</h3>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="c">/*1. 先强制一行内显示文本*/</span>
+      <span class="nt">white-space</span><span class="o">:</span> <span class="nt">nowrap</span><span class="o">;</span>
+  <span class="c">/*2. 超出的部分隐藏*/</span>
+      <span class="nt">overflow</span><span class="o">:</span> <span class="nt">hidden</span><span class="o">;</span>
+  <span class="c">/*3. 文字用省略号替代超出的部分*/</span>
+      <span class="nt">text-overflow</span><span class="o">:</span> <span class="nt">ellipsis</span><span class="o">;</span>
+</code></pre></div></div>
+
+<h3 id="雪碧图"><strong>雪碧图</strong></h3>
+
+<p><strong>为了有效地减少服务器接受和发送请求的次数，提高页面的加载速度。</strong></p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>多个图片集成在一个图片中的图
+使用雪碧图可以减少网络请求的次数，加快允许的速度
+通过background-position，去定位图片在屏幕的哪个位置
+</code></pre></div></div>
+
+<h3 id="用css实现三角的效果">用CSS实现三角的效果？</h3>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20201211092544.png" alt="image-20201211092544349" /></p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">div</span> <span class="p">{</span>
+            <span class="nl">width</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+            <span class="nl">height</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+            <span class="nl">line-height</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+            <span class="nl">font-size</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+            <span class="nl">border-top</span><span class="p">:</span> <span class="m">10px</span> <span class="nb">solid</span> <span class="no">red</span><span class="p">;</span>
+            <span class="nl">border-right</span><span class="p">:</span> <span class="m">10px</span> <span class="nb">solid</span> <span class="no">green</span><span class="p">;</span>
+            <span class="nl">border-bottom</span><span class="p">:</span> <span class="m">10px</span> <span class="nb">solid</span> <span class="no">blue</span><span class="p">;</span>
+            <span class="nl">border-left</span><span class="p">:</span> <span class="m">10px</span> <span class="nb">solid</span> <span class="m">#000</span><span class="p">;</span>
+        <span class="p">}</span>
+</code></pre></div></div>
+
+<ol>
+  <li>我们用css 边框可以模拟三角效果</li>
+  <li>宽度高度为0</li>
+  <li>我们4个边框都要写， 只保留需要的边框颜色，其余的不能省略，都改为 transparent 透明就好了</li>
+  <li>为了照顾兼容性 低版本的浏览器，加上 font-size: 0;  line-height: 0;</li>
+</ol>
+
+<h3 id="实现九宫格">实现九宫格</h3>
+
+<p>5种方法</p>
+
+<h4 id="1-flexbox">1. FlexBox</h4>
+
+<p>HTML 结构如下：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;div class="square"&gt;
+  &lt;ul class="square-inner flex"&gt;
+    &lt;li&gt;1&lt;/li&gt;
+    &lt;li&gt;2&lt;/li&gt;
+    &lt;li&gt;3&lt;/li&gt;
+    &lt;li&gt;4&lt;/li&gt;
+    &lt;li&gt;5&lt;/li&gt;
+    &lt;li&gt;6&lt;/li&gt;
+    &lt;li&gt;7&lt;/li&gt;
+    &lt;li&gt;8&lt;/li&gt;
+    &lt;li&gt;9&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;
+</code></pre></div></div>
+
+<p>抽取公共样式：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.square{
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 100%; /* padding百分比是相对父元素宽度计算的 */
+  margin-bottom: 30px;
+}
+.square-inner{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; /* 铺满父元素容器，这时候宽高就始终相等了 */
+}
+.square-inner&gt;li{
+  width: calc(98% / 3);  /* calc里面的运算符两边要空格 */
+  height: calc(98% / 3);
+  margin-right: 1%;
+  margin-bottom: 1%;
+  overflow: hidden;
+}
+</code></pre></div></div>
+
+<p>使用Flex的一个好处是不用再担心高度塌陷的问题，而且还可以轻松实现子元素横向竖向甚至按比例伸缩扩展的布局。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.flex{
+  display: flex;
+  flex-wrap: wrap;
+}
+.flex&gt;li{
+  flex-grow: 1; /* 子元素按1/n的比例进行拉伸 */
+  background-color: #4d839c;
+  text-align: center;
+  color: #fff;
+  font-size: 50px;
+  line-height: 2;
+}
+.flex&gt;li:nth-of-type(3n){ /* 选择个数是3的倍数的元素 */
+  margin-right: 0;
+}
+.flex&gt;li:nth-of-type(n+7){  /* 选择倒数的三个元素，n可以取0 */
+  margin-bottom: 0;
+}
+</code></pre></div></div>
+
+<p><a href="https://i.loli.net/2017/12/08/5a2a6c7ca0c88.png"><img src="https://i.loli.net/2017/12/08/5a2a6c7ca0c88.png" alt="17_12_08_01.png" /></a></p>
+
+<p><a href="https://i.loli.net/2017/12/08/5a2a6c7ca0c88.png">FlexBox-效果图</a></p>
+
+<h4 id="2-grid">2. Grid</h4>
+
+<p>对于网格布局来说，grid 比 flex 更为方便，代码量更少，可以处理更为复杂的结构。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;div class="square"&gt;
+  &lt;div class="square-inner grid"&gt;
+    &lt;div&gt;1&lt;/div&gt;
+    &lt;div&gt;2&lt;/div&gt;
+    &lt;div&gt;3&lt;/div&gt;
+    &lt;div&gt;4&lt;/div&gt;
+    &lt;div&gt;5&lt;/div&gt;
+    &lt;div&gt;6&lt;/div&gt;
+    &lt;div&gt;7&lt;/div&gt;
+    &lt;div&gt;8&lt;/div&gt;
+    &lt;div&gt;9&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+.grid{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 相当于 1fr 1fr 1fr */
+  grid-template-rows: repeat(3, 1fr); /* fr单位可以将容器分为几等份 */
+  grid-gap: 1%; /* grid-column-gap 和 grid-row-gap的简写 */
+  grid-auto-flow: row;
+}
+.grid&gt;div{
+  color: #fff;
+  font-size: 50px;
+  line-height: 2;
+  text-align: center;
+  background: linear-gradient(to bottom, #f5f6f6 0%,#dbdce2 21%,#b8bac6 49%,#dddfe3 80%,#f5f6f6 100%);
+}
+</code></pre></div></div>
+
+<p><a href="https://i.loli.net/2017/12/10/5a2cf18e48460.png"><img src="https://i.loli.net/2017/12/10/5a2cf18e48460.png" alt="17_12_08_05.png" /></a></p>
+
+<p><a href="https://i.loli.net/2017/12/10/5a2cf18e48460.png">Grid-效果图</a></p>
+
+<p>更多：<a href="http://blog.csdn.net/ceshi986745/article/details/51733383">CSS Grid布局指南</a></p>
+
+<h4 id="3-float">3. Float</h4>
+
+<p>浮动实现九宫格就不多说了，原理同上。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;div class="square"&gt;
+  &lt;ul class="square-inner float"&gt;
+    &lt;li&gt;1&lt;/li&gt;
+    &lt;li&gt;2&lt;/li&gt;
+    &lt;li&gt;3&lt;/li&gt;
+    &lt;li&gt;4&lt;/li&gt;
+    &lt;li&gt;5&lt;/li&gt;
+    &lt;li&gt;6&lt;/li&gt;
+    &lt;li&gt;7&lt;/li&gt;
+    &lt;li&gt;8&lt;/li&gt;
+    &lt;li&gt;9&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;
+.float::after{
+  content: "";
+  display: block;
+  clear: both;
+  visibility: hidden;
+}
+.float&gt;li{
+  float: left;
+  background-color: #42a59f;
+  text-align: center;
+  color: #fff;
+  font-size: 50px;
+  line-height: 2;
+}
+.float&gt;li:nth-of-type(3n){
+  margin-right: 0;
+}
+.float&gt;li:nth-of-type(n+7){
+  margin-bottom: 0;
+}
+</code></pre></div></div>
+
+<p><a href="https://i.loli.net/2017/12/08/5a2a6c7ca6312.png"><img src="https://i.loli.net/2017/12/08/5a2a6c7ca6312.png" alt="17_12_08_02.png" /></a></p>
+
+<p><a href="https://i.loli.net/2017/12/08/5a2a6c7ca6312.png">Float-效果图</a></p>
+
+<p>除了浮动，这里 li 也可以使用<code class="language-plaintext highlighter-rouge">display: inline-block;</code>实现同样的效果，不过要注意HTML代码非压缩情况下行块级元素之间会出现默认间隔，不同浏览器下表现还不一样，这时可以给父级元素设置<code class="language-plaintext highlighter-rouge">font-size: 0;</code></p>
+
+<h4 id="4-table">4. Table</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;div class="square"&gt;
+  &lt;table class="square-inner table"&gt;
+    &lt;tbody&gt;
+      &lt;tr&gt;
+        &lt;td&gt;1&lt;/td&gt;
+        &lt;td&gt;2&lt;/td&gt;
+        &lt;td&gt;3&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;td&gt;4&lt;/td&gt;
+        &lt;td&gt;5&lt;/td&gt;
+        &lt;td&gt;6&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;td&gt;7&lt;/td&gt;
+        &lt;td&gt;8&lt;/td&gt;
+        &lt;td&gt;9&lt;/td&gt;
+      &lt;/tr&gt;
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;/div&gt;
+.table{
+  border-collapse: separate;
+  border-spacing: 0.57em;
+  font-size: 14px;
+  empty-cells: hide;
+  table-layout: fixed;
+}
+.table&gt;tbody&gt;tr&gt;td{
+  text-align: center;
+  background-color: #889ed8;
+  overflow: hidden;
+}
+</code></pre></div></div>
+
+<p><a href="https://i.loli.net/2017/12/08/5a2a6c7cab47a.png"><img src="https://i.loli.net/2017/12/08/5a2a6c7cab47a.png" alt="17_12_08_03.png" /></a></p>
+
+<p><a href="https://i.loli.net/2017/12/08/5a2a6c7cab47a.png">Table-效果图</a></p>
+
+<p>说下用表格实现九宫格有哪些瑕疵：</p>
+
+<ul>
+  <li>最后一行最后一列的单元格宽高与前面的不一致，虽然相差不大，但是还是有差异的；</li>
+  <li>与前面的两种方法不同，table 单元格之间的间隔是利用<code class="language-plaintext highlighter-rouge">border-spacing</code>属性实现的，且不支持百分比，单元格四周都有类似margin的外边距效果，如下图。</li>
+</ul>
+
+<p><a href="https://i.loli.net/2017/12/08/5a2a7142123ad.png"><img src="https://i.loli.net/2017/12/08/5a2a7142123ad.png" alt="17_12_08_04.png" /></a></p>
+
+<p><a href="https://i.loli.net/2017/12/08/5a2a7142123ad.png">浏览器渲染效果图</a></p>
+
+<h4 id="分析">分析</h4>
+
+<p>综上来看，个人认为 FlexBox 适合用于移动端，PC端 IE10 以下不支持；Grid网格布局比较方便，但是规范还未成熟，主流浏览器厂商尚未推广，不推荐使用在项目中；浮动和行块级式声明可以兼容到IE6，移动端和PC端支持的都不错；Table 因为实现有瑕疵所以不推荐使用。</p>
+
+<h3 id="如何让一个div水平居中">如何让一个div水平居中？</h3>
+
+<p>已知宽度，block元素 ，添加添加margin:0 auto属性。
+已知宽度，绝对定位的居中 ，上下左右都为0，margin:auto</p>
+
+<h3 id="如何让一个div水平垂直居中"><strong>如何让一个div水平垂直居中</strong></h3>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">//</span><span class="err">方法一</span><span class="nd">:display</span><span class="o">:</span> <span class="nt">flex-box</span>
+<span class="nt">display</span><span class="nd">:flex</span><span class="o">;</span>
+<span class="nt">justify-content</span><span class="nd">:center</span><span class="o">;</span>
+<span class="nt">align-items</span><span class="nd">:center</span><span class="o">;</span>
+
+<span class="o">//</span><span class="err">方法二</span><span class="nd">:display:table</span> 
+<span class="nt">display</span><span class="nd">:table</span><span class="o">;</span>
+<span class="nt">vertical-align</span><span class="nd">:center</span><span class="o">;</span>
+
+<span class="o">//</span><span class="err">方法五</span><span class="nd">:display:inline-block</span>
+<span class="o">//</span><span class="err">适用于行内元素</span>
+<span class="nt">display</span><span class="nd">:inline-block</span><span class="o">;</span>
+<span class="nt">width</span><span class="nd">:100px</span><span class="o">;</span>
+<span class="nt">height</span><span class="nd">:100px</span><span class="o">;</span>
+<span class="nt">text-align</span><span class="nd">:center</span><span class="o">;</span>
+<span class="nt">line-height</span><span class="nd">:100px</span><span class="o">;</span>
+
+<span class="o">//</span><span class="err">方法六</span><span class="o">:</span><span class="err">适用于块级元素</span>
+<span class="nt">display</span><span class="nd">:block</span><span class="o">;</span>
+<span class="nt">height</span><span class="nd">:100px</span><span class="o">;</span>
+<span class="nt">margin</span><span class="nd">:0</span> <span class="nt">auto</span><span class="o">;</span>
+<span class="nt">line-height</span><span class="nd">:100px</span><span class="o">;</span>
+
+<span class="o">//</span><span class="err">方法三</span><span class="o">:</span><span class="err">适用于已知宽高且父元素定位不为</span><span class="nt">static</span>
+<span class="nt">postion</span><span class="nd">:absolute</span><span class="o">;</span>
+<span class="nt">width</span><span class="nd">:100px</span><span class="o">;</span>
+<span class="nt">height</span><span class="nd">:100px</span><span class="o">;</span>
+<span class="nt">top</span><span class="nd">:50</span><span class="o">%;</span>
+<span class="nt">left</span><span class="nd">:50</span><span class="o">%;</span>
+<span class="nt">margin</span><span class="nd">:-50px</span> <span class="nt">0</span> <span class="nt">0</span> <span class="nt">-50px</span><span class="o">;</span>
+
+<span class="o">//</span><span class="err">方法四</span>
+<span class="nt">position</span><span class="nd">:absolute</span><span class="o">;</span>
+<span class="nt">top</span><span class="nd">:50</span><span class="o">%;</span>
+<span class="nt">left</span><span class="nd">:50</span><span class="o">%;</span>
+<span class="nt">transform</span><span class="nd">:translateY</span><span class="o">(</span><span class="nt">-50</span><span class="o">%)</span> <span class="nt">translateX</span><span class="o">(</span><span class="nt">-50</span><span class="o">%);</span>
+</code></pre></div></div>
+
+<h3 id="css3属性选择器结构伪类选择器伪元素选择器">CSS3属性选择器、结构伪类选择器、伪元素选择器</h3>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20201211094710.png" alt="image-20201211094710329" /></p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">input</span><span class="o">[</span><span class="nt">type</span><span class="o">=</span><span class="nt">search</span><span class="o">]</span> <span class="p">{</span><span class="nl">color</span><span class="p">:</span> <span class="no">skyblue</span><span class="p">;}</span>
+<span class="nt">span</span><span class="o">[</span><span class="nt">class</span><span class="o">^=</span><span class="nt">black</span><span class="o">]</span> <span class="p">{</span><span class="nl">color</span><span class="p">:</span> <span class="no">lightgreen</span><span class="p">;}</span>
+<span class="nt">span</span><span class="o">[</span><span class="nt">class</span><span class="err">$</span><span class="o">=</span><span class="nt">black</span><span class="o">]</span> <span class="p">{</span><span class="nl">color</span><span class="p">:</span> <span class="no">lightsalmon</span><span class="p">;}</span>
+<span class="nt">span</span><span class="o">[</span><span class="nt">class</span><span class="o">*=</span><span class="nt">black</span><span class="o">]</span> <span class="p">{</span><span class="nl">color</span><span class="p">:</span> <span class="no">lightseagreen</span><span class="p">;}</span>
+</code></pre></div></div>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20201211094806.png" alt="image-20201211094806022" /></p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">ul</span> <span class="nt">li</span><span class="nd">:first-child</span> <span class="p">{</span><span class="nl">background-color</span><span class="p">:</span> <span class="no">lightseagreen</span><span class="p">;}</span>
+<span class="nt">ul</span> <span class="nt">li</span><span class="nd">:last-child</span> <span class="p">{</span><span class="nl">background-color</span><span class="p">:</span> <span class="no">lightcoral</span><span class="p">;}</span>
+<span class="nt">ul</span> <span class="nt">li</span><span class="nd">:nth-child</span><span class="o">(</span><span class="nt">3</span><span class="o">)</span> <span class="p">{</span><span class="nl">background-color</span><span class="p">:</span> <span class="no">aqua</span><span class="p">;}</span>
+</code></pre></div></div>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20201211094941.png" alt="image-20201211094940823" /></p>
+
+<h3 id="css3-2d-3d转换">CSS3 2D 3D转换</h3>
+
+<p>缩放：scale 移动：translate 旋转：rotate 倾斜：skew</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">transform</span><span class="o">:</span> <span class="nt">translate</span><span class="o">(</span><span class="nt">x</span><span class="o">,</span><span class="nt">y</span><span class="o">);</span>
+<span class="nt">transform</span><span class="o">:</span> <span class="nt">rotate</span><span class="o">(</span><span class="nt">angle</span><span class="o">);</span>
+<span class="nt">transform</span><span class="o">:</span> <span class="nt">scale</span><span class="o">(</span><span class="nt">x</span><span class="o">,</span><span class="nt">y</span><span class="o">);</span>
+</code></pre></div></div>
+
+<ul>
+  <li>transform:translate3d(x,y,z)、translform:translateX(100px)、translform:translateY(100px)、translform:translateZ(100px)</li>
+  <li>transform:rotateX(45deg)、transform:rotateY(45deg) 、transform:rotateZ(45deg)、transform:rotate3d(x,y,z,deg)：</li>
+</ul>
+
+<p>透视 perspective</p>
+
+<p>左手准则。</p>
+
+<h3 id="css3动画">CSS3动画</h3>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">animation</span><span class="err">：动画名称</span> <span class="err">动画时间</span> <span class="err">运动曲线</span> <span class="err">何时开始</span> <span class="err">播放次数</span> <span class="err">是否反方向</span> <span class="err">动画等待或者结束的状态</span><span class="o">;</span>
+<span class="nt">animation</span><span class="o">:</span> <span class="nt">myfirst</span> <span class="nt">5s</span> <span class="nt">linear</span> <span class="nt">2s</span> <span class="nt">infinite</span> <span class="nt">alternate</span><span class="o">;</span>
+</code></pre></div></div>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20201211095447.png" alt="image-20201211095447319" /></p>
+
+<h3 id="img中alt和title的区别"><strong>img中alt和title的区别</strong></h3>
+
+<blockquote>
+  <p>图片中的 title属性是在鼠标在移动到元素上的文本提示。</p>
+
+  <p>图片中的 alt属性是在图片不能正常显示时出现的文本提示。alt有利于SEO优化</p>
+</blockquote>
+
+<h3 id="css3的属性有哪些">css3的属性有哪些</h3>
+
+<h5 id="css3边框">CSS3边框</h5>
+
+<p>border-radius 圆角边框、box-shadow 边框阴影、border-image 边框图片</p>
+
+<h5 id="css3背景">CSS3背景</h5>
+
+<p>background-clip 规定背景的绘制区域、background-origin 规定 background-position 属性相对于什么位置来定、background-size 规定背景图像的尺寸</p>
+
+<h5 id="css3文本">CSS3文本</h5>
+
+<p>text-overflow 规定当文本溢出包含元素时发生的事情、text-shadow 向文本设置阴影、white-space（不是css3属性）</p>
+
+<h5 id="css3字体">CSS3字体</h5>
+
+<h5 id="css3-2d转换">CSS3 2D转换</h5>
+
+<p>transform</p>
+
+<h5 id="css3-3d转换">CSS3 3D转换</h5>
+
+<p>transform</p>
+
+<h5 id="css3-过渡">CSS3 过渡</h5>
+
+<p>transition-property、transition-duration、transition-timing-function</p>
+
+<h5 id="css3-动画">CSS3 动画</h5>
+
+<p>@keyframes 规则用于创建动画。用关键词 “from” 和 “to”，等同于 0% 和 100%。、通过animation属性将动画绑定到选择器上</p>
+
+<h5 id="css3-多列">CSS3 多列</h5>
+
+<p>column-count 属性规定元素应该被分隔的列数、column-gap 属性规定列之间的间隔、column-rule 属性设置列之间的宽度、样式和颜色规则</p>
+
+<h5 id="css3-用户界面">CSS3 用户界面</h5>
+
+<p>resize 属性规定是否可由用户调整元素尺寸、box-sizing 以确切的方式定义适应某个区域的具体内容、outline-offset 对轮廓进行偏移，并在超出边框边缘的位置绘制轮廓</p>
+
+<h3 id="pxemrem区别">px，em，rem区别</h3>
+
+<p><strong>px</strong> 相对长度单位，是相当于显示器的分辨率而言的</p>
+
+<p><strong>em</strong> 相对长度单位，相对父元素的字体大小而言的</p>
+
+<p><strong>rem</strong> 相对长度单位，相对html根元素的字体大小而言的，css3新增元素</p>
+
+<h3 id="清除浮动的四种方式及其原理理解">清除浮动的四种方式及其原理理解</h3>
+
+<ol>
+  <li>利用clear样式</li>
+  <li>父元素结束标签之前插入清除浮动的块级元素</li>
+  <li>利用伪元素</li>
+  <li>利用overflow清除浮动</li>
+</ol>
+
+<blockquote>
+  <p>clear清除浮动（添加空div法）在浮动元素下方添加空div,并给该元素写css样式 {clear:both;height:0;overflow:hidden;}</p>
+
+  <p>给浮动元素父级设置高度</p>
+
+  <p>父级同时浮动（需要给父级同级元素添加浮动）</p>
+
+  <p>父级设置成inline-block，其margin: 0 auto居中方式失效</p>
+
+  <p>给父级添加overflow:hidden 清除浮动方法</p>
+
+  <p>万能清除法 after伪类 清浮动（现在主流方法，推荐使用）</p>
+</blockquote>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">float_div</span><span class="nd">:after</span><span class="p">{</span>
+<span class="nl">content</span><span class="p">:</span><span class="s1">"."</span><span class="p">;</span>
+<span class="nl">clear</span><span class="p">:</span><span class="nb">both</span><span class="p">;</span>
+<span class="nl">display</span><span class="p">:</span><span class="nb">block</span><span class="p">;</span>
+<span class="nl">height</span><span class="p">:</span><span class="m">0</span><span class="p">;</span>
+<span class="nl">overflow</span><span class="p">:</span><span class="nb">hidden</span><span class="p">;</span>
+<span class="nl">visibility</span><span class="p">:</span><span class="nb">hidden</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nc">.float_div</span><span class="p">{</span>
+<span class="py">zoom</span><span class="p">:</span><span class="m">1</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="displaynone-和-visibility-hidden的区别"><strong>display:none 和 visibility: hidden的区别</strong></h3>
+
+<blockquote>
+  <p>display:none 隐藏对应的元素，在文档布局中不再给它分配空间，它各边的元素会合拢，就当他从来不存在。</p>
+
+  <p>visibility:hidden 隐藏对应的元素，但是在文档布局中仍保留原来的空间。</p>
+</blockquote>
+
+<h3 id="position的absolute与fixed共同点与不同点"><strong>position的absolute与fixed共同点与不同点</strong></h3>
+
+<blockquote>
+  <p>共同点： 改变行内元素的呈现方式，display被置为block 让元素脱离普通流，不占据空间 默认会覆盖到非定位元素上</p>
+
+  <p>不同点： absolute的”根元素“是可以设置的 fixed的”根元素“固定为浏览器窗口。当你滚动网页，fixed元素与浏览器窗口之间的距离是不变的。</p>
+</blockquote>
+
+<h3 id="transition和animation的区别"><strong>transition和animation的区别</strong></h3>
+
+<blockquote>
+  <p>Animation和transition大部分属性是相同的，他们都是随时间改变元素的属性值，他们的主要区别是transition需要触发一个事件才能改变属性， 而animation不需要触发任何事件的情况下才会随时间改变属性值，并且transition为2帧，从from …. to，而animation可以一帧一帧的。</p>
+
+  <p>transition 规定动画的名字 规定完成过渡效果需要多少秒或毫秒 规定速度效果 定义过渡效果何时开始 animation 指定要绑定到选择器的关键帧的名称</p>
+</blockquote>
+
+<h3 id="为什么css放在顶部而js写在后面"><strong>为什么css放在顶部而js写在后面</strong></h3>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1.浏览器预先加载css后，可以不必等待HTML加载完毕就可以渲染页面了
+2.其实HTML渲染并不会等到完全加载完在渲染页面，而是一边解析DOM一边渲染。
+3.js写在尾部，主要是因为js主要扮演事件处理的功能，一方面很多操作是在页面渲染后才执行的。另一方面可以节省加载时间，使页面能够更加的加载，提高用户的良好体验
+但是随着JS技术的发展，JS也开始承担页面渲染的工作。比如我们的UI其实可以分被对待，把渲染页面的js放在前面，时间处理的js放在后面
+</code></pre></div></div>
+
+<h3 id="iframe-有那些缺点">iframe 有那些缺点？</h3>
+
+<p>*iframe 会阻塞主页面的 Onload事件；</p>
+
+<p>*iframe 和主页面共享连接池，而浏览器对相同域的连接有限制，所以会影响页面的并行加载。</p>
+
+<p>使用 iframe之前需要考虑这两个缺点。如果需要使用iframe， 最好是通过 javascript</p>
+
+<p>动态给 iframe添加 src 属性值，这样可以绕开以上两个问题。</p>
+:ET

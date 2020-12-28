@@ -1,0 +1,15 @@
+I"v<h1 id="attributeerror-module-tensorflowcontribestimator-has-no-attribute-stop_if_no_decrease_hook">AttributeError: module ‘tensorflow.contrib.estimator’ has no attribute ‘stop_if_no_decrease_hook’</h1>
+
+<p>训练<a href="https://github.com/macanv/BERT-BiLSTM-CRF-NER">BERT-BiLSTM-CRF-NER</a>，运行训练命令时报错：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>AttributeError: module 'tensorflow.contrib.estimator' has no attribute 'stop_if_no_decrease_hook'
+</code></pre></div></div>
+
+<p>查阅资料后知道了</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tf.estimator.experimental.stop_if_no_decrease_hook  改为这个就好了
+</code></pre></div></div>
+
+<p><a href="https://github.com/macanv/BERT-BiLSTM-CRF-NER/issues/203">Link</a></p>
+
+:ET

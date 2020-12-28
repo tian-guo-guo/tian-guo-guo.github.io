@@ -1,0 +1,563 @@
+I"|C<h1 id="6---attention-is-all-you-need论文复现代码">6 - Attention is All You Need论文复现代码</h1>
+<p>For more details: <a href="http://nlp.seas.harvard.edu/2018/04/03/attention.html">The Annotated Transformer</a></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="n">nn</span>
+<span class="kn">import</span> <span class="nn">torch.optim</span> <span class="k">as</span> <span class="n">optim</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="n">F</span>
+
+<span class="kn">import</span> <span class="nn">torchtext</span>
+<span class="kn">from</span> <span class="nn">torchtext.datasets</span> <span class="kn">import</span> <span class="n">TranslationDataset</span><span class="p">,</span> <span class="n">Multi30k</span>
+<span class="kn">from</span> <span class="nn">torchtext.data</span> <span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">BucketIterator</span>
+
+<span class="kn">import</span> <span class="nn">spacy</span>
+
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">SEED</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">random</span><span class="p">.</span><span class="n">seed</span><span class="p">(</span><span class="n">SEED</span><span class="p">)</span>
+<span class="n">torch</span><span class="p">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="n">SEED</span><span class="p">)</span>
+<span class="n">torch</span><span class="p">.</span><span class="n">backends</span><span class="p">.</span><span class="n">cudnn</span><span class="p">.</span><span class="n">deterministic</span> <span class="o">=</span> <span class="bp">True</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">spacy_de</span> <span class="o">=</span> <span class="n">spacy</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="s">'de'</span><span class="p">)</span>
+<span class="n">spacy_en</span> <span class="o">=</span> <span class="n">spacy</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="s">'en'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">tokenize_de</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="s">"""
+    Tokenizes German text from a string into a list of strings
+    """</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">tok</span><span class="p">.</span><span class="n">text</span> <span class="k">for</span> <span class="n">tok</span> <span class="ow">in</span> <span class="n">spacy_de</span><span class="p">.</span><span class="n">tokenizer</span><span class="p">(</span><span class="n">text</span><span class="p">)]</span>
+
+<span class="k">def</span> <span class="nf">tokenize_en</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="s">"""
+    Tokenizes English text from a string into a list of strings
+    """</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">tok</span><span class="p">.</span><span class="n">text</span> <span class="k">for</span> <span class="n">tok</span> <span class="ow">in</span> <span class="n">spacy_en</span><span class="p">.</span><span class="n">tokenizer</span><span class="p">(</span><span class="n">text</span><span class="p">)]</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">SRC</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">tokenize</span><span class="o">=</span><span class="n">tokenize_de</span><span class="p">,</span> <span class="n">init_token</span><span class="o">=</span><span class="s">'&lt;sos&gt;'</span><span class="p">,</span> <span class="n">eos_token</span><span class="o">=</span><span class="s">'&lt;eos&gt;'</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">batch_first</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">TRG</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">tokenize</span><span class="o">=</span><span class="n">tokenize_en</span><span class="p">,</span> <span class="n">init_token</span><span class="o">=</span><span class="s">'&lt;sos&gt;'</span><span class="p">,</span> <span class="n">eos_token</span><span class="o">=</span><span class="s">'&lt;eos&gt;'</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">batch_first</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">train_data</span><span class="p">,</span> <span class="n">valid_data</span><span class="p">,</span> <span class="n">test_data</span> <span class="o">=</span> <span class="n">Multi30k</span><span class="p">.</span><span class="n">splits</span><span class="p">(</span><span class="n">exts</span><span class="o">=</span><span class="p">(</span><span class="s">'.de'</span><span class="p">,</span> <span class="s">'.en'</span><span class="p">),</span> <span class="n">fields</span><span class="o">=</span><span class="p">(</span><span class="n">SRC</span><span class="p">,</span> <span class="n">TRG</span><span class="p">))</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">SRC</span><span class="p">.</span><span class="n">build_vocab</span><span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">min_freq</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">TRG</span><span class="p">.</span><span class="n">build_vocab</span><span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">min_freq</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">device</span><span class="p">(</span><span class="s">'cuda'</span> <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s">'cpu'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">BATCH_SIZE</span> <span class="o">=</span> <span class="mi">128</span>
+
+<span class="n">train_iterator</span><span class="p">,</span> <span class="n">valid_iterator</span><span class="p">,</span> <span class="n">test_iterator</span> <span class="o">=</span> <span class="n">BucketIterator</span><span class="p">.</span><span class="n">splits</span><span class="p">(</span>
+    <span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">valid_data</span><span class="p">,</span> <span class="n">test_data</span><span class="p">),</span> 
+     <span class="n">batch_size</span><span class="o">=</span><span class="n">BATCH_SIZE</span><span class="p">,</span>
+     <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Encoder</span><span class="p">(</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_dim</span><span class="p">,</span> <span class="n">hid_dim</span><span class="p">,</span> <span class="n">n_layers</span><span class="p">,</span> <span class="n">n_heads</span><span class="p">,</span> <span class="n">pf_dim</span><span class="p">,</span> <span class="n">encoder_layer</span><span class="p">,</span> <span class="n">self_attention</span><span class="p">,</span> <span class="n">positionwise_feedforward</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">().</span><span class="n">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="p">.</span><span class="n">input_dim</span> <span class="o">=</span> <span class="n">input_dim</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">hid_dim</span> <span class="o">=</span> <span class="n">hid_dim</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">n_layers</span> <span class="o">=</span> <span class="n">n_layers</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">n_heads</span> <span class="o">=</span> <span class="n">n_heads</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">pf_dim</span> <span class="o">=</span> <span class="n">pf_dim</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">encoder_layer</span> <span class="o">=</span> <span class="n">encoder_layer</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">self_attention</span> <span class="o">=</span> <span class="n">self_attention</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">positionwise_feedforward</span> <span class="o">=</span> <span class="n">positionwise_feedforward</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">dropout</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">tok_embedding</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Embedding</span><span class="p">(</span><span class="n">input_dim</span><span class="p">,</span> <span class="n">hid_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">pos_embedding</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Embedding</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">hid_dim</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">layers</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">ModuleList</span><span class="p">([</span><span class="n">encoder_layer</span><span class="p">(</span><span class="n">hid_dim</span><span class="p">,</span> <span class="n">n_heads</span><span class="p">,</span> <span class="n">pf_dim</span><span class="p">,</span> <span class="n">self_attention</span><span class="p">,</span> <span class="n">positionwise_feedforward</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span> 
+                                     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_layers</span><span class="p">)])</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">do</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="n">FloatTensor</span><span class="p">([</span><span class="n">hid_dim</span><span class="p">])).</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">src_mask</span><span class="p">):</span>
+        
+        <span class="c1">#src = [batch size, src sent len]
+</span>        <span class="c1">#src_mask = [batch size, src sent len]
+</span>        
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">src</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]).</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="n">repeat</span><span class="p">(</span><span class="n">src</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">).</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">device</span><span class="p">)</span>
+        
+        <span class="n">src</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">do</span><span class="p">((</span><span class="bp">self</span><span class="p">.</span><span class="n">tok_embedding</span><span class="p">(</span><span class="n">src</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="p">.</span><span class="n">scale</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="p">.</span><span class="n">pos_embedding</span><span class="p">(</span><span class="n">pos</span><span class="p">))</span>
+        
+        <span class="c1">#src = [batch size, src sent len, hid dim]
+</span>        
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">layers</span><span class="p">:</span>
+            <span class="n">src</span> <span class="o">=</span> <span class="n">layer</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">src_mask</span><span class="p">)</span>
+            
+        <span class="k">return</span> <span class="n">src</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">EncoderLayer</span><span class="p">(</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hid_dim</span><span class="p">,</span> <span class="n">n_heads</span><span class="p">,</span> <span class="n">pf_dim</span><span class="p">,</span> <span class="n">self_attention</span><span class="p">,</span> <span class="n">positionwise_feedforward</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">().</span><span class="n">__init__</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">ln</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">hid_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">sa</span> <span class="o">=</span> <span class="n">self_attention</span><span class="p">(</span><span class="n">hid_dim</span><span class="p">,</span> <span class="n">n_heads</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">pf</span> <span class="o">=</span> <span class="n">positionwise_feedforward</span><span class="p">(</span><span class="n">hid_dim</span><span class="p">,</span> <span class="n">pf_dim</span><span class="p">,</span> <span class="n">dropout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">do</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)</span>
+        
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">src_mask</span><span class="p">):</span>
+        
+        <span class="c1">#src = [batch size, src sent len, hid dim]
+</span>        <span class="c1">#src_mask = [batch size, src sent len]
+</span>        
+        <span class="n">src</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">ln</span><span class="p">(</span><span class="n">src</span> <span class="o">+</span> <span class="bp">self</span><span class="p">.</span><span class="n">do</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">sa</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">src_mask</span><span class="p">)))</span>
+        
+        <span class="n">src</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">ln</span><span class="p">(</span><span class="n">src</span> <span class="o">+</span> <span class="bp">self</span><span class="p">.</span><span class="n">do</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">pf</span><span class="p">(</span><span class="n">src</span><span class="p">)))</span>
+        
+        <span class="k">return</span> <span class="n">src</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">SelfAttention</span><span class="p">(</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hid_dim</span><span class="p">,</span> <span class="n">n_heads</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">().</span><span class="n">__init__</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">hid_dim</span> <span class="o">=</span> <span class="n">hid_dim</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">n_heads</span> <span class="o">=</span> <span class="n">n_heads</span>
+        
+        <span class="k">assert</span> <span class="n">hid_dim</span> <span class="o">%</span> <span class="n">n_heads</span> <span class="o">==</span> <span class="mi">0</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">w_q</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hid_dim</span><span class="p">,</span> <span class="n">hid_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">w_k</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hid_dim</span><span class="p">,</span> <span class="n">hid_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">w_v</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hid_dim</span><span class="p">,</span> <span class="n">hid_dim</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">fc</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hid_dim</span><span class="p">,</span> <span class="n">hid_dim</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">do</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="n">FloatTensor</span><span class="p">([</span><span class="n">hid_dim</span> <span class="o">//</span> <span class="n">n_heads</span><span class="p">])).</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        
+        <span class="n">bsz</span> <span class="o">=</span> <span class="n">query</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        
+        <span class="c1">#query = key = value [batch size, sent len, hid dim]
+</span>                
+        <span class="n">Q</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">w_q</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="n">K</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">w_k</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">V</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">w_v</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        
+        <span class="c1">#Q, K, V = [batch size, sent len, hid dim]
+</span>        
+        <span class="n">Q</span> <span class="o">=</span> <span class="n">Q</span><span class="p">.</span><span class="n">view</span><span class="p">(</span><span class="n">bsz</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">n_heads</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">hid_dim</span> <span class="o">//</span> <span class="bp">self</span><span class="p">.</span><span class="n">n_heads</span><span class="p">).</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">K</span> <span class="o">=</span> <span class="n">K</span><span class="p">.</span><span class="n">view</span><span class="p">(</span><span class="n">bsz</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">n_heads</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">hid_dim</span> <span class="o">//</span> <span class="bp">self</span><span class="p">.</span><span class="n">n_heads</span><span class="p">).</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">V</span> <span class="o">=</span> <span class="n">V</span><span class="p">.</span><span class="n">view</span><span class="p">(</span><span class="n">bsz</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">n_heads</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">hid_dim</span> <span class="o">//</span> <span class="bp">self</span><span class="p">.</span><span class="n">n_heads</span><span class="p">).</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        
+        <span class="c1">#Q, K, V = [batch size, n heads, sent len, hid dim // n heads]
+</span>        
+        <span class="n">energy</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">K</span><span class="p">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="o">/</span> <span class="bp">self</span><span class="p">.</span><span class="n">scale</span>
+        
+        <span class="c1">#energy = [batch size, n heads, sent len, sent len]
+</span>        
+        <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">energy</span> <span class="o">=</span> <span class="n">energy</span><span class="p">.</span><span class="n">masked_fill</span><span class="p">(</span><span class="n">mask</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1e10</span><span class="p">)</span>
+        
+        <span class="n">attention</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">do</span><span class="p">(</span><span class="n">F</span><span class="p">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span>
+        
+        <span class="c1">#attention = [batch size, n heads, sent len, sent len]
+</span>        
+        <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">attention</span><span class="p">,</span> <span class="n">V</span><span class="p">)</span>
+        
+        <span class="c1">#x = [batch size, n heads, sent len, hid dim // n heads]
+</span>        
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">).</span><span class="n">contiguous</span><span class="p">()</span>
+        
+        <span class="c1">#x = [batch size, sent len, n heads, hid dim // n heads]
+</span>        
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">view</span><span class="p">(</span><span class="n">bsz</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">n_heads</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">hid_dim</span> <span class="o">//</span> <span class="bp">self</span><span class="p">.</span><span class="n">n_heads</span><span class="p">))</span>
+        
+        <span class="c1">#x = [batch size, src sent len, hid dim]
+</span>        
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">fc</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        
+        <span class="c1">#x = [batch size, sent len, hid dim]
+</span>        
+        <span class="k">return</span> <span class="n">x</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">PositionwiseFeedforward</span><span class="p">(</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hid_dim</span><span class="p">,</span> <span class="n">pf_dim</span><span class="p">,</span> <span class="n">dropout</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">().</span><span class="n">__init__</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">hid_dim</span> <span class="o">=</span> <span class="n">hid_dim</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">pf_dim</span> <span class="o">=</span> <span class="n">pf_dim</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">fc_1</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Conv1d</span><span class="p">(</span><span class="n">hid_dim</span><span class="p">,</span> <span class="n">pf_dim</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">fc_2</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Conv1d</span><span class="p">(</span><span class="n">pf_dim</span><span class="p">,</span> <span class="n">hid_dim</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">do</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)</span>
+        
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        
+        <span class="c1">#x = [batch size, sent len, hid dim]
+</span>        
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        
+        <span class="c1">#x = [batch size, hid dim, sent len]
+</span>        
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">do</span><span class="p">(</span><span class="n">F</span><span class="p">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">fc_1</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+        
+        <span class="c1">#x = [batch size, ff dim, sent len]
+</span>        
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">fc_2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        
+        <span class="c1">#x = [batch size, hid dim, sent len]
+</span>        
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        
+        <span class="c1">#x = [batch size, sent len, hid dim]
+</span>        
+        <span class="k">return</span> <span class="n">x</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Decoder</span><span class="p">(</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_dim</span><span class="p">,</span> <span class="n">hid_dim</span><span class="p">,</span> <span class="n">n_layers</span><span class="p">,</span> <span class="n">n_heads</span><span class="p">,</span> <span class="n">pf_dim</span><span class="p">,</span> <span class="n">decoder_layer</span><span class="p">,</span> <span class="n">self_attention</span><span class="p">,</span> <span class="n">positionwise_feedforward</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">().</span><span class="n">__init__</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">output_dim</span> <span class="o">=</span> <span class="n">output_dim</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">hid_dim</span> <span class="o">=</span> <span class="n">hid_dim</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">n_layers</span> <span class="o">=</span> <span class="n">n_layers</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">n_heads</span> <span class="o">=</span> <span class="n">n_heads</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">pf_dim</span> <span class="o">=</span> <span class="n">pf_dim</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">decoder_layer</span> <span class="o">=</span> <span class="n">decoder_layer</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">self_attention</span> <span class="o">=</span> <span class="n">self_attention</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">positionwise_feedforward</span> <span class="o">=</span> <span class="n">positionwise_feedforward</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">dropout</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">tok_embedding</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Embedding</span><span class="p">(</span><span class="n">output_dim</span><span class="p">,</span> <span class="n">hid_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">pos_embedding</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Embedding</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">hid_dim</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">layers</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">ModuleList</span><span class="p">([</span><span class="n">decoder_layer</span><span class="p">(</span><span class="n">hid_dim</span><span class="p">,</span> <span class="n">n_heads</span><span class="p">,</span> <span class="n">pf_dim</span><span class="p">,</span> <span class="n">self_attention</span><span class="p">,</span> <span class="n">positionwise_feedforward</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+                                     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_layers</span><span class="p">)])</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">fc</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hid_dim</span><span class="p">,</span> <span class="n">output_dim</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">do</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="n">FloatTensor</span><span class="p">([</span><span class="n">hid_dim</span><span class="p">])).</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trg</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">trg_mask</span><span class="p">,</span> <span class="n">src_mask</span><span class="p">):</span>
+        
+        <span class="c1">#trg = [batch_size, trg sent len]
+</span>        <span class="c1">#src = [batch_size, src sent len]
+</span>        <span class="c1">#trg_mask = [batch size, trg sent len]
+</span>        <span class="c1">#src_mask = [batch size, src sent len]
+</span>        
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">trg</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]).</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="n">repeat</span><span class="p">(</span><span class="n">trg</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">).</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">device</span><span class="p">)</span>
+                
+        <span class="n">trg</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">do</span><span class="p">((</span><span class="bp">self</span><span class="p">.</span><span class="n">tok_embedding</span><span class="p">(</span><span class="n">trg</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="p">.</span><span class="n">scale</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="p">.</span><span class="n">pos_embedding</span><span class="p">(</span><span class="n">pos</span><span class="p">))</span>
+        
+        <span class="c1">#trg = [batch size, trg sent len, hid dim]
+</span>        
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">layers</span><span class="p">:</span>
+            <span class="n">trg</span> <span class="o">=</span> <span class="n">layer</span><span class="p">(</span><span class="n">trg</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">trg_mask</span><span class="p">,</span> <span class="n">src_mask</span><span class="p">)</span>
+            
+        <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">fc</span><span class="p">(</span><span class="n">trg</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">DecoderLayer</span><span class="p">(</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hid_dim</span><span class="p">,</span> <span class="n">n_heads</span><span class="p">,</span> <span class="n">pf_dim</span><span class="p">,</span> <span class="n">self_attention</span><span class="p">,</span> <span class="n">positionwise_feedforward</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">().</span><span class="n">__init__</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">ln</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">hid_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">sa</span> <span class="o">=</span> <span class="n">self_attention</span><span class="p">(</span><span class="n">hid_dim</span><span class="p">,</span> <span class="n">n_heads</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">ea</span> <span class="o">=</span> <span class="n">self_attention</span><span class="p">(</span><span class="n">hid_dim</span><span class="p">,</span> <span class="n">n_heads</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">pf</span> <span class="o">=</span> <span class="n">positionwise_feedforward</span><span class="p">(</span><span class="n">hid_dim</span><span class="p">,</span> <span class="n">pf_dim</span><span class="p">,</span> <span class="n">dropout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">do</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)</span>
+        
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trg</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">trg_mask</span><span class="p">,</span> <span class="n">src_mask</span><span class="p">):</span>
+        
+        <span class="c1">#trg = [batch size, trg sent len, hid dim]
+</span>        <span class="c1">#src = [batch size, src sent len, hid dim]
+</span>        <span class="c1">#trg_mask = [batch size, trg sent len]
+</span>        <span class="c1">#src_mask = [batch size, src sent len]
+</span>                
+        <span class="n">trg</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">ln</span><span class="p">(</span><span class="n">trg</span> <span class="o">+</span> <span class="bp">self</span><span class="p">.</span><span class="n">do</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">sa</span><span class="p">(</span><span class="n">trg</span><span class="p">,</span> <span class="n">trg</span><span class="p">,</span> <span class="n">trg</span><span class="p">,</span> <span class="n">trg_mask</span><span class="p">)))</span>
+                
+        <span class="n">trg</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">ln</span><span class="p">(</span><span class="n">trg</span> <span class="o">+</span> <span class="bp">self</span><span class="p">.</span><span class="n">do</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">ea</span><span class="p">(</span><span class="n">trg</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">src_mask</span><span class="p">)))</span>
+        
+        <span class="n">trg</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">ln</span><span class="p">(</span><span class="n">trg</span> <span class="o">+</span> <span class="bp">self</span><span class="p">.</span><span class="n">do</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">pf</span><span class="p">(</span><span class="n">trg</span><span class="p">)))</span>
+        
+        <span class="k">return</span> <span class="n">trg</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Seq2Seq</span><span class="p">(</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encoder</span><span class="p">,</span> <span class="n">decoder</span><span class="p">,</span> <span class="n">pad_idx</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">().</span><span class="n">__init__</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">encoder</span> <span class="o">=</span> <span class="n">encoder</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">decoder</span> <span class="o">=</span> <span class="n">decoder</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">pad_idx</span> <span class="o">=</span> <span class="n">pad_idx</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+        
+    <span class="k">def</span> <span class="nf">make_masks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">):</span>
+        
+        <span class="c1">#src = [batch size, src sent len]
+</span>        <span class="c1">#trg = [batch size, trg sent len]
+</span>        
+        <span class="n">src_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">src</span> <span class="o">!=</span> <span class="bp">self</span><span class="p">.</span><span class="n">pad_idx</span><span class="p">).</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        
+        <span class="n">trg_pad_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">trg</span> <span class="o">!=</span> <span class="bp">self</span><span class="p">.</span><span class="n">pad_idx</span><span class="p">).</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+        <span class="n">trg_len</span> <span class="o">=</span> <span class="n">trg</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        
+        <span class="n">trg_sub_mask</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">tril</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="n">ones</span><span class="p">((</span><span class="n">trg_len</span><span class="p">,</span> <span class="n">trg_len</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="p">.</span><span class="n">uint8</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">device</span><span class="p">))</span>
+        
+        <span class="n">trg_mask</span> <span class="o">=</span> <span class="n">trg_pad_mask</span> <span class="o">&amp;</span> <span class="n">trg_sub_mask</span>
+        
+        <span class="k">return</span> <span class="n">src_mask</span><span class="p">,</span> <span class="n">trg_mask</span>
+    
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">):</span>
+        
+        <span class="c1">#src = [batch size, src sent len]
+</span>        <span class="c1">#trg = [batch size, trg sent len]
+</span>                
+        <span class="n">src_mask</span><span class="p">,</span> <span class="n">trg_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">make_masks</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">)</span>
+        
+        <span class="n">enc_src</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">encoder</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">src_mask</span><span class="p">)</span>
+        
+        <span class="c1">#enc_src = [batch size, src sent len, hid dim]
+</span>                
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">decoder</span><span class="p">(</span><span class="n">trg</span><span class="p">,</span> <span class="n">enc_src</span><span class="p">,</span> <span class="n">trg_mask</span><span class="p">,</span> <span class="n">src_mask</span><span class="p">)</span>
+        
+        <span class="c1">#out = [batch size, trg sent len, output dim]
+</span>        
+        <span class="k">return</span> <span class="n">out</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">input_dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">SRC</span><span class="p">.</span><span class="n">vocab</span><span class="p">)</span>
+<span class="n">hid_dim</span> <span class="o">=</span> <span class="mi">512</span>
+<span class="n">n_layers</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">n_heads</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">pf_dim</span> <span class="o">=</span> <span class="mi">2048</span>
+<span class="n">dropout</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+<span class="n">enc</span> <span class="o">=</span> <span class="n">Encoder</span><span class="p">(</span><span class="n">input_dim</span><span class="p">,</span> <span class="n">hid_dim</span><span class="p">,</span> <span class="n">n_layers</span><span class="p">,</span> <span class="n">n_heads</span><span class="p">,</span> <span class="n">pf_dim</span><span class="p">,</span> <span class="n">EncoderLayer</span><span class="p">,</span> <span class="n">SelfAttention</span><span class="p">,</span> <span class="n">PositionwiseFeedforward</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">output_dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">TRG</span><span class="p">.</span><span class="n">vocab</span><span class="p">)</span>
+<span class="n">hid_dim</span> <span class="o">=</span> <span class="mi">512</span>
+<span class="n">n_layers</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">n_heads</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">pf_dim</span> <span class="o">=</span> <span class="mi">2048</span>
+<span class="n">dropout</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+<span class="n">dec</span> <span class="o">=</span> <span class="n">Decoder</span><span class="p">(</span><span class="n">output_dim</span><span class="p">,</span> <span class="n">hid_dim</span><span class="p">,</span> <span class="n">n_layers</span><span class="p">,</span> <span class="n">n_heads</span><span class="p">,</span> <span class="n">pf_dim</span><span class="p">,</span> <span class="n">DecoderLayer</span><span class="p">,</span> <span class="n">SelfAttention</span><span class="p">,</span> <span class="n">PositionwiseFeedforward</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">pad_idx</span> <span class="o">=</span> <span class="n">SRC</span><span class="p">.</span><span class="n">vocab</span><span class="p">.</span><span class="n">stoi</span><span class="p">[</span><span class="s">'&lt;pad&gt;'</span><span class="p">]</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">Seq2Seq</span><span class="p">(</span><span class="n">enc</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span> <span class="n">pad_idx</span><span class="p">,</span> <span class="n">device</span><span class="p">).</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">count_parameters</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">numel</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">model</span><span class="p">.</span><span class="n">parameters</span><span class="p">()</span> <span class="k">if</span> <span class="n">p</span><span class="p">.</span><span class="n">requires_grad</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s">f'The model has </span><span class="si">{</span><span class="n">count_parameters</span><span class="p">(</span><span class="n">model</span><span class="p">):,</span><span class="si">}</span><span class="s"> trainable parameters'</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>The model has 55,205,125 trainable parameters
+
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">model</span><span class="p">.</span><span class="n">parameters</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">p</span><span class="p">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">nn</span><span class="p">.</span><span class="n">init</span><span class="p">.</span><span class="n">xavier_uniform_</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">NoamOpt</span><span class="p">:</span>
+    <span class="s">"Optim wrapper that implements rate."</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_size</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">warmup</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">_step</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">warmup</span> <span class="o">=</span> <span class="n">warmup</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">factor</span> <span class="o">=</span> <span class="n">factor</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">model_size</span> <span class="o">=</span> <span class="n">model_size</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">_rate</span> <span class="o">=</span> <span class="mi">0</span>
+        
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">"Update parameters and rate"</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">_step</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">rate</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">rate</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">optimizer</span><span class="p">.</span><span class="n">param_groups</span><span class="p">:</span>
+            <span class="n">p</span><span class="p">[</span><span class="s">'lr'</span><span class="p">]</span> <span class="o">=</span> <span class="n">rate</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">_rate</span> <span class="o">=</span> <span class="n">rate</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">optimizer</span><span class="p">.</span><span class="n">step</span><span class="p">()</span>
+        
+    <span class="k">def</span> <span class="nf">rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+        <span class="s">"Implement `lrate` above"</span>
+        <span class="k">if</span> <span class="n">step</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">_step</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">factor</span> <span class="o">*</span> \
+            <span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">model_size</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span> <span class="o">*</span>
+            <span class="nb">min</span><span class="p">(</span><span class="n">step</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">),</span> <span class="n">step</span> <span class="o">*</span> <span class="bp">self</span><span class="p">.</span><span class="n">warmup</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">)))</span>
+
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">optimizer</span> <span class="o">=</span> <span class="n">NoamOpt</span><span class="p">(</span><span class="n">hid_dim</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span>
+            <span class="n">torch</span><span class="p">.</span><span class="n">optim</span><span class="p">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">betas</span><span class="o">=</span><span class="p">(</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.98</span><span class="p">),</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">))</span>
+
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">CrossEntropyLoss</span><span class="p">(</span><span class="n">ignore_index</span><span class="o">=</span><span class="n">pad_idx</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">iterator</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">clip</span><span class="p">):</span>
+    
+    <span class="n">model</span><span class="p">.</span><span class="n">train</span><span class="p">()</span>
+    
+    <span class="n">epoch_loss</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">batch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">iterator</span><span class="p">):</span>
+        
+        <span class="n">src</span> <span class="o">=</span> <span class="n">batch</span><span class="p">.</span><span class="n">src</span>
+        <span class="n">trg</span> <span class="o">=</span> <span class="n">batch</span><span class="p">.</span><span class="n">trg</span>
+        
+        <span class="n">optimizer</span><span class="p">.</span><span class="n">optimizer</span><span class="p">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        
+        <span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">[:,:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                
+        <span class="c1">#output = [batch size, trg sent len - 1, output dim]
+</span>        <span class="c1">#trg = [batch size, trg sent len]
+</span>            
+        <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="p">.</span><span class="n">contiguous</span><span class="p">().</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">output</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">trg</span> <span class="o">=</span> <span class="n">trg</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:].</span><span class="n">contiguous</span><span class="p">().</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                
+        <span class="c1">#output = [batch size * trg sent len - 1, output dim]
+</span>        <span class="c1">#trg = [batch size * trg sent len - 1]
+</span>            
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">trg</span><span class="p">)</span>
+        
+        <span class="n">loss</span><span class="p">.</span><span class="n">backward</span><span class="p">()</span>
+        
+        <span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">utils</span><span class="p">.</span><span class="n">clip_grad_norm_</span><span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">clip</span><span class="p">)</span>
+        
+        <span class="n">optimizer</span><span class="p">.</span><span class="n">step</span><span class="p">()</span>
+        
+        <span class="n">epoch_loss</span> <span class="o">+=</span> <span class="n">loss</span><span class="p">.</span><span class="n">item</span><span class="p">()</span>
+        
+    <span class="k">return</span> <span class="n">epoch_loss</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">iterator</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">iterator</span><span class="p">,</span> <span class="n">criterion</span><span class="p">):</span>
+    
+    <span class="n">model</span><span class="p">.</span><span class="nb">eval</span><span class="p">()</span>
+    
+    <span class="n">epoch_loss</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="k">with</span> <span class="n">torch</span><span class="p">.</span><span class="n">no_grad</span><span class="p">():</span>
+    
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">batch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">iterator</span><span class="p">):</span>
+
+            <span class="n">src</span> <span class="o">=</span> <span class="n">batch</span><span class="p">.</span><span class="n">src</span>
+            <span class="n">trg</span> <span class="o">=</span> <span class="n">batch</span><span class="p">.</span><span class="n">trg</span>
+
+            <span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">[:,:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            
+            <span class="c1">#output = [batch size, trg sent len - 1, output dim]
+</span>            <span class="c1">#trg = [batch size, trg sent len]
+</span>            
+            <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="p">.</span><span class="n">contiguous</span><span class="p">().</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">output</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">trg</span> <span class="o">=</span> <span class="n">trg</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:].</span><span class="n">contiguous</span><span class="p">().</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            
+            <span class="c1">#output = [batch size * trg sent len - 1, output dim]
+</span>            <span class="c1">#trg = [batch size * trg sent len - 1]
+</span>            
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">trg</span><span class="p">)</span>
+
+            <span class="n">epoch_loss</span> <span class="o">+=</span> <span class="n">loss</span><span class="p">.</span><span class="n">item</span><span class="p">()</span>
+        
+    <span class="k">return</span> <span class="n">epoch_loss</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">iterator</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">epoch_time</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">end_time</span><span class="p">):</span>
+    <span class="n">elapsed_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
+    <span class="n">elapsed_mins</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">elapsed_time</span> <span class="o">/</span> <span class="mi">60</span><span class="p">)</span>
+    <span class="n">elapsed_secs</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">elapsed_time</span> <span class="o">-</span> <span class="p">(</span><span class="n">elapsed_mins</span> <span class="o">*</span> <span class="mi">60</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">elapsed_mins</span><span class="p">,</span> <span class="n">elapsed_secs</span>
+
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">N_EPOCHS</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">CLIP</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">SAVE_DIR</span> <span class="o">=</span> <span class="s">'models'</span>
+<span class="n">MODEL_SAVE_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">SAVE_DIR</span><span class="p">,</span> <span class="s">'transformer-seq2seq.pt'</span><span class="p">)</span>
+
+<span class="n">best_valid_loss</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s">'inf'</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">isdir</span><span class="p">(</span><span class="s">f'</span><span class="si">{</span><span class="n">SAVE_DIR</span><span class="si">}</span><span class="s">'</span><span class="p">):</span>
+    <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="s">f'</span><span class="si">{</span><span class="n">SAVE_DIR</span><span class="si">}</span><span class="s">'</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_EPOCHS</span><span class="p">):</span>
+    
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span>
+    
+    <span class="n">train_loss</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">train_iterator</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">CLIP</span><span class="p">)</span>
+    <span class="n">valid_loss</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">valid_iterator</span><span class="p">,</span> <span class="n">criterion</span><span class="p">)</span>
+    
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span>
+    
+    <span class="n">epoch_mins</span><span class="p">,</span> <span class="n">epoch_secs</span> <span class="o">=</span> <span class="n">epoch_time</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">end_time</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">valid_loss</span> <span class="o">&lt;</span> <span class="n">best_valid_loss</span><span class="p">:</span>
+        <span class="n">best_valid_loss</span> <span class="o">=</span> <span class="n">valid_loss</span>
+        <span class="n">torch</span><span class="p">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="n">MODEL_SAVE_PATH</span><span class="p">)</span>
+    
+    <span class="k">print</span><span class="p">(</span><span class="s">f'| Epoch: </span><span class="si">{</span><span class="n">epoch</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="mi">03</span><span class="si">}</span><span class="s"> | Time: </span><span class="si">{</span><span class="n">epoch_mins</span><span class="si">}</span><span class="s">m </span><span class="si">{</span><span class="n">epoch_secs</span><span class="si">}</span><span class="s">s| Train Loss: </span><span class="si">{</span><span class="n">train_loss</span><span class="p">:.</span><span class="mi">3</span><span class="n">f</span><span class="si">}</span><span class="s"> | Train PPL: </span><span class="si">{</span><span class="n">math</span><span class="p">.</span><span class="n">exp</span><span class="p">(</span><span class="n">train_loss</span><span class="p">):</span><span class="mf">7.3</span><span class="n">f</span><span class="si">}</span><span class="s"> | Val. Loss: </span><span class="si">{</span><span class="n">valid_loss</span><span class="p">:.</span><span class="mi">3</span><span class="n">f</span><span class="si">}</span><span class="s"> | Val. PPL: </span><span class="si">{</span><span class="n">math</span><span class="p">.</span><span class="n">exp</span><span class="p">(</span><span class="n">valid_loss</span><span class="p">):</span><span class="mf">7.3</span><span class="n">f</span><span class="si">}</span><span class="s"> |'</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>| Epoch: 001 | Time: 0m 53s| Train Loss: 5.947 | Train PPL: 382.509 | Val. Loss: 4.110 | Val. PPL:  60.939 |
+| Epoch: 002 | Time: 0m 53s| Train Loss: 3.772 | Train PPL:  43.474 | Val. Loss: 3.196 | Val. PPL:  24.446 |
+| Epoch: 003 | Time: 0m 53s| Train Loss: 3.127 | Train PPL:  22.811 | Val. Loss: 2.806 | Val. PPL:  16.538 |
+| Epoch: 004 | Time: 0m 54s| Train Loss: 2.762 | Train PPL:  15.824 | Val. Loss: 2.570 | Val. PPL:  13.060 |
+| Epoch: 005 | Time: 0m 53s| Train Loss: 2.507 | Train PPL:  12.263 | Val. Loss: 2.413 | Val. PPL:  11.162 |
+| Epoch: 006 | Time: 0m 53s| Train Loss: 2.313 | Train PPL:  10.104 | Val. Loss: 2.323 | Val. PPL:  10.209 |
+| Epoch: 007 | Time: 0m 54s| Train Loss: 2.186 | Train PPL:   8.901 | Val. Loss: 2.310 | Val. PPL:  10.072 |
+| Epoch: 008 | Time: 0m 53s| Train Loss: 2.103 | Train PPL:   8.191 | Val. Loss: 2.283 | Val. PPL:   9.807 |
+| Epoch: 009 | Time: 0m 53s| Train Loss: 2.057 | Train PPL:   7.820 | Val. Loss: 2.307 | Val. PPL:  10.043 |
+| Epoch: 010 | Time: 0m 52s| Train Loss: 2.003 | Train PPL:   7.408 | Val. Loss: 2.285 | Val. PPL:   9.823 |
+
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">model</span><span class="p">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">MODEL_SAVE_PATH</span><span class="p">))</span>
+
+<span class="n">test_loss</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">test_iterator</span><span class="p">,</span> <span class="n">criterion</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s">f'| Test Loss: </span><span class="si">{</span><span class="n">test_loss</span><span class="p">:.</span><span class="mi">3</span><span class="n">f</span><span class="si">}</span><span class="s"> | Test PPL: </span><span class="si">{</span><span class="n">math</span><span class="p">.</span><span class="n">exp</span><span class="p">(</span><span class="n">test_loss</span><span class="p">):</span><span class="mf">7.3</span><span class="n">f</span><span class="si">}</span><span class="s"> |'</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>| Test Loss: 2.281 | Test PPL:   9.791 |
+
+</code></pre></div></div>
+
+:ET
