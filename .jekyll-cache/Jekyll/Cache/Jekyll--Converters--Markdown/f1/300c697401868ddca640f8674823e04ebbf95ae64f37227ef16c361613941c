@@ -1,4 +1,4 @@
-I"�n<h2 id="vue">VUE</h2>
+I"�l<h2 id="vue">VUE</h2>
 
 <h3 id="说说你对spa单页面的理解它的优缺点分别是什么">说说你对SPA单页面的理解，它的优缺点分别是什么?</h3>
 
@@ -90,44 +90,90 @@ return this. size. trim( ) . toLowerCase( )
 
 <h3 id="vue生命周期">vue生命周期</h3>
 
-<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="mi">1</span><span class="p">.</span><span class="nx">beforeCreate</span>
- <span class="err">初始化界面前</span>
-<span class="mi">2</span><span class="p">.</span><span class="nx">created</span>
-  <span class="err">初始化界面后，拿到</span><span class="nx">data</span><span class="err">，</span><span class="nx">props</span><span class="err">，</span><span class="nx">methods</span><span class="err">、</span><span class="nx">computed</span><span class="err">和</span><span class="nx">watch</span>
-<span class="mi">3</span><span class="p">.</span><span class="nx">beforeMount</span>
- <span class="err">渲染</span><span class="nx">dom</span><span class="err">前</span>
-<span class="mi">4</span><span class="p">.</span><span class="nx">mounted</span>
- <span class="err">渲染</span><span class="nx">dom</span><span class="err">后，拿到</span><span class="nx">$el</span>
-<span class="mi">5</span><span class="p">.</span><span class="nx">beforeUpdate</span>
- <span class="err">更新前</span>
-<span class="mi">6</span><span class="p">.</span><span class="nx">updated</span>
- <span class="err">更新后，拿到更新后的</span><span class="nx">dom</span>
-<span class="mi">7</span><span class="p">.</span><span class="nx">beforeDestroy</span>
- <span class="err">卸载组件前</span>
-<span class="mi">8</span><span class="p">.</span><span class="nx">destroyed</span>
- <span class="err">卸载组件后</span>
-<span class="mi">9</span><span class="p">.</span><span class="nx">activated</span>
- <span class="err">被</span> <span class="nx">keep</span><span class="o">-</span><span class="nx">alive</span> <span class="err">缓存的组件激活时调用</span>
-<span class="mi">10</span><span class="p">.</span><span class="nx">deactivated</span>
- <span class="err">被</span> <span class="nx">keep</span><span class="o">-</span><span class="nx">alive</span> <span class="err">缓存的组件停用时调用</span>
-<span class="mi">11</span><span class="p">.</span> <span class="nx">errorCaptured</span>
- <span class="err">当捕获一个来自子孙组件的错误时被调用。此钩子会收到三个参数：错误对象、发生错误的组件实例</span>
- <span class="err">以及一个包含错误来源信息的字符串。此钩子可以返回</span> <span class="kc">false</span> <span class="err">以阻止该错误继续向上传播。</span>
-</code></pre></div></div>
+<p>Vue实例有一个完整的生命周期，也就是从开始创建、初始化数据、编译模版、挂载Dom-&gt;渲染、更新-&gt;渲染、卸载等一系列过程，我们称这是Vue的生命周期。</p>
 
-<p><strong>父子组件通信</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>No.</th>
+      <th>name</th>
+      <th>feature</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>beforeCreate</td>
+      <td>初始化界面前，组件实例被创建之初，组件的属性生效之前</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>created</td>
+      <td>初始化界面后，拿到data，props，methods、computed和watch组件实例已经完全创建，属性也绑定，但真实dom还没有还不可用</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>beforeMount</td>
+      <td>渲染dom前，在挂载开始之前被调用:相关的render函数首次被调用</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>mounted</td>
+      <td>渲染dom后，拿到$ el，el被新创建的vm.$ el替换，并挂载到实例.上去之后调用该</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>beforeUpdate</td>
+      <td>更新前组件数据更新之前调用，发生在虚拟DOM打补丁之前</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>update</td>
+      <td>更新后，拿到更新后的dom组件数据更新之后</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>activited</td>
+      <td>被 keep-alive 缓存的组件激活时调用keep-alive专属，组件被激活时调用</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>deadctivated</td>
+      <td>被 keep-alive 缓存的组件停用时调用keep-alive专属，组件被销毁时调用</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>beforeDestory</td>
+      <td>卸载组件前组件 销毁前调用</td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td>destoryed</td>
+      <td>卸载组件后，组件销毁后调用</td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td>errorCaptured</td>
+      <td>当捕获一个来自子孙组件的错误时被调用。此钩子会收到三个参数：错误对象、发生错误的组件实例<br /> 以及一个包含错误来源信息的字符串。此钩子可以返回 false 以阻止该错误继续向上传播。</td>
+    </tr>
+  </tbody>
+</table>
 
-<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">父传子</span><span class="p">:</span><span class="nx">prop</span>
+<h3 id="vue的父组件和子组件生命周期钩子函数执行顺序">Vue的父组件和子组件生命周期钩子函数执行顺序?</h3>
+<p>Vue的父组件和子组件生命周期钩子函数执行顺序可以归类为以下4部分:
+●加载渲染过程
+父beforeCreate -&gt;父created -&gt;父beforeMount-&gt;子
+beforeCreate -&gt;子created -&gt;子beforeMount -&gt;子mounted -&gt;父mounted
+●子组件更新过程
+父beforeUpdate -&gt;子beforeUpdate -&gt;子updated -&gt;父updated</p>
 
-<span class="err">子传父</span><span class="p">:</span><span class="nx">$emit</span>
+<p>●父组件更新过程
+父 beforeUpdate -&gt; 父 updated</p>
 
-<span class="err">父子通信</span><span class="p">:</span>
-<span class="o">+</span> <span class="nx">eventbus</span>
-<span class="o">+</span> <span class="nx">vuex</span>
-<span class="o">+</span> <span class="nx">ref</span><span class="err">结合</span><span class="nx">$parent</span><span class="err">或</span> <span class="nx">$children</span>
+<p>●销毁过程</p>
 
-<span class="err">跨层级较多</span><span class="p">:</span><span class="nx">provide</span><span class="o">/</span><span class="nx">inject</span>
-</code></pre></div></div>
+<p>父 beforeDestroy-&gt; 子 beforeDestroy-&gt; 子 destroyed -&gt; 父
+destroyed</p>
 
 <h3 id="computed和watch区别和运用的场景"><strong>computed和watch区别和运用的场景？</strong></h3>
 
