@@ -2,7 +2,7 @@
 layout:     post                    # 使用的布局（不需要改）
 title:      flower dance              # 标题 
 subtitle:   by B站-up初相识 #副标题
-date:       2020-01-01              # 时间
+date:       2021-01-01              # 时间
 author:     甜果果                      # 作者
 header-img: https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/post-bg-swift2.jpg    #这篇文章标题背景图片
 catalog: true                       # 是否归档
