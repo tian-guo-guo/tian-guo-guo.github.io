@@ -13,3 +13,7 @@ tags:                               #标签
 
 # Life sentiment
 
+### 20200104
+
+[当莫扎特的音乐可视化后，会发生怎样的画面呢？](https://www.zhihu.com/zvideo/1327235915975372800?utm_source=wechat_session&utm_medium=social&utm_oi=561116613324091392)
+
