@@ -1,8 +1,8 @@
 ---
 layout:     post           # 使用的布局（不需要改）
-title:      初学Vue 遇到Module not found Error Can t resolve lessloader 问题查
-subtitle:   初学Vue 遇到Module not found Error Can t resolve lessloader 问题  #副标题
-date:       2020-12-14             # 时间
+title:      NPM Error gyp No Xcode or CLT version detected!
+subtitle:   NPM Error gyp No Xcode or CLT version detected!  #副标题
+date:       2021-1-18             # 时间
 author:     甜果果                    # 作者
 header-img: https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/post-bg-debug.png    #背景图片
 catalog: true                       # 是否归档
@@ -13,31 +13,70 @@ tags:                               #标签
  
 ---
 
-# 初学Vue 遇到Module not found Error Can t resolve lessloader 问题
+# NPM Error：gyp: No Xcode or CLT version detected!
 
-```python
-<span style="font-family:Consolas, Inconsolata, Courier, monospace;">./src/components/1-模板语法/test.vueModule not found: Error: Can't resolve 'less-loader' in 'D:\vue\myVue\myVue\src\components\1-模板语法' @ ./src/components/1-模板语法/test.vue 4:2-315 @ ./node_modules/babel-loader/lib!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/components/1-模板语法/HelloWorld.vue @ ./src/components/1-模板语法/HelloWorld.vue @ ./src/router/index.js @ ./src/main.js @ multi (webpack)-dev-server/client?http://localhost:8080 webpack/hot/dev-server ./src/main.js</span>
+ 问题
+
+最近在macOS Catalina中使用npm安装模块，经常会出现如下错误：
+
+```bash
+> node-gyp rebuild
+
+No receipt for 'com.apple.pkg.CLTools_Executables' found at '/'.
+
+No receipt for 'com.apple.pkg.DeveloperToolsCLILeo' found at '/'.
+
+No receipt for 'com.apple.pkg.DeveloperToolsCLI' found at '/'.
+
+gyp: No Xcode or CLT version detected!
+gyp ERR! configure error 
+gyp ERR! stack Error: `gyp` failed with exit code: 1
+gyp ERR! stack     at ChildProcess.onCpExit (/usr/local/lib/node_modules/npm/node_modules/node-gyp/lib/configure.js:351:16)
+gyp ERR! stack     at ChildProcess.emit (events.js:210:5)
+gyp ERR! stack     at Process.ChildProcess._handle.onexit (internal/child_process.js:272:12)
+gyp ERR! System Darwin 19.3.0
+gyp ERR! command "/usr/local/bin/node" "/usr/local/lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js" "rebuild"
+gyp ERR! cwd /Users/yangjian/Documents/temp/test001/node_modules/fsevents
+gyp ERR! node -v v12.13.0
+gyp ERR! node-gyp -v v5.0.5
+gyp ERR! not ok
 ```
 
-一、学习vue时，导入一个子组件时遇到Module not found:Error:Can`t resolve 'less-loader' 问题，实际上是在子组件中的样式里加了这么个代码
+-   截图如下
 
-```html
-<style lang="less" scoped>
-</style>
+
+
+![img](https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20210118204636.jpg)
+
+
+
+## 解决方案
+
+### 1. 尝试用如下命令进行修复
+
+```bash
+$ xcode-select --install
 ```
 
-而这个less是需要安装的，npm install --save-dev less-loader less
+系统提示如下信息：
 
-这是他npm的地址
+```bash
+xcode-select: error: command line tools are already installed, use "Software Update" to install updates
+```
 
-https://www.npmjs.com/package/less-loader
+而事实上并没有所谓的"Software Update"可以更新
 
-二、记住！ 但凡只要遇到 Module not found:Error:Can`t resolve 'XXXXXXXXXXXX'，都是项目中没有安装这个依赖。
+### 2. 正确姿势
 
-只需要执行 ： npm install  XXXXXX  就能解决问题。
+一筹莫展之际，找到如下解决方案：
 
-或许初学时并不知道这个依赖是干嘛的，放心，随着经验不断积累，慢慢就知道些是干嘛的了
+```bash
+$ sudo rm -rf $(xcode-select -print-path)
+$ xcode-select --install
+```
 
-这个是[NPM仓库](https://www.npmjs.com/)，所有需要的依赖都会从这里下载，并且提供了安装和使用的方法。
-
- 
+>   请参见：
+>   \- [https://github.com/schnerd/d3-scale-cluster/issues/7](https://link.zhihu.com/?target=https%3A//github.com/schnerd/d3-scale-cluster/issues/7)
+>   \- [https://github.com/nodejs/node-gyp/blob/master/macOS_Catalina.md](https://link.zhihu.com/?target=https%3A//github.com/nodejs/node-gyp/blob/master/macOS_Catalina.md)
+>
+>   https://zhuanlan.zhihu.com/p/105526835

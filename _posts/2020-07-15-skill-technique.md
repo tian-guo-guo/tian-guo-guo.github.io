@@ -44,6 +44,12 @@ test.gbk:     ISO-8859 text
 ffmpeg -i inputfile.flv -c copy outputfile.mp4
 ```
 
+### 批量flv2mp4
+
+```
+
+```
+
 ### m4a2mp3
 
 ```
