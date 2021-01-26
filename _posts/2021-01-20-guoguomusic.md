@@ -620,6 +620,8 @@ git push -u origin master
 
 还剩下修改README.md文件。
 
+更新经历和简历。
+
 # 知识点
 
 ##1. playlists.vue里数据联动是怎么实现的？
