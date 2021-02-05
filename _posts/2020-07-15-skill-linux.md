@@ -73,3 +73,21 @@ CUDA_VISIBLE_DEVICES=0
 激活环境：`conda activate py36`   (conda4之前的版本是：source activate py36 ) //下面这个py36是个环境名
 
 退出环境：`conda deactivate`  (conda4之前的版本是：source deactivate )
+
+## 6. [linux中解压.tgz, .tar.gz ,zip ,gz, .tar文件](https://blog.csdn.net/fu6543210/article/details/79845781)
+
+将.tgz文件解压在当前目录： tar zxvf  MY_NAME.tgz 
+
+将.tar.gz文件解压在当前目录： tar zxvf  MY_NAME.tar.gz
+
+tar -xvf file.tar //解压 tar包
+
+把/home目录下包括它的子目录全部做备份文件，并进行压缩，备份文件名为usr.tar.gz 。$ tar czvf usr.tar.gz /home
+
+tar -cf all.tar *.jpg   这条命令是将所有.jpg的文件打成一个名为all.tar的包。-c是表示产生新的包 ，-f指定包的文件名。
+
+ tar -rf all.tar *.gif   这条命令是将所有.gif的文件增加到all.tar的包里面去。-r是表示增加文件的意思。
+
+tar -tf all.tar   这条命令是列出all.tar包中所有文件，-t是列出文件的意思
+
+ tar -xf all.tar  这条命令是解出all.tar包中所有文件，-x是解开的意思  特别注意，在参数 f 之后的文件档名是自己取的，我们习惯上都用 .tar 来作为辨识。  如果加 z 参数，则以 .tar.gz 或 .tgz 来代表 gzip 压缩过的 tar file ～  如果加 j 参数，则以 .tar.bz2 来作为附档名啊～

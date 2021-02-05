@@ -16,7 +16,9 @@ tags:                               #标签
 
 最终效果：http://autumnfish.cn/webmusic/
 
-# ES6
+# 课程PPT
+
+## 一、ES6
 
 ## 01.let
 
@@ -44,7 +46,7 @@ function省略掉，替换为=>
 
 创建时的this是谁，运行的时候this就是谁
 
-# 回顾
+## 二、回顾
 
 *需求：*
 
@@ -70,7 +72,7 @@ function省略掉，替换为=>
 
 ​            *参数:id  歌曲id*
 
-# 单文件组件
+## 三、单文件组件
 
 后缀名是. vue，可以同时编写结构，逻辑和样式
 template标签中写结构
@@ -79,7 +81,7 @@ style 标签中写样式
 安装了vetur
 插件可以通过<vue生成基础结构
 
-# 快速原型开发
+## 四、快速原型开发
 
 ## 环境配置
 
@@ -116,7 +118,7 @@ App.vue中使用import导入播放器组件
 直接拖入到chrome中的更多工具扩展程序重启浏览器即可
 在使用vue的项目中插件会自动亮起，在开发者界面中通过vue分栏即可使用
 
-# vue-cli
+## 五、vue-cli
 
 帮你创建项目基本结构的工具
 帮你整合了很多东西，
@@ -164,7 +166,7 @@ public目录下可以替换图标
 因为这里要切换，并且也有自己的逻辑，弄个组件丢进去，截图走起
 其他的页面也需要切换哦，路由走起 
 
-# vue-router
+## 六、vue-router
 
 管理多个组件切换关系的大杀器
 用它可以做SPA
@@ -213,7 +215,7 @@ mvs:最新mv
 通过key=value&key2=value的方式添加参数
 组件中通过this.$route.query访问对应的key即可获取数据
 
-# Element-ui
+## 七、Element-ui
 
  饿了么前端推出的Vue组件库
 很多常用的功能已经写好了，直接用
@@ -255,9 +257,7 @@ https://element.eleme.cn/#/zh-CN/componentpagination
 看文档
 https://element.eleme.cn/#/zh-CN/component/carousel
 
-
-
-# 播放器
+## 八、播放器
 
 ## 发现音乐
 
@@ -570,13 +570,13 @@ import到discovery.vue里，通过created, v-for渲染数据到页面上，通�
 
 直接复制粘贴xxx.js   xxx.vue
 
-# webplayer上线
+## webplayer上线
 
 上线得买服务器。阿里云学生3次认证失败，一年内不能学生认证了😭。
 
 Over，上传到GitHub上好了。
 
-# [上传到GitHub](https://zhuanlan.zhihu.com/p/34625448)
+## [上传到GitHub](https://zhuanlan.zhihu.com/p/34625448)
 
 **第一步：建立git仓库，cd到你的本地项目根目录下，执行git命令**
 
