@@ -5,5 +5,5 @@
 
 1. 这个模板是从这里 [Hux](https://github.com/Huxpro/huxpro.github.io) fork的, 感谢这个作者~
 2. 博客的搭建是参考这篇博客 [《利用 GitHub Pages 快速搭建个人博客》](http://www.jianshu.com/p/e68fba58f75c) ，感谢~
-3. 建站初期遇到许多困难，感谢[燕云长风](http://www.yanyunchangfeng.com)的帮助~
+3. 感谢[燕云长风](http://www.yanyunchangfeng.com)建站初期的帮助~
 4. 感谢 Jekyll、Github Pages 和 Bootstrap~
