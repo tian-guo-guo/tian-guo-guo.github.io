@@ -1,0 +1,17 @@
+I"w<h1 id="bash-netstat-command-not-found">bash: netstat: command not found</h1>
+
+<p>If you are looking for the <code class="language-plaintext highlighter-rouge">netstat</code> command and getting error:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bash: netstat: command not found
+</code></pre></div></div>
+
+<p>This simply means that the relevant package <code class="language-plaintext highlighter-rouge">net-tools</code> which includes netstat executable is not installed, thus missing. The package <code class="language-plaintext highlighter-rouge">net-tools</code> may not be installed on your system by default so you need to install it manually.</p>
+
+<p>The package also includes aditional utilisties such as <code class="language-plaintext highlighter-rouge">arp</code>, <code class="language-plaintext highlighter-rouge">ifconfig</code>, <code class="language-plaintext highlighter-rouge">netstat</code>, <code class="language-plaintext highlighter-rouge">rarp</code>, <code class="language-plaintext highlighter-rouge">nameif</code> and <code class="language-plaintext highlighter-rouge">route</code>.
+To make <code class="language-plaintext highlighter-rouge">netstat</code> available on your system simply install the <code class="language-plaintext highlighter-rouge">net-tools</code> package using the bellow command:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># apt-get install net-tools
+</code></pre></div></div>
+
+<p><a href="https://linuxconfig.org/bash-netstat-command-not-found-debian-ubuntu-linux">Link</a></p>
+:ET

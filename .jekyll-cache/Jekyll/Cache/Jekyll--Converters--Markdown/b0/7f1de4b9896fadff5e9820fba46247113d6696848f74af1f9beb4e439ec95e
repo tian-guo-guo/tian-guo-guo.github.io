@@ -1,0 +1,19 @@
+I"�<h3 id="1-论文笔记---从神经图灵机-ntm-到可微分神经计算机-dnc"><a href="http://www.shuang0420.com/2018/01/20/%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0%20-%20%E4%BB%8E%E7%A5%9E%E7%BB%8F%E5%9B%BE%E7%81%B5%E6%9C%BA%20NTM%20%E5%88%B0%E5%8F%AF%E5%BE%AE%E5%88%86%E7%A5%9E%E7%BB%8F%E8%AE%A1%E7%AE%97%E6%9C%BA%20DNC/">1. 论文笔记 - 从神经图灵机 NTM 到可微分神经计算机 DNC</a></h3>
+
+<p>这篇文章按照论文的顺序讲解了NTM的主要部分（整体模型架构、controller、read head、write head、memory），总结的非常好！
+另外还和另一篇论文Differentiable Neural Computer(DNC) DNC模型做了对比，非常好~</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/blog/190902-NTM1.png" alt="190902-NTM1.png" /></p>
+
+<h3 id="2-neural-turing-machines-ntm系列一简述"><a href="https://blog.csdn.net/rtygbwwwerr/article/details/50548311">2. Neural Turing Machines-NTM系列（一）简述</a></h3>
+
+<p>这篇笔记集合了论文的复现代码，另外也对NTM的细节讲解的十分到位，还通过矩阵的例子来具象化实际使用中数据的流动，nice！</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/blog/190902-NTM2.png" alt="190902-NTM2.png" /></p>
+
+<h3 id="3-neural-turing-machines论文笔记"><a href="http://www.xuwei.io/2019/03/19/%E3%80%8Aneural-turing-machines%E3%80%8B%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/">3. 《Neural Turing Machines》论文笔记</a></h3>
+
+<p>这篇文章从公式的角度很好的讲解了NTM的细节，good👍！</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/blog/190902-NTM3.png" alt="190902-NTM3.png" /></p>
+:ET

@@ -1,0 +1,80 @@
+I"H"<h1 id="序列标注的准确率和召回率计算">序列标注的准确率和召回率计算</h1>
+
+<h2 id="公式">公式</h2>
+
+<p><strong>准确率</strong> = 预测正确的实体个数 / 预测的实体总个数</p>
+
+<p><strong>召回率</strong> = 预测正确的实体个数 / 标注的实体总个数</p>
+
+<p><strong>F1</strong> = 2 *准确率 * 召回率 / (准确率 + 召回率)</p>
+
+<h2 id="实现">实现</h2>
+
+<p>1、获取实体：包括<strong>预测的全部实体</strong>和<strong>标注的全部实体</strong></p>
+
+<p>对于一个标签序列，例如：’B-PER’, ‘I-PER’, ‘O’, ‘B-PER’, ‘I-PER’, ‘O’, ‘O’, ‘B-LOC’, ‘I-LOC’</p>
+
+<p>实体对应的标签块是指：从B开头标签开始的，同一类型（PER/LOC/ORG）的，非O的连续标签序列</p>
+
+<p>因此可以采用形如<strong>{(position, type): [label1, label2, …]}</strong>这种格式的<strong>字典</strong>来存储实体，其中position为实体起始标签对应的序列下标索引，type为实体对应的类型，[label1, label2, …]为实体对应的标签序列</p>
+
+<p>从标签序列中抽取实体的代码如下：</p>
+
+<div class="language-cython highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">split_entity</span><span class="p">(</span><span class="n">label_sequence</span><span class="p">):</span>
+    <span class="n">entity_mark</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">entity_pointer</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="kt">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">label_sequence</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">label</span><span class="p">.</span><span class="nf">startswith</span><span class="p">(</span><span class="s">'B'</span><span class="p">):</span>
+            <span class="n">category</span> <span class="o">=</span> <span class="n">label</span><span class="p">.</span><span class="nf">split</span><span class="p">(</span><span class="s">'-'</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">entity_pointer</span> <span class="o">=</span> <span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+            <span class="n">entity_mark</span><span class="p">.</span><span class="nf">setdefault</span><span class="p">(</span><span class="n">entity_pointer</span><span class="p">,</span> <span class="p">[</span><span class="n">label</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">label</span><span class="p">.</span><span class="nf">startswith</span><span class="p">(</span><span class="s">'I'</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">entity_pointer</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span> <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">entity_pointer</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">label</span><span class="p">.</span><span class="nf">split</span><span class="p">(</span><span class="s">'-'</span><span class="p">)[</span><span class="mi">1</span><span class="p">]:</span> <span class="k">continue</span>
+            <span class="n">entity_mark</span><span class="p">[</span><span class="n">entity_pointer</span><span class="p">].</span><span class="nf">append</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">entity_pointer</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="n">entity_mark</span>
+</code></pre></div></div>
+
+<p>2、获取<strong>预测正确的实体</strong>，进而计算准确率和召回率</p>
+
+<p>得到标注的全部实体和预测的全部实体后，这两个字典中<strong>键和值均相等</strong>的元素，即为预测正确的实体。</p>
+
+<p>统计标注的实体总个数、预测的实体总个数、预测正确的实体总个数，进而可以计算出准确率、召回率以及F1值。</p>
+
+<p>代码如下：</p>
+
+<div class="language-cython highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="n">real_label</span><span class="p">,</span> <span class="n">predict_label</span><span class="p">):</span>
+    <span class="n">real_entity_mark</span> <span class="o">=</span> <span class="nf">split_entity</span><span class="p">(</span><span class="n">real_label</span><span class="p">)</span>
+    <span class="n">predict_entity_mark</span> <span class="o">=</span> <span class="nf">split_entity</span><span class="p">(</span><span class="n">predict_label</span><span class="p">)</span>
+
+    <span class="n">true_entity_mark</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">key_set</span> <span class="o">=</span> <span class="n">real_entity_mark</span><span class="p">.</span><span class="nf">keys</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">predict_entity_mark</span><span class="p">.</span><span class="nf">keys</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">key_set</span><span class="p">:</span>
+        <span class="n">real_entity</span> <span class="o">=</span> <span class="n">real_entity_mark</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">predict_entity</span> <span class="o">=</span> <span class="n">predict_entity_mark</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">real_entity</span><span class="p">)</span> <span class="o">==</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">predict_entity</span><span class="p">):</span>
+            <span class="n">true_entity_mark</span><span class="p">.</span><span class="nf">setdefault</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">real_entity</span><span class="p">)</span>
+
+    <span class="n">real_entity_num</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">real_entity_mark</span><span class="p">)</span>
+    <span class="n">predict_entity_num</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">predict_entity_mark</span><span class="p">)</span>
+    <span class="n">true_entity_num</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">true_entity_mark</span><span class="p">)</span>
+
+    <span class="n">precision</span> <span class="o">=</span> <span class="n">true_entity_num</span> <span class="o">/</span> <span class="n">predict_entity_num</span>
+    <span class="n">recall</span> <span class="o">=</span> <span class="n">true_entity_num</span> <span class="o">/</span> <span class="n">real_entity_num</span>
+    <span class="n">f1</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">precision</span> <span class="o">*</span> <span class="n">recall</span> <span class="o">/</span> <span class="p">(</span><span class="n">precision</span> <span class="o">+</span> <span class="n">recall</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">precision</span><span class="p">,</span> <span class="n">recall</span><span class="p">,</span> <span class="n">f1</span>
+</code></pre></div></div>
+
+<h2 id="补充">补充</h2>
+
+<p>1、以上只简单计算了准确率和召回率，没有涉及到混淆和偏移等问题。如有错误和疏漏之处，请不吝指正。</p>
+
+<p>2、代码写完后，在github上发现了conlleval的python版本o(╯□╰)o，附链接如下：</p>
+
+<p><a href="https://link.zhihu.com/?target=https%3A//github.com/spyysalo/conlleval.py/blob/master/conlleval.py">conlleval.py</a></p>
+
+<p><a href="https://zhuanlan.zhihu.com/p/56582082">Link</a></p>
+:ET

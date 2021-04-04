@@ -1,0 +1,70 @@
+I"�.<h1 id="tensorflow报错setting-an-array-element-with-a-sequence">tensorflow报错：setting an array element with a sequence</h1>
+
+<h1 id="问题">问题</h1>
+
+<p>在训练bilstm-crf模型的时候，往模型里送word.npy文件时报错setting an array element with a sequence</p>
+
+<h1 id="分析">分析</h1>
+
+<p>这个问题一般会发生在读取数据的时候，也就是把我们Python里面的数据传递给placeholder的时候会报这个错。</p>
+
+<p>为什么会出现这样的错误，看下面两行代码：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">constant</span><span class="p">([[[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">],</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">1</span><span class="p">]],</span>
+                   <span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">]]],</span>
+
+                  <span class="p">[[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">],</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">1</span><span class="p">]],</span>
+                   <span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">]]]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="p">.</span><span class="n">float32</span><span class="p">)</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">constant</span><span class="p">([[[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">],</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">]],</span> 
+                   <span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]]],</span> 
+
+                  <span class="p">[[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">],</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">]],</span> 
+                   <span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]]]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="p">.</span><span class="n">float32</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>结果会告诉你第一个语句正确可以执行，第二个语句错误，且爆出下面这样的错误：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Traceback (most recent call last):
+  File "/home/lc/PycharmProjects/tensorflow/HAN/HAN-text-classification-tf/test.py", line 65, in &lt;module&gt;
+    [[0,1,2,3], [2,3,4], [3,4]]]], dtype=np.float32)
+  File "/home/lc/anaconda2/lib/python2.7/site-packages/tensorflow/python/framework/constant_op.py", line 102, in constant
+    tensor_util.make_tensor_proto(value, dtype=dtype, shape=shape, verify_shape=verify_shape))
+  File "/home/lc/anaconda2/lib/python2.7/site-packages/tensorflow/python/framework/tensor_util.py", line 371, in make_tensor_proto
+    nparray = np.array(values, dtype=np_dt)
+ValueError: setting an array element with a sequence.
+</code></pre></div></div>
+
+<p>这说明什么呢，第二条赋值语句的list元素的shape是不一样的。它不像第一个里面每一个元素长度都是3，反而是2,3,4个元素都有，所以在复制的时候程序并不知道该怎样去做。就将其当做是一个sequence对待，自然是无法赋值的。</p>
+
+<p>其次还有一种情况就是咱们一开始提到的那种，当我们给palceholder传递数据的时候偶尔也会出现这种问题，这时候我们一般会在数据处理的时候将数据使用np.array()进行封装。大概就像这样，使用列表添加append数据的时候就封装一次。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">data_x</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">max_sent_in_doc</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">max_word_in_sent</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="k">for</span> <span class="n">perdoc</span> <span class="ow">in</span> <span class="n">x_text</span><span class="p">:</span>
+    <span class="n">doc2idx</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">snt_doc</span> <span class="o">=</span> <span class="n">perdoc</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="s">'。'</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">sent</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">snt_doc</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span><span class="n">max_sent_in_doc</span><span class="p">:</span>
+            <span class="n">word2idx</span> <span class="o">=</span><span class="p">[]</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span><span class="n">word</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sent</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="s">' '</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">max_word_in_sent</span><span class="p">:</span>
+                    <span class="n">word2idx</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">array</span><span class="p">(</span><span class="n">vocab</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">word</span><span class="p">,</span><span class="n">UNKNOWN</span><span class="p">)))</span>
+            <span class="n">npad</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">30</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">word2idx</span><span class="p">))</span>
+
+            <span class="c1">#add padding 
+</span>            <span class="n">word2idx</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">pad</span><span class="p">(</span><span class="n">word2idx</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="n">npad</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">'constant'</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="c1">#padding
+</span>            <span class="n">doc2idx</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">array</span><span class="p">(</span><span class="n">word2idx</span><span class="p">))</span>
+    <span class="n">npad2</span> <span class="o">=</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">30</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">doc2idx</span><span class="p">)),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+
+    <span class="c1">#add padding
+</span>    <span class="n">doc2idx</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">pad</span><span class="p">(</span><span class="n">doc2idx</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="n">npad2</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">'constant'</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="c1">#padding
+</span>    <span class="n">data_x</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">array</span><span class="p">(</span><span class="n">doc2idx</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>注意data_x.append()和doc2idx.append()两句即可。</p>
+
+<p><a href="https://blog.csdn.net/liuchonge/article/details/77854689">Link</a></p>
+:ET

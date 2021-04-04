@@ -1,0 +1,66 @@
+I"s	<h1 id="javascript-substring-方法"><a href="https://www.runoob.com/jsref/jsref-substring.html">JavaScript substring() 方法</a></h1>
+
+<h1 id="javascript-substring-方法-1">JavaScript substring() 方法</h1>
+
+<p><a href="https://www.runoob.com/jsref/jsref-obj-string.html"><img src="https://www.runoob.com/images/up.gif" alt="String 对象参考手册" /> JavaScript String 对象</a></p>
+
+<hr />
+
+<h2 id="定义和用法">定义和用法</h2>
+
+<p>substring() 方法用于提取字符串中介于两个指定下标之间的字符。</p>
+
+<p>substring() 方法返回的子串包括 <em>开始</em> 处的字符，但不包括 <em>结束</em> 处的字符。</p>
+
+<h2 id="语法">语法</h2>
+
+<p><em>string</em>.substring(from, to)</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">参数</th>
+      <th style="text-align: left">描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">from</td>
+      <td style="text-align: left">必需。一个非负的整数，规定要提取的子串的第一个字符在 string Object 中的位置。</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">to</td>
+      <td style="text-align: left">可选。一个非负的整数，比要提取的子串的最后一个字符在 string Object 中的位置多 1。 如果省略该参数，那么返回的子串会一直到字符串的结尾。</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="浏览器支持">浏览器支持</h2>
+
+<p><img src="https://www.runoob.com/images/compatible_ie.gif" alt="Internet Explorer" /><img src="https://www.runoob.com/images/compatible_firefox.gif" alt="Firefox" /><img src="https://www.runoob.com/images/compatible_opera.gif" alt="Opera" /><img src="https://www.runoob.com/images/compatible_chrome.gif" alt="Google Chrome" /><img src="https://www.runoob.com/images/compatible_safari.gif" alt="Safari" /></p>
+
+<p>所有主要浏览器都支持 substring() 方法</p>
+
+<hr />
+
+<h2 id="实例">实例</h2>
+
+<h2 id="实例-1">实例</h2>
+
+<p>在本例中，我们将使用 substring() 从字符串中提取一些字符：:</p>
+
+<script>  
+    var str="Hello world!"; 
+    document.write(str.substring(3)+"<br>"); 
+    document.write(str.substring(3,7));  
+</script>
+
+<p>以上代码输出结果:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>lo world!
+lo w
+</code></pre></div></div>
+
+:ET

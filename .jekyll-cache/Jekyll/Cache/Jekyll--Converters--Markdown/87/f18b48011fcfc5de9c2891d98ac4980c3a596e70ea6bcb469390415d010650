@@ -1,0 +1,58 @@
+I"�<h1 id="leetcode-21-合并两个有序链表">LeetCode-<a href="https://leetcode-cn.com/problems/merge-two-sorted-lists/">21. 合并两个有序链表</a></h1>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Z7VOBq6S5n8" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+
+<p>tag: easy，链表</p>
+
+<p><strong>题目：</strong></p>
+
+<p>将两个升序链表合并为一个新的 <strong>升序</strong> 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。</p>
+
+<p><strong>示例1：</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>输入：1-&gt;2-&gt;4, 1-&gt;3-&gt;4
+输出：1-&gt;1-&gt;2-&gt;3-&gt;4-&gt;4
+</code></pre></div></div>
+
+<h1 id="方法一">方法一：</h1>
+
+<p>在每一次iteration的时候，判断linked list1还是linked list2比较小，把相对比较小的插入到list里面，依次往后推。</p>
+
+<p>先create一个新linked list起始点，此后不停的往里面插新的node，需要一个curent指针看我们到了哪一步，</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Definition for singly-linked list.
+</span>
+<span class="c1"># class ListNode:
+</span>
+<span class="c1">#     def __init__(self, x):
+</span>
+<span class="c1">#         self.val = x
+</span>
+<span class="c1">#         self.next = None
+</span>
+<span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">mergeTwoLists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">):</span>
+        <span class="n">curr</span> <span class="o">=</span> <span class="n">dummy</span> <span class="o">=</span> <span class="n">ListNode</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># curr记录起始点，当走完了所有的node后就指向最后一个node了，所以再记录一个dummy node，虚拟结点，记录起点
+</span>
+        <span class="k">while</span> <span class="n">l1</span> <span class="ow">and</span> <span class="n">l2</span><span class="p">:</span> <span class="c1"># 遍历l1和l2，比较走到的那一位哪个比较小
+</span>
+            <span class="k">if</span> <span class="n">l1</span><span class="p">.</span><span class="n">val</span> <span class="o">&lt;</span> <span class="n">l2</span><span class="p">.</span><span class="n">val</span><span class="p">:</span>
+                <span class="n">curr</span><span class="p">.</span><span class="nb">next</span> <span class="o">=</span> <span class="n">l1</span>
+                <span class="n">l1</span> <span class="o">=</span> <span class="n">l1</span><span class="p">.</span><span class="nb">next</span> <span class="c1"># l1的指针指向下一位
+</span>                
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">curr</span><span class="p">.</span><span class="nb">next</span> <span class="o">=</span> <span class="n">l2</span> 
+                <span class="n">l2</span> <span class="o">=</span> <span class="n">l2</span><span class="p">.</span><span class="nb">next</span> <span class="c1"># l2的指针指向下一位
+</span>                
+            <span class="n">curr</span> <span class="o">=</span> <span class="n">curr</span><span class="p">.</span><span class="nb">next</span> 
+        <span class="n">curr</span><span class="p">.</span><span class="nb">next</span> <span class="o">=</span> <span class="n">l1</span> <span class="ow">or</span> <span class="n">l2</span> <span class="c1"># 不知道哪个链表是先结束的
+</span>
+        <span class="k">return</span> <span class="n">dummy</span><span class="p">.</span><span class="nb">next</span> <span class="c1"># dummy node的起始点
+</span></code></pre></div></div>
+
+<blockquote>
+  <p>执行用时：40 ms, 在所有 Python3 提交中击败了92.96%的用户</p>
+
+  <p>内存消耗：13.7 MB, 在所有 Python3 提交中击败了7.14%的用户</p>
+</blockquote>
+:ET

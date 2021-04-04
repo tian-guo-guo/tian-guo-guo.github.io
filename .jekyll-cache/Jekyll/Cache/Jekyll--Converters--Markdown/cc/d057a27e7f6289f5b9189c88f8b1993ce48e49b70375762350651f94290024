@@ -1,0 +1,43 @@
+I"�<h1 id="leetcode-58-最后一个单词的长度">LeetCode-<a href="https://leetcode-cn.com/problems/length-of-last-word/">58. 最后一个单词的长度</a></h1>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/L1Gm5SWFDhs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+
+<p>tag: easy，字符串</p>
+
+<p><strong>题目：</strong></p>
+
+<p>给定一个仅包含大小写字母和空格 ‘ ‘ 的字符串 s，返回其最后一个单词的长度。如果字符串从左向右滚动显示，那么最后一个单词就是最后出现的单词。</p>
+
+<p>如果不存在最后一个单词，请返回 0 。</p>
+
+<p>说明：一个单词是指仅由字母组成、不包含任何空格字符的 最大子字符串。</p>
+
+<p><strong>示例1：</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>输入: "Hello World"
+输出: 5
+</code></pre></div></div>
+
+<h1 id="方法一">方法一：</h1>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">lengthOfLastWord</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span> 
+        <span class="n">local_count</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># 如果是# "Hello "这种情况，直接返回count是0，所以需要一个局部变量来记录
+</span>        
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s">' '</span><span class="p">:</span> <span class="c1"># 两种情况，一种是空格，另一种是结尾，无论哪种，local_count都要归于0
+</span>
+                <span class="n">local_count</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">local_count</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">count</span> <span class="o">=</span> <span class="n">local_count</span>
+        <span class="k">return</span> <span class="n">count</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>执行用时：40 ms, 在所有 Python3 提交中击败了67.40%的用户</p>
+
+  <p>内存消耗：13.8 MB, 在所有 Python3 提交中击败了5.26%的用户</p>
+</blockquote>
+:ET

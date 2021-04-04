@@ -1,0 +1,165 @@
+I"�J<h1 id="packagejson文件解析"><a href="https://blog.csdn.net/qq_38128179/article/details/84788912">package.json文件解析</a></h1>
+
+<h3 id="一用途"><strong>一、用途</strong></h3>
+
+<p>​    管理你所安装的npm包的依赖，在开发过程中能清楚的查询安装的包的版本以及项目中使用的包依赖，便于开发组成员共享。以及项目的配置信息（比如名称、版本号、项目描述、许可证等元数据）。运行npm install命令可以自动下载package.json文件中运行和开发环境中所需的依赖</p>
+
+<h3 id="二创建两种方式"><strong>二、创建(两种方式)</strong></h3>
+
+<p><strong>1.手动输入创建</strong></p>
+
+<p><strong>2.npm init命令自动创建</strong></p>
+
+<h3><img src="https://img-blog.csdnimg.cn/20181204165932524.jpg" alt="img" /></h3>
+
+<h3 id="三配置项"><strong>三、配置项</strong></h3>
+
+<p><strong>1.name 项目名称</strong></p>
+
+<p>name和version字段是package.json文件中最重要的字段，都是必须的字段，如果你的npm包没有指定这两个字段，将无法被安装。name和version字段被假定组合成一个唯一的标识符，包内容的更改和包版本的更改是同步的。</p>
+
+<p><strong>2.version 版本号</strong></p>
+
+<p>npm采用”语义版本”管理软件包。所谓语义版本，就是指版本号为x.y.z的形式，其中x是大版本号，y是小版本号(功能)，z是补丁号(修复bug)。</p>
+
+<p><strong>3.description 项目描述</strong></p>
+
+<p>description是一个字符串，它可以帮助人们在使用npm search时找到这个包。</p>
+
+<p><strong>4.keywords 关键字</strong></p>
+
+<p>​    keywords是一个字符串的数组，它可以帮助人们在使用npm search时找到这个包。</p>
+
+<p><strong>5.homepage 主页url</strong></p>
+
+<p>​    这和”url”不一样，是没有http://等带协议前缀的URL。</p>
+
+<p><strong>6.bugs（可选）</strong></p>
+
+<p>​    项目的提交问题的url和（或）邮件地址，这对使用该包遇到问题的用户会有帮助。可以择其一或者两个都写上，如果只想提供一个url，你可以对”bugs”字段指定一个字符串而不是object。如果提供了一个url，它会被用于npm bugs命令。</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span> 
+<span class="err">　</span><span class="dl">"</span><span class="s2">url</span><span class="dl">"</span> <span class="p">:</span> <span class="dl">"</span><span class="s2">https://github.com/owner/project/issues</span><span class="dl">"</span><span class="p">,</span>
+<span class="err">　</span><span class="dl">"</span><span class="s2">email</span><span class="dl">"</span> <span class="p">:</span> <span class="dl">"</span><span class="s2">project@hostname.com</span><span class="dl">"</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><strong>7.license 许可证</strong></p>
+
+<p>​    你应该对你的包指定一个license让用户知道他们的使用权利和和任何限制。BSD-3-Clause，MIT，ISC是通用许可证。</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span> <span class="dl">"</span><span class="s2">license</span><span class="dl">"</span> <span class="p">:</span> <span class="dl">"</span><span class="s2">ISC</span><span class="dl">"</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<p><strong>8.author 作者</strong></p>
+
+<p>​     author是一个对象</p>
+
+<p><strong>9.files</strong></p>
+
+<p>​     files字段是一个被项目包含的文件名数组，如果你在里面放一个文件夹名，那么这个文件夹中的所有文件都会被包含进项目中(除非是那些在其他规则中被忽略的文件)。你还可以在包的根目录或子目录下提供一个”.npmignore”文件来忽略项目包含文件，即使这些文件被包含在files字段中。.npmignore文件和.gitignore的功能很像。</p>
+
+<p><strong>10.main</strong></p>
+
+<p>​     这个字段的值指定了加载的入口文件，<code class="language-plaintext highlighter-rouge">require('moduleName')</code>就会加载这个文件。这个字段的默认值是模块根目录下面的index.js。</p>
+
+<p><strong>11.repository</strong></p>
+
+<p>​     指明你的代码被托管在何处，这对那些想要参与到这个项目中的人来说很有帮助。如果git仓库在github上，用npm docs命令将会找到你。</p>
+
+<p><strong>12.scripts</strong></p>
+
+<p>​    scripts指定了运行脚本命令的npm命令行缩写，比如start代替npm run start所要执行的命令。</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">"</span><span class="s2">scripts</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="dl">"</span><span class="s2">serve</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">vue-cli-service serve</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">build</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">vue-cli-service build</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">lint</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">vue-cli-service lint</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">start</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">egg-scripts start --daemon --title=egg-server-ambassador-manage</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">stop</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">egg-scripts stop --title=egg-server-ambassador-manage</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">dev</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">cross-env NODE_ENV=local http_proxy=http://127.0.0.1:8888 egg-bin dev</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">debug</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">egg-bin debug</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">test</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">npm run lint -- --fix &amp;&amp; npm run test-local</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">test-local</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">egg-bin test</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">cov</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">egg-bin cov</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">ci</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">npm run lint &amp;&amp; npm run cov</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">autod</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">autod</span><span class="dl">"</span>
+  <span class="p">},</span>
+</code></pre></div></div>
+
+<p><strong>13.config</strong></p>
+
+<p>​    config字段用于向环境变量输出值。</p>
+
+<p><strong>14.dependencies</strong></p>
+
+<p>​    dependencies字段是一个对象，它指定了项目运行时依赖的模块名和版本范围映射。</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="dl">"</span><span class="s2">dependencies</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="dl">"</span><span class="s2">@fortawesome/fontawesome-svg-core</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^1.2.0</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">@fortawesome/free-solid-svg-icons</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^5.1.0</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">@fortawesome/vue-fontawesome</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^0.1.0</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">axios</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^0.18.0</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">cross-env</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^5.2.0</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">egg</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^2.2.1</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">egg-cors</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^2.1.0</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">egg-development-proxyagent</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^1.0.0</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">egg-oss</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^2.0.0</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">egg-scripts</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^2.5.0</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">egg-view-nunjucks</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^2.2.0</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">element-ui</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^2.4.2</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">formstream</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^1.1.0</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">js-cookie</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^2.2.0</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">moment</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^2.22.2</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">nunjucks</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^3.1.3</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">pdfobject</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^2.1.1</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">stream-wormhole</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^1.1.0</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">vue</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^2.5.17</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">vue-router</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^3.0.1</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">vuex</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^3.0.1</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">xml2js</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^0.4.19</span><span class="dl">"</span>
+ <span class="p">},</span>
+</code></pre></div></div>
+
+<p><strong>15.devDependencies</strong></p>
+
+<p>​    devDependencies字段是一个对象，它指定了项目开发时依赖的模块名和版本范围映射。如果有人要用你的模块，但他们可能不需要你开发所使用的外部测试或者文档框架。</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">"</span><span class="s2">devDependencies</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="dl">"</span><span class="s2">@vue/cli-plugin-babel</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^3.1.1</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">@vue/cli-plugin-eslint</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^3.1.1</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">@vue/cli-service</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^3.1.1</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">@vue/eslint-config-standard</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^3.0.0-rc.3</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">babel-eslint</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^10.0.1</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">eslint</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^5.8.0</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">eslint-plugin-vue</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^5.0.0-0</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">lint-staged</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^7.2.2</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">babel-plugin-component</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^1.1.1</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">vue-template-compiler</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^2.5.17</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">autod</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^3.0.1</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">autod-egg</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^1.0.0</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">chai</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^4.1.2</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">egg-bin</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^4.3.5</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">egg-ci</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^1.8.0</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">egg-mock</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^3.14.0</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">eslint-config-egg</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^6.0.0</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">mockjs</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^1.0.1-beta3</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">node-sass</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^4.9.0</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">sass-loader</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">^7.0.3</span><span class="dl">"</span>
+ <span class="p">}</span>
+</code></pre></div></div>
+
+<p><strong>16.engines</strong></p>
+
+<p>​    指明了该模块运行的平台, 比如node的版本、安装这个包的npm版本</p>
+
+<p><strong>17.private</strong></p>
+
+<p>​    设置”private”: true时，npm会拒绝发布当前包。这是一个防止意外发布私有包的方式。如果你希望包装某个包只能被发布到特定的一个registry中(比如，一个内部的registry)，则可以使用publishConfig字典来重写registry的publish-time配置参数。</p>
+
+<h3 id="四dependencies与devdependencies的区别">四、dependencies与devDependencies的区别</h3>
+
+<p><strong>1. –save-dev安装的包在devDependencies下， –save安装的包在dependencies下。</strong></p>
+
+<p><strong>2. devDependencies中列出再开发环境中使用的包，比如项目开发中使用的构建工具，不会被部署到生产环境中，就放在devDependencies下。最后需要发布上线的包，则放在dependencies下。</strong></p>
+:ET

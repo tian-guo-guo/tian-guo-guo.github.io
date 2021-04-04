@@ -1,0 +1,311 @@
+I"�)<h1 id="常用css3属性汇总"><a href="https://juejin.im/post/6844903799966924807">常用CSS3属性汇总</a></h1>
+
+<h5 id="css3边框">CSS3边框</h5>
+
+<ul>
+  <li>
+    <p>border-radius 圆角边框</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>border-radius:25px;
+复制代码
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>box-shadow 边框阴影</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>box-shadow: h-shadow v-shadow blur spread color inset;
+复制代码
+</code></pre></div>    </div>
+
+    <ul>
+      <li>h-shadow    必需。水平阴影的位置。允许负值。</li>
+      <li>v-shadow    必需。垂直阴影的位置。允许负值。</li>
+      <li>blur    可选。模糊距离。</li>
+      <li>spread    可选。阴影的尺寸。(<strong>blur模糊距离是算在盒子的长宽里面的，spread阴影的尺寸会增大阴影盒子的长宽</strong>)</li>
+      <li>color    可选。阴影的颜色。请参阅 CSS 颜色值。</li>
+      <li>inset    可选。将外部阴影 (outset) 改为内部阴影。</li>
+    </ul>
+  </li>
+  <li>
+    <p>border-image 边框图片</p>
+
+    <p>border-image 属性是一个简写属性，用于设置以下属性：</p>
+
+    <ul>
+      <li>border-image-source    边框的图片的路径</li>
+      <li>border-image-slice    图片边框向内偏移</li>
+      <li>border-image-width    图片边框的宽度</li>
+      <li>border-image-outset    边框图像区域超出边框的量</li>
+      <li>border-image-repeat    图像边框是否应平铺(repeated)、铺满(rounded)或拉伸(stretched)</li>
+    </ul>
+  </li>
+</ul>
+
+<h5 id="css3背景">CSS3背景</h5>
+
+<ul>
+  <li>
+    <p>background-clip 规定背景的绘制区域</p>
+
+    <ul>
+      <li>border-box 背景被裁剪到边框盒。</li>
+      <li>padding-box 背景被裁剪到内边距框。</li>
+      <li>content-box  背景被裁剪到内容框。</li>
+    </ul>
+  </li>
+  <li>
+    <p>background-origin 规定 background-position 属性相对于什么位置来定位</p>
+
+    <ul>
+      <li>padding-box  背景图像相对于内边距框来定位。</li>
+      <li>border-box  背景图像相对于边框盒来定位。</li>
+      <li>content-box  背景图像相对于内容框来定位。</li>
+    </ul>
+  </li>
+  <li>
+    <p>background-size 规定背景图像的尺寸</p>
+  </li>
+  <li>
+    <p>CSS3 多重图片</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>body
+{ 
+background-image:url(bg_flower.gif),url(bg_flower_2.gif);
+}
+复制代码
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h5 id="css3文本">CSS3文本</h5>
+
+<ul>
+  <li>
+    <p>text-overflow 规定当文本溢出包含元素时发生的事情</p>
+
+    <ul>
+      <li>clip  修剪文本。</li>
+      <li>ellipsis  显示省略符号来代表被修剪的文本。</li>
+      <li><em>string</em>  使用给定的字符串来代表被修剪的文本。</li>
+    </ul>
+  </li>
+  <li>
+    <p>text-shadow  向文本设置阴影</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>text-shadow: h-shadow v-shadow blur color;
+复制代码
+</code></pre></div>    </div>
+
+    <ul>
+      <li>h-shadow 必需。水平阴影的位置。允许负值。</li>
+      <li>v-shadow 必需。垂直阴影的位置。允许负值。</li>
+      <li>blur 可选。模糊的距离。</li>
+      <li>color 可选。阴影的颜色。</li>
+    </ul>
+  </li>
+  <li>
+    <p>white-space（不是css3属性）</p>
+
+    <ul>
+      <li>normal    默认。空白会被浏览器忽略。</li>
+      <li>pre    空白会被浏览器保留。其行为方式类似 HTML 中的 pre标签。</li>
+      <li>nowrap    文本不会换行，文本会在在同一行上继续，直到遇到 br标签为止。</li>
+      <li>pre-wrap    保留空白符序列，但是正常地进行换行。</li>
+      <li>pre-line    合并空白符序列，但是保留换行符。</li>
+      <li>inherit    规定应该从父元素继承 white-space 属性的值。</li>
+    </ul>
+  </li>
+</ul>
+
+<h5 id="css3字体">CSS3字体</h5>
+
+<ul>
+  <li>
+    <p>@font-face 规则，使用方式：首先定义字体的名称（比如 myFirstFont），然后指向该字体文件。</p>
+
+    <p>如需为 HTML 元素使用字体，请通过 font-family 属性来引用字体的名称 (myFirstFont)</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;style&gt; 
+@font-face
+{
+font-family: myFirstFont;
+src: url('Sansation_Light.ttf'),
+     url('Sansation_Light.eot'); /* IE9+ */
+}
+    
+div
+{
+font-family:myFirstFont;
+}
+&lt;/style&gt;
+复制代码
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h5 id="css3-2d转换">CSS3 2D转换</h5>
+
+<ul>
+  <li>通过 CSS3 转换，我们能够对元素进行移动、缩放、转动、拉长或拉伸。</li>
+  <li>transform
+    <ul>
+      <li>translate(x, y) 方法，元素从其当前位置移动，根据给定的 left（x 坐标） 和 top（y 坐标） 位置参数</li>
+      <li>rotate(n deg) 方法，元素顺时针旋转给定的角度。允许负值，元素将逆时针旋转。 （<strong>以旋转元素中心为旋转点</strong>）</li>
+      <li>scale(x, y) 方法，元素宽高变化为原始的倍数，根据给定的宽度（X 轴）和高度（Y 轴）参数</li>
+      <li>scale(x)</li>
+      <li>scale(y)</li>
+    </ul>
+  </li>
+</ul>
+
+<h5 id="css3-3d转换">CSS3 3D转换</h5>
+
+<ul>
+  <li>transform
+    <ul>
+      <li>rotateX(n deg) 方法，元素围绕其 X 轴以给定的度数进行旋转。</li>
+      <li>rotateY(n deg) 方法，元素围绕其 Y 轴以给定的度数进行旋转。</li>
+      <li>rotateZ(n deg) 方法，元素围绕其 Z 轴以给定的度数进行旋转。</li>
+    </ul>
+  </li>
+</ul>
+
+<h5 id="css3-过渡">CSS3 过渡</h5>
+
+<ul>
+  <li>
+    <p>必须规定把过渡效果添加到哪个CSS属性上，并且规定效果的时长</p>
+  </li>
+  <li>
+    <p>如需向多个样式添加过渡效果，请添加多个属性，由逗号隔开</p>
+  </li>
+  <li>
+    <p>语法：transition: property duration timing-function delay;</p>
+
+    <ul>
+      <li>
+        <p>transition-property 规定设置过渡效果的 CSS 属性的名称。</p>
+      </li>
+      <li>
+        <p>transition-duration 规定完成过渡效果需要多少秒或毫秒。</p>
+      </li>
+      <li>
+        <p>transition-timing-function 规定速度效果的速度曲线。</p>
+
+        <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>transition-timing-function: linear|ease|ease-in|ease-out|ease-in-out|cubic-
+bezier(n,n,n,n);
+复制代码
+</code></pre></div>        </div>
+
+        <ul>
+          <li>linear 以相同速度开始至结束的过渡效果（等于 cubic-bezier(0,0,1,1)） 。</li>
+          <li>ease 规定慢速开始，然后变快，然后慢速结束的过渡效果（cubic-bezier(0.25,0.1,0.25,1)）。</li>
+          <li>ease-in 以慢速开始的过渡效果（等于 cubic-bezier(0.42,0,1,1)）。</li>
+          <li>ease-out 规定以慢速结束的过渡效果（等于 cubic-bezier(0,0,0.58,1)）。</li>
+          <li>ease-in-out  以慢速开始和结束的过渡效果（等于 cubic-bezier(0.42,0,0.58,1)）。</li>
+          <li>cubic-bezier(<em>n</em>,<em>n</em>,<em>n</em>,<em>n</em>)  在 cubic-bezier 函数中定义自己的值。可能的值是 0 至 1 之间的数值。</li>
+        </ul>
+      </li>
+      <li>
+        <p>transition-delay 定义过渡效果何时开始。</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h5 id="css3-动画">CSS3 动画</h5>
+
+<ul>
+  <li>
+    <p>@keyframes 规则用于创建动画。在 @keyframes 中规定某项 CSS 样式，就能创建由当前样式逐渐改为新样式的动画效果。 请用百分比来规定变化发生的时间，或用关键词 “from” 和 “to”，等同于 0% 和 100%。</p>
+
+    <p>0% 是动画的开始，100% 是动画的完成。</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@keyframes myfirst
+{
+from {background: red;}
+to {background: yellow;}
+}
+复制代码
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>通过animation属性将动画绑定到选择器上</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>div
+{
+animation: myfirst 5s;
+-moz-animation: myfirst 5s;	/* Firefox */
+-webkit-animation: myfirst 5s;	/* Safari 和 Chrome */
+-o-animation: myfirst 5s;	/* Opera */
+}
+复制代码
+</code></pre></div>    </div>
+
+    <ul>
+      <li>语法 animation: name duration timing-function delay iteration-count direction;</li>
+      <li>
+        <table>
+          <tbody>
+            <tr>
+              <td>animation-iteration-count: n</td>
+              <td>infinite; 播放n次或者无限次</td>
+            </tr>
+          </tbody>
+        </table>
+      </li>
+      <li>
+        <table>
+          <tbody>
+            <tr>
+              <td>animation-direction: normal</td>
+              <td>alternate; 正常播放或者轮流反向播放</td>
+            </tr>
+          </tbody>
+        </table>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h5 id="css3-多列">CSS3 多列</h5>
+
+<ul>
+  <li>column-count 属性规定元素应该被分隔的列数</li>
+  <li>column-gap 属性规定列之间的间隔</li>
+  <li>column-rule 属性设置列之间的宽度、样式和颜色规则</li>
+</ul>
+
+<h5 id="css3-用户界面">CSS3 用户界面</h5>
+
+<ul>
+  <li>
+    <p>resize 属性规定是否可由用户调整元素尺寸</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>resize: none|both|horizontal|vertical;
+复制代码
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>box-sizing 以确切的方式定义适应某个区域的具体内容</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>content-box|border-box|inherit;
+复制代码
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>outline-offset 对轮廓进行偏移，并在超出边框边缘的位置绘制轮廓</p>
+
+    <ul>
+      <li>轮廓不占用空间</li>
+      <li>轮廓可能是非矩形</li>
+    </ul>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>outline-offset: length|inherit;
+复制代码
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<p><a href="https://juejin.im/post/6844903799966924807">Link</a></p>
+:ET

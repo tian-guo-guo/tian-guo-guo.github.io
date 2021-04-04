@@ -1,0 +1,89 @@
+I"�<h1 id="剑指-offer-18-删除链表的节点"><a href="https://leetcode-cn.com/problems/shan-chu-lian-biao-de-jie-dian-lcof/">剑指 Offer 18. 删除链表的节点</a></h1>
+
+<p>tag: easy，链表，双指针</p>
+
+<p><strong>题目：</strong></p>
+
+<p>给定单向链表的头指针和一个要删除的节点的值，定义一个函数删除该节点。</p>
+
+<p>返回删除后的链表的头节点。</p>
+
+<p><strong>示例 1：</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>输入: head = [4,5,1,9], val = 5
+输出: [4,1,9]
+解释: 给定你链表中值为 5 的第二个节点，那么在调用了你的函数之后，该链表应变为 4 -&gt; 1 -&gt; 9.
+</code></pre></div></div>
+
+<p><strong>示例 2：</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>输入: head = [4,5,1,9], val = 1
+输出: [4,5,9]
+解释: 给定你链表中值为 1 的第三个节点，那么在调用了你的函数之后，该链表应变为 4 -&gt; 5 -&gt; 9.
+</code></pre></div></div>
+
+<h1 id="方法一">方法一：</h1>
+
+<ul>
+  <li>解题思路：</li>
+</ul>
+
+<blockquote>
+  <p>删除值为 val 的节点可分为两步：定位节点、修改引用。</p>
+</blockquote>
+
+<ol>
+  <li>定位节点： 遍历链表，直到 head.val == val 时跳出，即可定位目标节点。</li>
+  <li>修改引用： 设节点 cur 的前驱节点为 pre ，后继节点为 cur.next ；则执行 pre.next = cur.next ，即可实现删除 cur 节点。</li>
+</ol>
+
+<ul>
+  <li>算法流程：
+    <ol>
+      <li>特例处理： 当应删除头节点 head 时，直接返回 head.next 即可。</li>
+      <li>初始化： pre = head , cur = head.next 。</li>
+      <li>定位节点： 当 cur 为空 或 cur 节点值等于 val 时跳出。</li>
+    </ol>
+    <ol>
+      <li>保存当前节点索引，即 pre = cur 。</li>
+      <li>遍历下一节点，即 cur = cur.next 。
+        <ol>
+          <li>删除节点： 若 cur 指向某节点，则执行 pre.next = cur.next 。（若 cur 指向 nullnull ，代表链表中不包含值为 val 的节点。
+  返回值： 返回链表头部节点 head 即可。</li>
+        </ol>
+      </li>
+    </ol>
+  </li>
+  <li>复杂度分析：
+    <ul>
+      <li>时间复杂度 O(N)： N为链表长度，删除操作平均需循环 N/2次，最差 N次。</li>
+      <li>空间复杂度 O(1) ： cur, pre 占用常数大小额外空间。</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">ListNode</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">val</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="p">.</span><span class="nb">next</span> <span class="o">=</span> <span class="bp">None</span>
+
+<span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">deleteNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">head</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">head</span><span class="p">.</span><span class="n">val</span> <span class="o">==</span> <span class="n">val</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">head</span><span class="p">.</span><span class="nb">next</span>
+        <span class="n">pre</span><span class="p">,</span> <span class="n">cur</span> <span class="o">=</span> <span class="n">head</span><span class="p">,</span> <span class="n">head</span><span class="p">.</span><span class="nb">next</span>
+        <span class="k">while</span> <span class="n">cur</span> <span class="ow">and</span> <span class="n">cur</span><span class="p">.</span><span class="n">val</span> <span class="o">!=</span> <span class="n">val</span><span class="p">:</span>
+            <span class="n">pre</span><span class="p">,</span> <span class="n">cur</span> <span class="o">=</span> <span class="n">cur</span><span class="p">,</span> <span class="n">cur</span><span class="p">.</span><span class="nb">next</span>
+        <span class="k">if</span> <span class="n">cur</span><span class="p">:</span>
+            <span class="n">pre</span><span class="p">.</span><span class="nb">next</span> <span class="o">=</span> <span class="n">cur</span><span class="p">.</span><span class="nb">next</span>
+        <span class="k">return</span> <span class="n">head</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>执行用时：44 ms, 在所有 Python3 提交中击败了87.05%的用户</p>
+
+  <p>内存消耗：13.9 MB, 在所有 Python3 提交中击败了61.38%的用户</p>
+</blockquote>
+
+<p><a href="https://leetcode-cn.com/problems/shan-chu-lian-biao-de-jie-dian-lcof/solution/mian-shi-ti-18-shan-chu-lian-biao-de-jie-dian-sh-2/">Link</a></p>
+:ET

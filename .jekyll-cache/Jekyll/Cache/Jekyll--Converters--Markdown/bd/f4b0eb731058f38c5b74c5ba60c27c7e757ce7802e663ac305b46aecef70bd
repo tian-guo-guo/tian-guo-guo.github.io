@@ -1,0 +1,29 @@
+I"F<h1 id="mac-sublime-text解决there-are-no-packages-available-for-installation">(MAC) Sublime Text：解决“There are no packages available for installation”</h1>
+
+<p>解决方案
+核心：
+出现此问题的主要原因在于无法访问“https://packagecontrol.io/channel_v3.json”，因此只需要将其地址替换掉即可解决。</p>
+
+<p>解决方案1：
+打开Sublime Text，点击Sublime Text-&gt;Preferences-&gt;Settings - User，添加如下代码：</p>
+
+<p>“channels”:
+[
+“http://cst.stu.126.net/u/json/cms/channel_v3.json”,
+],
+保存后即可解决。</p>
+
+<p>解决方案2：
+1、 Command+Shift+p 打开命令面板
+2、输入 Package Control: Add Channel
+3、添加地址：https://github.com/wilon/sublime/raw/master/download/channel_v3.json</p>
+
+<p>参考贴：
+[1] 解决sublime text无法安装插件问题
+[2] Sublime Text 3 下载安装插件太慢怎么办?</p>
+
+<p>作者：姚远_HIT
+链接：https://www.jianshu.com/p/d059f5f1fe86
+来源：简书
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</p>
+:ET

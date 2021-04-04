@@ -1,0 +1,46 @@
+I"�<h1 id="homebrew--curl-7-failed-to-connect-to-rawgithubusercontentcom-port-443-connection-refused"><a href="https://blog.csdn.net/u012400885/article/details/103849472">Homebrew | curl: (7) Failed to connect to raw.githubusercontent.com port 443: Connection refused</a></h1>
+
+<p>某天想玩玩 Homebrew，突然提示如下：
+<img src="https://img-blog.csdnimg.cn/20200106003102790.jpeg" alt="在这里插入图片描述" />
+依稀记得，我曾经玩过这个东西啊，啥情况？</p>
+
+<p>果断官网准备安装下 Homebrew：
+<img src="https://img-blog.csdnimg.cn/20200106003253981.png" alt="在这里插入图片描述" />
+出师不利，自然的打开 Stack Overflow 查找解决之道：</p>
+
+<ul>
+  <li><a href="https://stackoverflow.com/questions/29910217/homebrew-installation-on-mac-os-x-failed-to-connect-to-raw-githubusercontent-com">Homebrew installation on Mac OS X Failed to connect to raw.githubusercontent.com port 443</a></li>
+</ul>
+
+<p>关键靠谱答案截图如下：
+<img src="https://img-blog.csdnimg.cn/20200106003451943.png" alt="在这里插入图片描述" />
+我们按照此步骤操作一番～</p>
+
+<p><strong>Step 1：首先打开 Homebrew install：</strong></p>
+
+<ul>
+  <li><a href="https://raw.githubusercontent.com/Homebrew/install/master/install">Homebrew install</a></li>
+</ul>
+
+<p>将文件另存为：<strong>brew_install.rb</strong></p>
+
+<p>鉴于个人也出现了几次打不开的情况，这里附上百度网盘地址，方便小伙伴操作：</p>
+
+<ul>
+  <li>链接: https://pan.baidu.com/s/1HvJZj0dl9fDqtgzmVtK2iw 密码:umqb</li>
+</ul>
+
+<p><strong>Step 2：ruby 安装已下载的 brew_install.rb：</strong></p>
+
+<p>iTerm 2 键入如下指令：</p>
+
+<ul>
+  <li>ruby [brew_install.rb 地址]</li>
+</ul>
+
+<p>如下图所示：
+<img src="https://img-blog.csdnimg.cn/20200106003957981.png" alt="在这里插入图片描述" />
+安装成功信息如下：
+<img src="https://img-blog.csdnimg.cn/20200106004122124.png" alt="在这里插入图片描述" />
+哦可，玩去吧～</p>
+:ET

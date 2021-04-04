@@ -1,0 +1,7 @@
+I"U<h1 id="return-command-lsb_release--a-returned-non-zero-exit-status-1">return Command ‘lsb_release -a’ returned non-zero exit status 1</h1>
+
+<p>安装新库报错，输入这个即可<code class="language-plaintext highlighter-rouge">rm /usr/bin/lsb_release</code></p>
+
+<p><a href="https://github.com/pypa/pip/issues/4924">Link</a></p>
+
+:ET
