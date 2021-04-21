@@ -20,12 +20,15 @@ cdn: https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/
 # SNS settings
 RSS: false
 # weibo_username:     xxx
-jianshu_username:   cba210cef915
-zhihu_username:     tianguoguo15
+jianshu_username:   xxx
+zhihu_username:     xxx
 github_username:    tian-guo-guo
-facebook_username:  TianTian
+facebook_username:  xxx
 # twitter_username:   xxx
-
+# jianshu_username:   cba210cef915
+# zhihu_username:     tianguoguo15
+# github_username:    tian-guo-guo
+# facebook_username:  TianTian
 
 
 
@@ -107,13 +110,14 @@ friends: [
     {
         title: "美拍·甜果果2333",
         href: "http://www.meipai.com/user/1088601139?client_id=1089857299&gid=1119354961&uid=1088601139&utm_user_id=1088601139&utm_content=test&utm_source=meipai_share&utm_term=meipai_ios"
-    },{
-        title: "Keep·甜果果2333",
-        href: "https://show.gotokeep.com/users/573d84f646054cc85d430037?utm_source=wechat&utm_medium=web&utm_campaign=client_share&utm_term=&utm_content=users"
-    },{
-        title: "豆瓣·甜果果2333",
-        href: "https://www.douban.com/people/102650670/"
     }
+    # ,{
+    #     title: "Keep·甜果果2333",
+    #     href: "https://show.gotokeep.com/users/573d84f646054cc85d430037?utm_source=wechat&utm_medium=web&utm_campaign=client_share&utm_term=&utm_content=users"
+    # },{
+    #     title: "豆瓣·甜果果2333",
+    #     href: "https://www.douban.com/people/102650670/"
+    # }
     # {
     #     title: 'AI_flollower',
     #     href: "https://weibo.com/5516859712/profile?topnav=1&wvr=6&is_all=1&display=0&retcode=6102"

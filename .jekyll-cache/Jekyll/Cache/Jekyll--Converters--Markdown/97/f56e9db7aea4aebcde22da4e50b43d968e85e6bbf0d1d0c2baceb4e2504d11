@@ -1,12 +1,0 @@
-I"<h1 id="-bash-docker-compose-command-not-foundlinux-安装-docker-compose">-bash: docker-compose: command not found、linux 安装 docker-compose</h1>
-
-<p>安装Docker-Compose：</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip install docker-compose
-</code></pre></div></div>
-
-<p>检查是是否成功：</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker-compose -version
-</code></pre></div></div>
-:ET
