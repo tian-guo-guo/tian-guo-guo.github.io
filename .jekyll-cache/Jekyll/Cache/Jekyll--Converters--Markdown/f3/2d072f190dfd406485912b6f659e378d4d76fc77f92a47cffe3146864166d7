@@ -1,0 +1,11 @@
+I"�<h1 id="conda-安装tensorboardx">conda 安装tensorboardX</h1>
+
+<p>To install this package with conda run one of the following:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>conda install -c conda-forge tensorboardx 
+conda install -c conda-forge/label/gcc7 tensorboardx 
+conda install -c conda-forge/label/cf201901 tensorboardx 
+</code></pre></div></div>
+
+<p><a href="https://blog.csdn.net/y1556368418/article/details/89177720">原文链接</a></p>
+:ET

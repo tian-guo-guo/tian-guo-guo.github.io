@@ -1,0 +1,67 @@
+I"�<h1 id="剑指-offer-22-链表中倒数第k个节点"><a href="https://leetcode-cn.com/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/">剑指 Offer 22. 链表中倒数第k个节点</a></h1>
+
+<p>tag: easy，链表，双指针</p>
+
+<p><strong>题目：</strong></p>
+
+<p>输入一个链表，输出该链表中倒数第k个节点。为了符合大多数人的习惯，本题从1开始计数，即链表的尾节点是倒数第1个节点。例如，一个链表有6个节点，从头节点开始，它们的值依次是1、2、3、4、5、6。这个链表的倒数第3个节点是值为4的节点。</p>
+
+<p><strong>示例 1：</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>给定一个链表: 1-&gt;2-&gt;3-&gt;4-&gt;5, 和 k = 2.
+返回链表 4-&gt;5.
+</code></pre></div></div>
+
+<h1 id="方法一">方法一：</h1>
+
+<ul>
+  <li>解题思路：
+    <ul>
+      <li>第一时间想到的解法：
+        <ul>
+          <li>先遍历统计链表长度，记为 nn ；</li>
+          <li>设置一个指针走 (n-k)(n−k) 步，即可找到链表倒数第 kk 个节点。</li>
+        </ul>
+      </li>
+      <li>使用双指针则可以不用统计链表长度。</li>
+    </ul>
+  </li>
+  <li>算法流程：
+    <ol>
+      <li>初始化： 前指针 former 、后指针 latter ，双指针都指向头节点 head 。</li>
+      <li>构建双指针距离： 前指针 former 先向前走 k 步（结束后，双指针 former 和 latter 间相距 k 步）。</li>
+      <li>双指针共同移动： 循环中，双指针 former 和 latter 每轮都向前走一步，直至 former 走过链表 尾节点 时跳出（跳出后， latter 与尾节点距离为 k-1，即 latter 指向倒数第 k 个节点）。</li>
+      <li>返回值： 返回 latter 即可。</li>
+    </ol>
+  </li>
+  <li>复杂度分析：
+    <ul>
+      <li>时间复杂度 O(N) ： N 为链表长度；总体看， former 走了 N 步， latter 走了 (N−k) 步。</li>
+      <li>空间复杂度 O(1) ： 双指针 former , latter 使用常数大小的额外空间。</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">ListNode</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">val</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="p">.</span><span class="nb">next</span> <span class="o">=</span> <span class="n">Node</span>
+        
+<span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">getKthFromEnd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">head</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+        <span class="n">former</span><span class="p">,</span> <span class="n">latter</span> <span class="o">=</span> <span class="n">head</span><span class="p">,</span> <span class="n">head</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+            <span class="n">former</span> <span class="o">=</span> <span class="n">former</span><span class="p">.</span><span class="nb">next</span>
+        <span class="k">while</span> <span class="n">former</span><span class="p">:</span>
+            <span class="n">former</span><span class="p">,</span> <span class="n">latter</span> <span class="o">=</span> <span class="n">former</span><span class="p">.</span><span class="nb">next</span><span class="p">,</span> <span class="n">latter</span><span class="p">.</span><span class="nb">next</span>
+        <span class="k">return</span> <span class="n">latter</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>执行用时：28 ms, 在所有 Python3 提交中击败了99.65%的用户</p>
+
+  <p>内存消耗：13.6 MB, 在所有 Python3 提交中击败了73.64%的用户</p>
+</blockquote>
+
+<p><a href="https://leetcode-cn.com/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/solution/mian-shi-ti-22-lian-biao-zhong-dao-shu-di-kge-j-11/">Link</a></p>
+:ET

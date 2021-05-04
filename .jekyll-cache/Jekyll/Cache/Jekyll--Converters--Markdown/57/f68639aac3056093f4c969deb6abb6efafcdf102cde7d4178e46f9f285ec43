@@ -1,0 +1,90 @@
+I"�<h1 id="剑指-offer-03-数组中重复的数字"><a href="https://leetcode-cn.com/problems/shu-zu-zhong-zhong-fu-de-shu-zi-lcof/">剑指 Offer 03. 数组中重复的数字</a></h1>
+
+<p>tag: easy，哈希表，数组</p>
+
+<p><strong>题目：</strong></p>
+
+<p>找出数组中重复的数字。</p>
+
+<p>在一个长度为 n 的数组 nums 里的所有数字都在 0～n-1 的范围内。数组中某些数字是重复的，但不知道有几个数字重复了，也不知道每个数字重复了几次。请找出数组中任意一个重复的数字。</p>
+
+<p><strong>示例1：</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>输入：
+[2, 3, 1, 0, 2, 5, 3]
+输出：2 或 3 
+</code></pre></div></div>
+
+<h1 id="方法一-使用集合">方法一 使用集合：</h1>
+
+<p>一、使用集合</p>
+
+<p>遍历数组，判断nums[i]是否存在于集合中，如果存在就返回；不存在就添加到集合中。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">findRepeatNumber</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nums</span><span class="p">):</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">nums</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">count</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">num</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">count</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>执行用时：76 ms, 在所有 Python3 提交中击败了11.73%的用户</p>
+
+  <p>内存消耗：22.9 MB, 在所有 Python3 提交中击败了96.79%的用户</p>
+</blockquote>
+
+<ul>
+  <li>时间复杂度：O(N)，最坏情况，循环遍历完了整个数组</li>
+  <li>空间复杂度：O(N)，哈希表。</li>
+</ul>
+
+<p>二、使用哈希表（字典）</p>
+
+<p>建立一个字典，以数字当做唯一的键，索引当做值，循环遍历数组里的每一个数，如果字典中已经存在这个数字，返回这个数字，不然的话就添加这个数字到字典中。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">findRepeatNumber</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nums</span><span class="p">):</span>
+        <span class="n">dic</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">num</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">nums</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">dic</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">num</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dic</span><span class="p">[</span><span class="n">num</span><span class="p">]</span> <span class="o">=</span> <span class="n">index</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>执行用时：80 ms, 在所有 Python3 提交中击败了8.41%的用户</p>
+
+  <p>内存消耗：23.1 MB, 在所有 Python3 提交中击败了62.17%的用户</p>
+</blockquote>
+
+<h1 id="方法二排序">方法二：排序</h1>
+
+<p>对数组进行排序，相同的数字会碰到一起，从1开始遍历数组，如果当前数与上一个数是相等的，就返回这个数。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">findRepeatNumber</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nums</span><span class="p">):</span>
+        <span class="n">nums</span><span class="p">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">nums</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">nums</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">nums</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="n">nums</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>执行用时：64 ms, 在所有 Python3 提交中击败了34.06%的用户</p>
+
+  <p>内存消耗：23.2 MB, 在所有 Python3 提交中击败了32.08%的用户</p>
+</blockquote>
+
+<ul>
+  <li>时间复杂度：O(NlogN)，对数组进行排序</li>
+  <li>空间复杂度：O(1)</li>
+</ul>
+
+<p><a href="https://leetcode-cn.com/problems/shu-zu-zhong-zhong-fu-de-shu-zi-lcof/solution/jian-ji-ha-xi-biao-by-ml-zimingmeng/">Link</a></p>
+
+:ET

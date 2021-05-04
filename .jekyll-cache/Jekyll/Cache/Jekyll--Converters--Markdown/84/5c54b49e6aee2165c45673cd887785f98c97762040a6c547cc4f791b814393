@@ -1,0 +1,22 @@
+I",<h1 id="如何在mac上使用latex写论文">如何在Mac上使用LaTeX写论文</h1>
+
+<h2 id="1mac上latex环境搭建">1.Mac上LaTeX环境搭建</h2>
+<p><a href="https://www.jianshu.com/p/50a813c8a6ea">macOS + Sublime Text + Latex 环境配置</a></p>
+<h2 id="2-latex论文模板">2. LaTeX论文模板</h2>
+<p><a href="IEEE论文模板">IEEE论文模板</a></p>
+<h2 id="3-latex在线编辑器">3. LaTeX在线编辑器</h2>
+<p><a href="https://www.overleaf.com/project">Overleaf在线编辑器</a></p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/blog/2019-08-21-overleaf.png" alt="Overleaf在线编辑器截图" /></p>
+<h2 id="4-如何在latex写作中管理参考文献">4. 如何在LaTeX写作中管理参考文献</h2>
+<p><a href="https://www.zhihu.com/question/23565739">如何在LaTeX写作中管理参考文献?</a>
+（待研究）（.bib 文件，待整理）</p>
+<h2 id="5-latex语法">5. LaTeX语法</h2>
+<p>（也可以需要什么命令再现场谷歌，看语法怎么写）
+<a href="https://blog.csdn.net/qingdujun/article/details/80805613">LaTeX快速入门：一文浅谈TeX排版语法</a></p>
+
+<p><a href="https://zhuanlan.zhihu.com/p/52347414">Latex基础语法</a></p>
+
+<p><a href="http://mohu.org/info/symbols/symbols.htm">常用数学符号的 LaTeX 表示方法</a></p>
+
+:ET

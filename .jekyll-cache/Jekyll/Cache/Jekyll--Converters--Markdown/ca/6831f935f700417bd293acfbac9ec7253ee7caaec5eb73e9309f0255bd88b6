@@ -1,0 +1,53 @@
+I"�<h2 id="爬取硅谷来信音频">爬取硅谷来信音频</h2>
+
+<h5 id="关于吴军老师的简介">关于吴军老师的简介：</h5>
+<p>吴军，硅谷投资人，丰元资本创始合伙人，计算机科学家，著名的自然语言处理和搜索专家。他的著作《浪潮之巅》第一版荣获“蓝狮子2011年十大最佳商业图书”奖。而这本书《文明之光》也荣获2014年“中国好书”的称号。同时作者还是《得到》专栏“硅谷来信”作者。</p>
+
+<h5 id="链接">链接：</h5>
+<p>要爬取的网址： <a href="http://www.tingban.cn/zj/VzvyijPi.html">吴军《硅谷来信》+《文明之光》</a></p>
+
+<h5 id="分析">分析：</h5>
+<ol>
+  <li>首先分析页面，主页面一共分为3页，每一页上有20条数据，通过审查元素能找到每一个页面的链接。
+<img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/blog/190914-1.png" alt="190914-1.png" />
+然后点进去某一个链接，能通过审查元素能找到音频的具体地址
+<img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@1.0/assets/img/blog/190914-2.png" alt="190914-2.png" /></li>
+  <li>所以接下来的任务就是获取所有要爬取的网址链接，以及所有音频的名字。然后再获取所有音频的链接，就可以利用python实现批量爬取啦~</li>
+  <li>我们可以使用使用谷歌浏览器的<a href="https://chrome.google.com/webstore/detail/xpath-helper/hgimnogjllphhhkhlmebbmlgjoejdpjl?hl=zh-CN">XPath Helper</a>插件，来批量解析出所有网址链接：<code class="language-plaintext highlighter-rouge">//div/ul[@class="list_box mb20"]/li/a/@href</code>，把42条数据存到links.txt中。以及获取所有音频的名字<code class="language-plaintext highlighter-rouge">//div/ul[@class="list_box mb20"]/li/a</code>，并把42条数据存到names.txt中。</li>
+  <li>
+    <p>以下是完整代码</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> from urllib.request import urlopen
+ from lxml import etree
+
+ # 读取所有要爬取的网址链接存到links中
+ with open('links.txt', 'r') as f:
+     links = f.readlines()
+
+ # 读取获取所有音频的名字存到names中
+ with open('names.txt', 'r') as f: 
+     names = f.readlines()
+     names = [i.strip() for i in names]
+
+ # 获取所有音频的链接
+ parse = etree.HTMLPullParser()
+ mp3_links = []
+ for link in links:
+     with urlopen(link) as f:
+         tree = etree.parse(f, parse)
+         mp3_link = tree.xpath('//div/dl[@class="fr intro "]/dd/input[@id="mp3"]/@value')
+         mp3_links.append(mp3_link)
+        
+ # 下载所有音频
+ for i in range(len(mp3_links)):
+     link = mp3_links[i][0]
+     try:
+         response = urllib.request.urlopen(link).read()
+         with open('%s.mp3'%names[i], 'wb') as f: 
+             f.write(response)
+     except:
+         print(link + ' is not found.')
+</code></pre></div>    </div>
+  </li>
+</ol>
+:ET

@@ -1,0 +1,72 @@
+I"<h2 id="1-起源">1. 起源</h2>
+
+<p>在绑定属性时，如果我们直接把属性暴露出去，虽然写起来很简单，但是，没办法检查参数，导致可以把成绩随便改：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">s</span> <span class="o">=</span> <span class="n">Student</span><span class="p">()</span>
+<span class="n">s</span><span class="p">.</span><span class="n">score</span> <span class="o">=</span> <span class="mi">9999</span>
+</code></pre></div></div>
+
+<p>这显然不合逻辑。为了限制 score 的范围，可以通过一个 set_score()方法来设置成绩，再通过一个 get_score()来获取成绩，这样，在 set_score()方法里，就可以检查参数：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Student</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">get_score</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">_score</span>
+
+    <span class="k">def</span> <span class="nf">set_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="s">'score must be an integer!'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="s">'score must between 0 ~ 100!'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">_score</span> <span class="o">=</span> <span class="n">value</span>
+</code></pre></div></div>
+
+<p>现在，对任意的 Student 实例进行操作，就不能随心所欲地设置 score 了：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">Student</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">set_score</span><span class="p">(</span><span class="mi">60</span><span class="p">)</span> <span class="c1"># ok!
+</span><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">get_score</span><span class="p">()</span>
+<span class="mi">60</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">set_score</span><span class="p">(</span><span class="mi">9999</span><span class="p">)</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="p">...</span>
+<span class="nb">ValueError</span><span class="p">:</span> <span class="n">score</span> <span class="n">must</span> <span class="n">between</span> <span class="mi">0</span> <span class="o">~</span> <span class="mi">100</span><span class="err">!</span>
+</code></pre></div></div>
+
+<p>但是，上面的调用方法又略显复杂，没有直接用属性这么直接简单。</p>
+
+<p>有没有既能检查参数，又可以用类似属性这样简单的方式来访问类的变量呢？当然有！Python 内置的@property 装饰器就是负责把一个方法变成属性调用的。</p>
+
+<h2 id="2-使用property">2. 使用@property</h2>
+
+<p>为了方便,节省时间,我们不想写 s.set_score(9999)啊,直接写 s.score = 9999 不是更快么，于是对以上代码加以修改。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Student</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="o">@</span><span class="nb">property</span>
+    <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">_score</span>
+
+    <span class="o">@</span><span class="n">score</span><span class="p">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="s">'分数必须是整数才行呐'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="s">'分数必须0-100之间'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">_score</span> <span class="o">=</span> <span class="n">value</span>
+</code></pre></div></div>
+
+<p>现在再调用就比较方便</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">Student</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">score</span> <span class="o">=</span> <span class="mi">60</span> <span class="c1"># OK，实际转化为s.set_score(60)
+</span><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">score</span> <span class="c1"># OK，实际转化为s.get_score()
+</span><span class="mi">60</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">score</span> <span class="o">=</span> <span class="mi">9999</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="p">...</span>
+<span class="nb">ValueError</span><span class="p">:</span> <span class="n">score</span> <span class="n">must</span> <span class="n">between</span> <span class="mi">0</span> <span class="o">~</span> <span class="mi">100</span><span class="err">!</span>
+</code></pre></div></div>
+
+<p>可以看到，把一个 get 方法变成属性，只需要加上@property 就可以了，此时，@property 本身又创建了另一个装饰器@score.setter，负责把一个 setter 方法变成属性赋值，这么做完后,我们调用起来既可控又方便。</p>
+:ET

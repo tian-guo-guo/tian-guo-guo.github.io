@@ -1,0 +1,39 @@
+I"b<h1 id="typora使用技巧脑图markmap">Typora使用技巧——脑图&amp;markmap</h1>
+
+<p>作为深度markdown编辑器的使用者，发现了一个使用markdown语言制作脑图的网站</p>
+
+<p>非常的惊艳!!!</p>
+
+<p>网站奉上：<a href="https://markmap.js.org/">MARKMAP</a></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># markmap-lib
+
+## Links
+
+- &lt;https://markmap.js.org/&gt;
+- [GitHub](https://github.com/gera2ld/markmap-lib)
+
+## Related
+
+- [coc-markmap](https://github.com/gera2ld/coc-markmap)
+- [gatsby-remark-markmap](https://github.com/gera2ld/gatsby-remark-markmap)
+
+## Features
+
+- links
+- **inline** *styles* ~~text~~
+- multiline
+  text
+- `inline code`
+-
+    ```js
+    console.log('code block');
+    ```
+- MathJax - `\(x = {-b \pm \sqrt{b^2-4ac} \over 2a}\)`
+
+12345678910111213141516171819202122232425
+</code></pre></div></div>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20200810110244.png" alt="在这里插入图片描述" />
+也就是说，你可以将.md文件转换为脑图！！！！</p>
+:ET

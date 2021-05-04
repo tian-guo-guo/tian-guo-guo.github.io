@@ -1,0 +1,18 @@
+I".<h1 id="谷歌浏览器-unchecked-runtimelasterror-the-message-port-closed-before-a-response-was-received">谷歌浏览器 Unchecked runtime.lastError: The message port closed before a response was received.</h1>
+
+<h4 id="谷歌浏览器报错">谷歌浏览器报错</h4>
+
+<ul>
+  <li>版本 <code class="language-plaintext highlighter-rouge">72.0.3626.81（正式版本） （32 位）</code></li>
+  <li>报错内容如下
+<img src="https://img-blog.csdnimg.cn/20190201091615587.png" alt="在这里插入图片描述" /></li>
+</ul>
+
+<h4 id="原因扩展程序问题">原因：扩展程序问题</h4>
+
+<ul>
+  <li>建议：打开<code class="language-plaintext highlighter-rouge">chrome://extensions/</code>，逐一关闭排查</li>
+  <li>以我的为例，发现罪魁祸首是以下扩展程序，最后关闭就好。
+<img src="https://img-blog.csdnimg.cn/20190201091853183.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L20wXzM3Mjg1MTkz,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></li>
+</ul>
+:ET

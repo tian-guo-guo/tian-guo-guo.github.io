@@ -1,0 +1,1541 @@
+I"�.<h2 id="htmlhtml5">HTML&amp;HTML5</h2>
+
+<h3 id="浏览器内核常见的浏览器内核">浏览器内核？常见的浏览器内核？</h3>
+
+<p><strong>浏览器内核是</strong>浏览器的核心，也称“渲染引擎”，用来解释网页语法并渲染到网页上。 浏览器内核决定了浏览器该如何显示网页内容以及页面的格式信息。 不同的浏览器内核对网页的语法解释也不同，因此网页开发者需要在不同内核的浏览器中测试网页的渲染效果。</p>
+
+<p><strong>浏览器内核包括两部分</strong>，渲染引擎和js引擎。<strong>渲染引擎</strong>负责读取网页内容，整理讯息，计算网页的显示方式并显示页面，<strong>js引擎</strong>是解析执行js获取网页的动态效果。 后来 JS 引擎越来越独立，内核就倾向于只指渲染引擎。</p>
+
+<p><strong>常见的浏览器内核</strong></p>
+
+<p>IE：Trident 
+firefox：Gecko 
+Chrome、safari：webkit 
+Opera：Presto 
+Microsoft Edge：EdgeHTML</p>
+
+<h3 id="语义化的理解">语义化的理解？</h3>
+
+<p>html语义化就是让页面的内容结构化， 便于对浏览器、搜索引擎解析；</p>
+
+<p>在没有样式 CCS 情况下也以一种文档格式显示，并 且是容易阅读的。</p>
+
+<p>搜索引擎的爬虫依赖于标记来确定上下文和各个关键 字的权重，利于 SEO。</p>
+
+<p>使阅读源代码的人对网站更容易将网站分块，便于阅 读维护理解。</p>
+
+<h3 id="html与xhtml二者有什么区别">HTML与XHTML二者有什么区别？</h3>
+
+<p>关于二者的区别可以分为两大类进行比较。一个是功能上的区别，另一个是书写习惯的区别。
+关于功能上的差别主要是XHTML可兼容各大浏览器，手机设备等，并且浏览器也能快速正确的编译网页。
+关于书写习惯的差别，XHTML的语法书写要更加严格一些。所有标签都必须小写，标签必须成对，出现标签顺序必须正确。所有属性都必须使用双引号。</p>
+
+<h3 id="divcss布局有什么优点">div+css布局有什么优点？</h3>
+<p>我们大致能总结说明了以下4点。
+首先第一点，div+css布局可以实现HTML结构和css的表现分离，这样可以使得HTML的文档了更加精简清晰，可读性高，加载的速度也会更快。
+第二点，想要使html拥有不同的呈现，实现会更加方便，因为我们只需要引入不同的CSS文档就可以了。这样的提高了我们整个文档的可复用性和设计的一个灵活性。
+第三点，浏览器会缓存静态文件，比如说可以缓存CSS文件，这样就有助于提高我们网站的性能和SEO的评估。
+第四点，因为实在了结构和表现分明，所以整个代码在上线之后可维护性会更好。</p>
+
+<h3 id="描述一下你理解的html">描述一下你理解的HTML</h3>
+
+<p>HTML，超文本标记语言，超文本是因为它可以加入图片、声音、动画、多媒体等内容，还可以从一个文件跳转到另一个文件。</p>
+
+<p>标记语言是一套标记标签，网页是由网页元素组成的 ，这些元素是利用html标签描述出来，然后通过浏览器解析，就可以显示给用户了。</p>
+
+<h3 id="xhtml">XHTML</h3>
+
+<p>XHTML 是更严格更纯净的 HTML 代码。</p>
+
+<p>可扩展超文本标签语言（EXtensible HyperText Markup Language）。目标是取代 HTML。是作为一种 XML 应用被重新定义的 HTML。是一个 W3C 标准。</p>
+
+<h3 id="html常用标签及属性"><a href="https://www.jianshu.com/p/57cecb7cfc4c">HTML常用标签及属性</a></h3>
+
+<h4 id="1--链接">1- 链接</h4>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>又称超链接，设置页面中允许被点击的内容。
+【标签】<span class="nt">&lt;a&gt;&lt;/a&gt;</span>
+【属性】
+href：链接地址（要跳转到的页面的地址）
+target：目标，打开新网页的形式
+取值：
+     _blank：在新标签页中打开
+     _self：在自身页面中打开（默认值）
+title：鼠标放到链接上的提示
+</code></pre></div></div>
+
+<h4 id="2--文本标记">2- 文本标记</h4>
+
+<ul>
+  <li>特殊字符</li>
+</ul>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">空格：</span> 
+<span class="o">&lt;</span><span class="p">:</span>  <span class="o">&lt;</span>
+<span class="o">&gt;</span><span class="p">:</span>  <span class="err">≷</span>  
+<span class="err">©</span><span class="p">:</span>  <span class="err">©</span>
+<span class="err">￥</span><span class="p">:</span> <span class="err">¥</span> 
+</code></pre></div></div>
+
+<ul>
+  <li>文本样式</li>
+</ul>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>斜体：<span class="nt">&lt;i&gt;&lt;/i&gt;</span>
+粗体：<span class="nt">&lt;b&gt;&lt;/b&gt;</span>
+删除线：<span class="nt">&lt;s&gt;&lt;/s&gt;</span>
+下划线：<span class="nt">&lt;u&gt;&lt;/u&gt;</span>
+上标：<span class="nt">&lt;sup&gt;&lt;/sup&gt;</span>
+下标：<span class="nt">&lt;sub&gt;&lt;/sub&gt;</span>
+</code></pre></div></div>
+
+<ul>
+  <li>标题元素</li>
+</ul>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>以标题的形式来显示文本内容
+<span class="nt">&lt;h1&gt;&lt;/h1&gt;</span>
+<span class="nt">&lt;h2&gt;&lt;/h2&gt;</span>
+<span class="nt">&lt;h3&gt;&lt;/h3&gt;</span>
+<span class="nt">&lt;h4&gt;&lt;/h4&gt;</span>
+<span class="nt">&lt;h5&gt;&lt;/h5&gt;</span>
+<span class="nt">&lt;h6&gt;&lt;/h6&gt;</span>
+【特点】
+- 改变字号（一级最大，六级最小）
+- 加粗显示
+- 上下有垂直的空白距离
+- 独立成行
+</code></pre></div></div>
+
+<ul>
+  <li>段落元素</li>
+</ul>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>【标签】<span class="nt">&lt;p&gt;&lt;/p&gt;</span>
+【特点】
+- 默认文字大小
+- 独立成行
+- 上下垂直空白
+</code></pre></div></div>
+
+<ul>
+  <li>换行元素</li>
+</ul>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>【标签】<span class="nt">&lt;br&gt;</span>
+</code></pre></div></div>
+
+<ul>
+  <li>分隔线元素</li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">【</span><span class="n">标签</span><span class="err">】</span><span class="o">&lt;</span><span class="n">hr</span><span class="o">&gt;</span>
+<span class="err">【</span><span class="n">属性</span><span class="err">】</span>
+        <span class="n">size</span><span class="err">：</span><span class="n">尺寸</span><span class="err">，</span><span class="n">取值单位为</span> <span class="n">px</span><span class="err">（</span><span class="n">像素</span><span class="err">），</span><span class="n">可以省略</span>
+        <span class="n">width</span><span class="err">：</span><span class="n">宽度</span><span class="err">，</span><span class="n">取值单位为px</span><span class="err">（</span><span class="n">像素</span><span class="err">）</span><span class="n">可以省略或百分比</span>
+        <span class="n">color</span><span class="err">：</span><span class="n">颜色</span><span class="err">，</span><span class="n">取值自然颜色值</span>
+        <span class="n">align</span><span class="err">：</span><span class="n">水平对齐方式</span><span class="err">，</span><span class="n">取值</span><span class="err">：</span><span class="n">left</span><span class="o">/</span><span class="n">center</span><span class="o">/</span><span class="n">right</span>
+</code></pre></div></div>
+
+<ul>
+  <li>分区元素</li>
+</ul>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>（1）块分区元素：<span class="nt">&lt;div&gt;&lt;/div&gt;</span>
+【特点】独立成行
+【作用】页面布局
+（2）行内分区元素：<span class="nt">&lt;span&gt;&lt;/span&gt;</span>
+【特点】多个元素在一行内显示
+【作用】设置同一行文字内的不同格式
+</code></pre></div></div>
+
+<ul>
+  <li>行内元素与块级元素</li>
+</ul>
+
+<pre><code class="language-undefined">（1）块级元素（div 、p、h1~h6）
+【特点】元素会独占一行，即元素前后都会自动换行，主要用于网页布局
+（2）、行内元素（ span、i、b、s、u、sub、sup、img、a）
+【特点】不会换行，多个元素会在一行内显示
+</code></pre>
+
+<h4 id="3--图像">3- 图像</h4>
+
+<ul>
+  <li>路径</li>
+</ul>
+
+<pre><code class="language-undefined">URL：Uniform Resource Locator（统一资源定位器，俗称：路径） 
+作用：标识网络任何资源的位置
+
+（1）绝对路径：从文件所在的最高级目录下开始查找资源文件所经过的路径
+-包括网络资源&amp;本地资源（如：E:\mmper\练习\img\flower.jpg）
+（2）相对路径：从当前文件位置处开始，查找资源文件所经过的路径
+- 同目录，直接用， 直接通过资源文件名称进行引用（a.jpg）
+- 子目录，进入到子目录中，然后再对资源文件进行引用（img/a.jpg）
+- 父目录，返回到父级目录再对资源文件进行引用（../a.jpg）
+</code></pre>
+
+<ul>
+  <li>图像</li>
+</ul>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>【标签】<span class="nt">&lt;img&gt;</span>
+【属性】
+        src：图片地址（绝对/相对）
+        width：图像宽度
+        height：图像高度
+</code></pre></div></div>
+
+<h4 id="4--表格">4- 表格</h4>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>由<span class="nt">&lt;table&gt;</span>元素定义。
+【标签】<span class="nt">&lt;table&gt;&lt;/table&gt;</span>
+【属性】
+        width ：设置表格的宽度
+        height：设置表格的高度
+        align：设置表格的对齐方式，取值: left/center/right
+        border：设置表格边框宽度
+        cellpadding：内边距（单元格边框与内容之间的距离）
+        cellspacing：外边距（单元格之间的距离）
+        bgcolor：设置表格的背景颜色
+</code></pre></div></div>
+
+<ul>
+  <li>table中包含的子元素</li>
+</ul>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;table&gt;&lt;/table&gt;</span>中包含的子元素：
+【标签】<span class="nt">&lt;tr&gt;&lt;/tr&gt;</span> （创建表行）
+【属性】
+       align：该行内容水平对齐方式，取值: left/center/right
+       valign：该行内容的垂直对齐方式，取值: top/middle/bottom
+       bgcolor：设置表格的背景颜色
+
+【标签】<span class="nt">&lt;td&gt;&lt;/td&gt;</span> （创建单元格）
+【属性】
+        align：内容水平对齐方式
+        valign：内容垂直对齐方式
+        width ：宽度
+        height ：高度
+【标签】<span class="nt">&lt;caption&gt;&lt;/caption&gt;</span> （表格标题）
+【标签】<span class="nt">&lt;th&gt;&lt;/th&gt;</span> （列标题）
+        行标题或列标题，字体有加粗的效果，放在tr中
+【标签】<span class="nt">&lt;thead&gt;&lt;/thead&gt;</span> （表头）
+【标签】<span class="nt">&lt;tbody&gt;&lt;/tbody&gt;</span> 表主体）
+【标签】<span class="nt">&lt;tfoot&gt;&lt;/tfoot&gt;</span> （表尾）
+</code></pre></div></div>
+
+<ul>
+  <li>一个完整的表格</li>
+</ul>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;caption&gt;</span>标题文本<span class="nt">&lt;/caption&gt;</span>
+<span class="nt">&lt;table&gt;</span>
+   <span class="nt">&lt;thead&gt;</span>
+    <span class="nt">&lt;tr&gt;</span>
+      <span class="nt">&lt;td&gt;</span>姓名<span class="nt">&lt;/td&gt;</span>
+       <span class="nt">&lt;td&gt;</span>性别<span class="nt">&lt;/td&gt;</span>
+    <span class="nt">&lt;/tr&gt;</span>
+  <span class="nt">&lt;/thead&gt;</span>
+  <span class="nt">&lt;tbody&gt;</span>
+    <span class="nt">&lt;tr&gt;</span>
+      <span class="nt">&lt;td&gt;</span>张三<span class="nt">&lt;/td&gt;</span>
+      <span class="nt">&lt;td&gt;</span>男<span class="nt">&lt;/td&gt;</span>
+    <span class="nt">&lt;/tr&gt;</span>
+    <span class="nt">&lt;tr&gt;</span>
+      <span class="nt">&lt;td&gt;</span>李四<span class="nt">&lt;/td&gt;</span>
+      <span class="nt">&lt;td&gt;</span>女<span class="nt">&lt;/td&gt;</span>
+    <span class="nt">&lt;/tr&gt;</span>
+  <span class="nt">&lt;/tbody&gt;</span>
+<span class="nt">&lt;/table&gt;</span>
+</code></pre></div></div>
+
+<ul>
+  <li>两行两列的表格</li>
+</ul>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;table&gt;</span>
+  <span class="nt">&lt;tr&gt;</span>
+    <span class="nt">&lt;td&gt;&lt;/td&gt;</span>
+    <span class="nt">&lt;td&gt;&lt;/td&gt;</span>
+  <span class="nt">&lt;/tr&gt;</span>
+  <span class="nt">&lt;tr&gt;</span>
+    <span class="nt">&lt;td&gt;&lt;/td&gt;</span>
+    <span class="nt">&lt;td&gt;&lt;/td&gt;</span>
+  <span class="nt">&lt;/tr&gt;</span>
+<span class="nt">&lt;/table&gt;</span>
+</code></pre></div></div>
+
+<ul>
+  <li>表格的其他应用</li>
+</ul>
+
+<pre><code class="language-undefined">（1）不规则表格
+- 跨列：从指定单元格位置处，横向向右合并几个（包含自己）单元格
+  属性：colspan=值（数字，合并单元格的个数）;
+- 跨行：从指定单元格位置处，纵向向下合并几个（包含自己）单元格
+  属性：rowspan=值（数字，合并单元格的个数）;
+（2）表格的嵌套
+  在单元格中去嵌套另一个表格，但嵌套的表格必须要放在td中
+</code></pre>
+
+<h4 id="5--列表">5- 列表</h4>
+
+<pre><code class="language-undefined">将一组具有相似特征或者具有先后顺序的内容按照从上到下的顺序排列在一起
+</code></pre>
+
+<ul>
+  <li>有序列表</li>
+</ul>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;ol&gt;</span>
+    <span class="nt">&lt;li&gt;&lt;/li&gt;</span>
+<span class="nt">&lt;/ol&gt;</span>
+【属性】
+        type:指定列表项标志的类型，默认为数字排列
+        取值：1（默认值）/a/A/i/I
+        start:定义起始值(数字)，默认从1开始
+        取值：数字，如：start:1;  start:i;等 
+</code></pre></div></div>
+
+<ul>
+  <li>无序列表</li>
+</ul>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;ul&gt;</span>
+     <span class="nt">&lt;li&gt;&lt;/li&gt;</span>
+<span class="nt">&lt;/ul&gt;</span>
+【属性】
+        type：指定无序列表的列表项标识
+        取值： disc,默认,实心圆/circle，空心圆/square，实心矩形none，不显示标识
+</code></pre></div></div>
+
+<ul>
+  <li>自定义列表</li>
+</ul>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dl&gt;</span>
+  <span class="nt">&lt;dt&gt;</span>列表中的标题内容<span class="nt">&lt;/dt&gt;</span>
+  <span class="nt">&lt;dd&gt;</span>列表中的数据<span class="nt">&lt;/dd&gt;</span>
+<span class="nt">&lt;/dl&gt;</span>
+使用场合：图文混排时使用
+</code></pre></div></div>
+
+<h4 id="6--表单">6- 表单</h4>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>由<span class="nt">&lt;form&gt;</span>定义，将用户输入的数据提交给后台。
+【常见属性】
+        action：提交的服务器地址
+        method：表单数据提交的方式，取值： get：明文提交/post：隐式提交
+        name：定义表单名称，JS用到的比较多
+        id： 独一无二的标识
+如：<span class="nt">&lt;form</span> <span class="na">action=</span><span class="s">"url"</span> <span class="na">method=</span><span class="s">"get/post"</span><span class="nt">&gt;</span> <span class="nt">&lt;/form&gt;</span>
+</code></pre></div></div>
+
+<p><input />元素</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>【主要属性】
+        <span class="nb">type</span>：根据不同的type属性值可以创建各种类型的输入字段
+        value：最终提交给服务器的值
+        name：控件的名称，提供给服务器使用，没有name，控件则无法提交
+        <span class="nb">id</span>：唯一标识，只能在当前页面使用，服务器不能用
+        disabled：禁用，不能被提交
+</code></pre></div></div>
+
+<ul>
+  <li>常用的表单控件：</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>（1）文本框：&lt;input <span class="nb">type</span><span class="o">=</span><span class="s2">"text"</span><span class="o">&gt;</span>
+（2）密码框：&lt;input <span class="nb">type</span><span class="o">=</span><span class="s2">"password"</span><span class="o">&gt;</span>
+ 【专有属性】
+         maxlength：限制输入的字符数，取值：数字
+         <span class="nb">readonly</span>：设置文本控件只读
+（3）单选按钮：&lt;input <span class="nb">type</span><span class="o">=</span><span class="s2">"radio"</span><span class="o">&gt;</span>
+（4）复选框：&lt;input <span class="nb">type</span><span class="o">=</span><span class="s2">"checkbox"</span><span class="o">&gt;</span>
+【专有属性】
+         checked，设置默认被选中
+（5）提交按钮：&lt;input <span class="nb">type</span><span class="o">=</span><span class="s2">"submit"</span><span class="o">&gt;</span>
+（6）重置按钮：&lt;input <span class="nb">type</span><span class="o">=</span><span class="s2">"reset"</span><span class="o">&gt;</span>
+（7）普通按钮：&lt;input <span class="nb">type</span><span class="o">=</span><span class="s2">"button"</span><span class="o">&gt;</span>
+（8）图片按钮：&lt;input <span class="nb">type</span><span class="o">=</span><span class="s2">"image"</span> <span class="nv">src</span><span class="o">=</span><span class="s2">""</span><span class="o">&gt;</span> 
+（9）隐藏域：&lt;input <span class="nb">type</span><span class="o">=</span><span class="s2">"hidden"</span><span class="o">&gt;</span>
+（10）文件选择框：&lt;input <span class="nb">type</span><span class="o">=</span><span class="s2">"file"</span><span class="o">&gt;</span>
+</code></pre></div></div>
+
+<h6 id="按钮提交按钮">按钮（提交按钮）</h6>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;button&gt;</span>内容<span class="nt">&lt;/button&gt;</span>
+</code></pre></div></div>
+
+<h6 id="下拉选择框select-和-option">下拉选择框select 和 option</h6>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;section</span> <span class="na">name=</span><span class="s">""</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;option</span> <span class="na">value=</span><span class="s">""</span> <span class="err">selected</span><span class="nt">&gt;&lt;/option&gt;</span>
+<span class="nt">&lt;/section&gt;</span>
+</code></pre></div></div>
+
+<h4 id="7--结构标记">7- 结构标记</h4>
+
+<pre><code class="language-undefined">HTML5所提供的结构标记，专门用于表示常见的网页结构（即制作布局），提升布局代码的语义性和可读性
+</code></pre>
+
+<ul>
+  <li>常见结构标记</li>
+</ul>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;header&gt;&lt;/header&gt;</span>：定义文档的页眉即页面顶部信息
+<span class="nt">&lt;nav&gt;&lt;/nav&gt;</span>：定义页面的导航链接部分
+<span class="nt">&lt;section&gt;&lt;/section&gt;</span>：定义文档中的节，文档中主体内容
+<span class="nt">&lt;article&gt;&lt;/article&gt;</span> ：定义独立于文档的其他部分内容(章、节等)
+<span class="nt">&lt;footer&gt;&lt;/footer&gt;</span>：定义某区域的脚注信息，页面底部内容等
+<span class="nt">&lt;aside&gt;&lt;/aside&gt;</span>：多用于侧边栏和相关引用信息等
+</code></pre></div></div>
+
+<h3 id="块元素内联元素内联块元素">块元素、内联元素、内联块元素</h3>
+
+<h4 id="常用的块状元素有">常用的块状元素有：</h4>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;div&gt;</span>、<span class="nt">&lt;p&gt;</span>、<span class="nt">&lt;h1&gt;</span>-<span class="nt">&lt;h6&gt;</span>、<span class="nt">&lt;ol&gt;</span>、<span class="nt">&lt;ul&gt;</span>、<span class="nt">&lt;dl&gt;</span>、<span class="nt">&lt;table&gt;</span>、<span class="nt">&lt;address&gt;</span>、<span class="nt">&lt;blockquote&gt;</span> 、<span class="nt">&lt;form&gt;</span>
+</code></pre></div></div>
+
+<h4 id="常用的内联元素有">常用的内联元素有：</h4>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;a&gt;</span>、<span class="nt">&lt;span&gt;</span>、<span class="nt">&lt;br&gt;</span>、<span class="nt">&lt;i&gt;</span>、<span class="nt">&lt;em&gt;</span>、<span class="nt">&lt;strong&gt;</span>、<span class="nt">&lt;label&gt;</span>、<span class="nt">&lt;q&gt;</span>、<span class="nt">&lt;var&gt;</span>、<span class="nt">&lt;cite&gt;</span>、<span class="nt">&lt;code&gt;</span>
+</code></pre></div></div>
+
+<h4 id="常用的内联块状元素有">常用的内联块状元素有：</h4>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;img&gt;</span>、<span class="nt">&lt;input&gt;</span>
+</code></pre></div></div>
+
+<h4 id="空元素有">空元素有：</h4>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&lt;</span><span class="nt">br</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="nt">hr</span><span class="o">&gt;&lt;</span><span class="nt">img</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="nt">input</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="nt">link</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="nt">meta</span><span class="o">&gt;</span>
+</code></pre></div></div>
+
+<h4 id="鲜为人知的是">鲜为人知的是:</h4>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&lt;</span><span class="nt">area</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="nt">base</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="nt">col</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="nt">command</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="nt">embed</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="nt">keygen</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="nt">param</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="nt">source</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="nt">track</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="nt">wbr</span><span class="o">&gt;</span>
+</code></pre></div></div>
+
+<h3 id="讲讲盒子模型">讲讲盒子模型</h3>
+
+<p>一种是IE盒模型，一种是W3C标准盒模型</p>
+
+<p><strong>IE盒子模型</strong> 宽度=内容宽度+padding *2+border *2</p>
+
+<p><strong>w3c盒子模型</strong> 宽度=内容宽度</p>
+
+<p>可以通过box-sizing切换，默认为content-box(w3c盒子模型)，设置border-box时为IE盒子模型</p>
+
+<p>盒模型： 内容(content)、填充(padding)、 边界(margin)、 边框(border).</p>
+
+<h3 id="doctype作用严格模式和混合模式的区别">doctype作用，严格模式和混合模式的区别</h3>
+
+<p>（1）、&lt;!DOCTYPE&gt; 声明位于文档中的最前面，处于 &lt;html&gt; 标签之前。告知浏览器的解析器， 用什么文档类型 规范来解析这个文档。</p>
+
+<p>（2）、严格模式的排版和 JS 运作模式是 浏览器支持的最高标准运行。</p>
+
+<p>以该</p>
+
+<p>（3）、在混杂模式中，页面以宽松的向后兼容的 方式显示。模拟老式浏览器的行为以防止站点无法工 作。</p>
+
+<p>（4）、DOCTYPE不存在或格式不正确会导致文 档以混杂模式呈现。</p>
+
+<h3 id="h5新特性十个新特性"><a href="https://www.cnblogs.com/jane-panyiyun/p/13092297.html">H5新特性：十个新特性</a></h3>
+
+<p>一、语义标签</p>
+
+<p>二、增强型表单</p>
+
+<p>三、视频和音频</p>
+
+<p>四、Canvas绘图</p>
+
+<p>五、SVG绘图</p>
+
+<p>六、地理定位</p>
+
+<p>七、拖放API</p>
+
+<p>八、WebWorker</p>
+
+<p>九、WebStorage</p>
+
+<p>十、WebSocket</p>
+
+<p><strong>一、语义标签</strong></p>
+
+<p>html5语义标签，可以使开发者更方便清晰构建页面的布局</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>标签</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>&lt;header&gt;</td>
+      <td>定义了文档的头部区域</td>
+    </tr>
+    <tr>
+      <td>&lt;footer&gt;</td>
+      <td>定义了文档的尾部区域</td>
+    </tr>
+    <tr>
+      <td>&lt;nav&gt;</td>
+      <td>定义文档的导航</td>
+    </tr>
+    <tr>
+      <td>&lt;section&gt;</td>
+      <td>定义文档中的节</td>
+    </tr>
+    <tr>
+      <td>&lt;article&gt;</td>
+      <td>定义文章</td>
+    </tr>
+    <tr>
+      <td>&lt;aside&gt;</td>
+      <td>定义页面以外的内容</td>
+    </tr>
+    <tr>
+      <td><details></details></td>
+      <td>定义用户可以看到或者隐藏的额外细节</td>
+    </tr>
+    <tr>
+      <td>&lt;summary&gt;</td>
+      <td>标签包含details元素的标题</td>
+    </tr>
+    <tr>
+      <td><dialog></dialog></td>
+      <td>定义对话框</td>
+    </tr>
+    <tr>
+      <td><figure></figure></td>
+      <td>定义自包含内容，如图表</td>
+    </tr>
+    <tr>
+      <td>&lt;main&gt;</td>
+      <td>定义文档主内容</td>
+    </tr>
+    <tr>
+      <td><mark></mark></td>
+      <td>定义文档的主内容</td>
+    </tr>
+    <tr>
+      <td><time></time></td>
+      <td>定义日期/时间</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>二、增强型表单</strong></p>
+
+<p>html5修改一些新的input输入特性，改善更好的输入控制和验证</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>输入类型</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>color</td>
+      <td>主要用于选取颜色</td>
+    </tr>
+    <tr>
+      <td>date</td>
+      <td>选取日期</td>
+    </tr>
+    <tr>
+      <td>datetime</td>
+      <td>选取日期(UTC时间)</td>
+    </tr>
+    <tr>
+      <td>datetime-local</td>
+      <td>选取日期（无时区）</td>
+    </tr>
+    <tr>
+      <td>month</td>
+      <td>选择一个月份</td>
+    </tr>
+    <tr>
+      <td>week</td>
+      <td>选择周和年</td>
+    </tr>
+    <tr>
+      <td>time</td>
+      <td>选择一个时间</td>
+    </tr>
+    <tr>
+      <td>email</td>
+      <td>包含e-mail地址的输入域</td>
+    </tr>
+    <tr>
+      <td>number</td>
+      <td>数值的输入域</td>
+    </tr>
+    <tr>
+      <td>url</td>
+      <td>url地址的输入域</td>
+    </tr>
+    <tr>
+      <td>tel</td>
+      <td>定义输入电话号码和字段</td>
+    </tr>
+    <tr>
+      <td>search</td>
+      <td>用于搜索域</td>
+    </tr>
+    <tr>
+      <td>range</td>
+      <td>一个范围内数字值的输入域</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>html5新增了五个表单元素</p>
+
+<table>
+  <thead>
+    <tr>
+      <th><datalist></datalist></th>
+      <th>用户会在他们输入数据时看到域定义选项的下拉列表</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><progress></progress></td>
+      <td>进度条，展示连接/下载进度</td>
+    </tr>
+    <tr>
+      <td><meter></meter></td>
+      <td>刻度值，用于某些计量，例如温度、重量等</td>
+    </tr>
+    <tr>
+      <td><keygen /></td>
+      <td>提供一种验证用户的可靠方法生成一个公钥和私钥</td>
+    </tr>
+    <tr>
+      <td><output></output></td>
+      <td>用于不同类型的输出比如尖酸或脚本输出</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>html5新增表单属性</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>属性</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>placehoder</td>
+      <td>输入框默认提示文字</td>
+    </tr>
+    <tr>
+      <td>required</td>
+      <td>要求输入的内容是否可为空</td>
+    </tr>
+    <tr>
+      <td>pattern</td>
+      <td>描述一个正则表达式验证输入的值</td>
+    </tr>
+    <tr>
+      <td>min/max</td>
+      <td>设置元素最小/最大值</td>
+    </tr>
+    <tr>
+      <td>step</td>
+      <td>为输入域规定合法的数字间隔</td>
+    </tr>
+    <tr>
+      <td>height/wdith</td>
+      <td>用于image类型<input />标签图像高度/宽度</td>
+    </tr>
+    <tr>
+      <td>autofocus</td>
+      <td>规定在页面加载时，域自动获得焦点</td>
+    </tr>
+    <tr>
+      <td>multiple</td>
+      <td>规定<input />元素中可选择多个值</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>三、音频和视频</strong></p>
+
+<p>html5提供了音频和视频文件的标准，既使用<audio>元素。</audio></p>
+
+<p>音频：<audio src=" "></audio></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;audio controls&gt;    //controls属性提供添加播放、暂停和音量控件。
+  &lt;source src="horse.ogg" type="audio/ogg"&gt;
+  &lt;source src="horse.mp3" type="audio/mpeg"&gt;
+您的浏览器不支持 audio 元素。        //浏览器不支持时显示文字
+&lt;/audio&gt;
+</code></pre></div></div>
+
+<p>视频：<video src=" "></video></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;video width="320" height="240" controls&gt;
+  &lt;source src="movie.mp4" type="video/mp4"&gt;
+  &lt;source src="movie.ogg" type="video/ogg"&gt;
+您的浏览器不支持Video标签。
+&lt;/video&gt;
+</code></pre></div></div>
+
+<p><strong>四、Canvas绘图</strong></p>
+
+<p><a href="https://www.runoob.com/w3cnote/html5-canvas-intro.html">https://www.runoob.com/w3cnote/html5-canvas-intro.html </a></p>
+
+<p><strong>五、SVG绘图</strong></p>
+
+<p>什么是SVG?</p>
+
+<p>SVG指可伸缩矢量图形</p>
+
+<p>SVG用于定义用于网络的基于矢量的图形</p>
+
+<p>SVG使用XML格式定义图形</p>
+
+<p>SVG图像在放大或改变尺寸的情况下其图形质量不会有损失</p>
+
+<p>SVG是万维网联盟的标准</p>
+
+<p>SVG的优势</p>
+
+<p>与其他图像格式相比，是哟个SVG的优势在于：</p>
+
+<p>SVG图像可通过文本编译器来创建和修改</p>
+
+<p>SVG图像可被搜索、索引、脚本化或压缩</p>
+
+<p>SVG是可伸缩的</p>
+
+<p>SVG图像可在任何的分辨率下被高质量的打印</p>
+
+<p>SVG可在图像质量不下降的情况下被放大</p>
+
+<p>SVG与Canvas区别</p>
+
+<p>*SVG适用于描述XML中的2D图形的语言</p>
+
+<p>*Canvas随时随地绘制2D图形（使用javaScript）</p>
+
+<p>*SVG是基于XML的，意味这可以操作DOM，渲染速度较慢</p>
+
+<p>*在SVG中每个形状都被当做是一个对象，如果SVG发生改变，页面就会发生重绘</p>
+
+<p>*Canvas是一像素一像素地渲染，如果改变某一个位置，整个画布会重绘。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Canvas</th>
+      <th>SVG</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>依赖分辨率</td>
+      <td>不依赖分辨率</td>
+    </tr>
+    <tr>
+      <td>不支持事件处理器</td>
+      <td>支持事件处理器</td>
+    </tr>
+    <tr>
+      <td>能够以.png或.jpg格式保存结果图像</td>
+      <td>复杂度会减慢搞渲染速度</td>
+    </tr>
+    <tr>
+      <td>文字呈现功能比较简单</td>
+      <td>适合大型渲染区域的应用程序</td>
+    </tr>
+    <tr>
+      <td>最合适图像密集的游戏</td>
+      <td>不适合游戏应用</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>六、地理定位</strong></p>
+
+<p>使用getCurrentPosition()方法来获取用户的位置。以实现“LBS服务”</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+<span class="kd">var</span> <span class="nx">x</span><span class="o">=</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">"</span><span class="s2">demo</span><span class="dl">"</span><span class="p">);</span>
+<span class="kd">function</span> <span class="nx">getLocation</span><span class="p">()</span>
+  <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nb">navigator</span><span class="p">.</span><span class="nx">geolocation</span><span class="p">)</span>
+    <span class="p">{</span>
+    <span class="nb">navigator</span><span class="p">.</span><span class="nx">geolocation</span><span class="p">.</span><span class="nx">getCurrentPosition</span><span class="p">(</span><span class="nx">showPosition</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="k">else</span><span class="p">{</span><span class="nx">x</span><span class="p">.</span><span class="nx">innerHTML</span><span class="o">=</span><span class="dl">"</span><span class="s2">Geolocation is not supported by this browser.</span><span class="dl">"</span><span class="p">;}</span>
+  <span class="p">}</span>
+<span class="kd">function</span> <span class="nx">showPosition</span><span class="p">(</span><span class="nx">position</span><span class="p">)</span>
+  <span class="p">{</span>
+  <span class="nx">x</span><span class="p">.</span><span class="nx">innerHTML</span><span class="o">=</span><span class="dl">"</span><span class="s2">Latitude: </span><span class="dl">"</span> <span class="o">+</span> <span class="nx">position</span><span class="p">.</span><span class="nx">coords</span><span class="p">.</span><span class="nx">latitude</span> <span class="o">+</span>
+  <span class="dl">"</span><span class="s2">&lt;br /&gt;Longitude: </span><span class="dl">"</span> <span class="o">+</span> <span class="nx">position</span><span class="p">.</span><span class="nx">coords</span><span class="p">.</span><span class="nx">longitude</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="o">&lt;</span><span class="sr">/script</span><span class="err">&gt;
+</span></code></pre></div></div>
+
+<p><strong>七、拖放API</strong></p>
+
+<p>拖放是一种常见的特性，即捉取对象以后拖到另一个位置。</p>
+
+<p>在html5中，拖放是标准的一部分，任何元素都能够拖放。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;div draggable="true"&gt;&lt;/div&gt;
+</code></pre></div></div>
+
+<p>当元素拖动时，我们可以检查其拖动的数据。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;div draggable="true" ondragstart="drag(event)"&gt;&lt;/div&gt;
+&lt;script&gt;
+function drap(ev){
+    console.log(ev);
+}
+&lt;/script&gt;
+</code></pre></div></div>
+
+<table>
+  <thead>
+    <tr>
+      <th>拖动生命周期</th>
+      <th>属性名</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>拖动开始</td>
+      <td>ondragstart</td>
+      <td>在拖动操作开始时执行脚本</td>
+    </tr>
+    <tr>
+      <td>拖动过程中</td>
+      <td>ondrag</td>
+      <td>只要脚本在被拖动就运行脚本</td>
+    </tr>
+    <tr>
+      <td>拖动过程中</td>
+      <td>ondragenter</td>
+      <td>当元素被拖动到一个合法的防止目标时，执行脚本</td>
+    </tr>
+    <tr>
+      <td>拖动过程中</td>
+      <td>ondragover</td>
+      <td>只要元素正在合法的防止目标上拖动时，就执行脚本</td>
+    </tr>
+    <tr>
+      <td>拖动过程中</td>
+      <td>ondragleave</td>
+      <td>当元素离开合法的防止目标时</td>
+    </tr>
+    <tr>
+      <td>拖动结束</td>
+      <td>ondrop</td>
+      <td>将被拖动元素放在目标元素内时运行脚本</td>
+    </tr>
+    <tr>
+      <td>拖动结束</td>
+      <td>ondragend</td>
+      <td>在拖动操作结束时运行脚本</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>八、Web Worker</strong></p>
+
+<p>Web Worker可以通过加载一个脚本文件，进而创建一个独立工作的线程，在主线程之外运行。</p>
+
+<p>基本使用：</p>
+
+<p>Web Worker的基本原理就是在当前javascript的主线程中，使用Worker类加载一个javascript文件来开辟一个新的线程，</p>
+
+<p>起到互不阻塞执行的效果，并且提供主线程和新县城之间数据交换的接口：postMessage、onmessage。</p>
+
+<p>javascript:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//worker.js
+onmessage =function (evt){
+  var d = evt.data;//通过evt.data获得发送来的数据
+  postMessage( d );//将获取到的数据发送会主线程
+}
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;!DOCTYPE HTML&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8"/&gt;
+&lt;script type="text/javascript"&gt;
+//WEB页主线程
+var worker =new Worker("worker.js"); //创建一个Worker对象并向它传递将在新线程中执行的脚本的URL
+worker.postMessage("hello world");     //向worker发送数据
+worker.onmessage =function(evt){     //接收worker传过来的数据函数
+   console.log(evt.data);              //输出worker发送来的数据
+}
+&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;&lt;/body&gt;
+&lt;/html&gt;
+</code></pre></div></div>
+
+<p><strong>九、Web Storage</strong></p>
+
+<p>WebStorage是HTML新增的本地存储解决方案之一，但并不是取代cookie而指定的标准，cookie作为HTTP协议的一部分用来处理客户端和服务器的通信是不可或缺的，session正式依赖与实现的客户端状态保持。WebSorage的意图在于解决本来不应该cookie做，却不得不用cookie的本地存储。</p>
+
+<p>websorage拥有5M的存储容量，而cookie却只有4K，这是完全不能比的。</p>
+
+<p>客户端存储数据有两个对象，其用法基本是一致。</p>
+
+<p>localStorage：没有时间限制的数据存储</p>
+
+<p>sessionStorage:在浏览器关闭的时候就会清除。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>localStorage.setItem(key,value);//保存数据
+    let value = localStorage.getItem(key);//读取数据
+    localStorage.removeItem(key);//删除单个数据
+    localStorage.clear();//删除所有数据
+    let key = localStorage.key(index);//得到某个索引的值
+</code></pre></div></div>
+
+<p><strong>十、WebSocket</strong></p>
+
+<p>WebSocket协议为web应用程序客户端和服务端之间提供了一种全双工通信机制。</p>
+
+<p>特点：</p>
+
+<p>（1）握手阶段采用HTTP协议，默认端口是80和443</p>
+
+<p>（2）建立在TCP协议基础之上，和http协议同属于应用层</p>
+
+<p>（3）可以发送文本，也可以发送二进制数据。</p>
+
+<p>（4）没有同源限制，客户端可以与任意服务器通信。</p>
+
+<p>（5）协议标识符是ws（如果加密，为wss），如ws://localhost:8023</p>
+
+<h3 id="bfc的理解触发-bfc"><a href="https://zhuanlan.zhihu.com/p/25321647">BFC的理解、触发 BFC</a></h3>
+
+<p>一、常见定位方案</p>
+
+<p>在讲 BFC 之前，我们先来了解一下常见的定位方案，定位方案是控制元素的布局，有三种常见方案:</p>
+
+<ul>
+  <li>普通流 (normal flow)</li>
+</ul>
+
+<blockquote>
+  <p>在普通流中，元素按照其在 HTML 中的先后位置至上而下布局，在这个过程中，行内元素水平排列，直到当行被占满然后换行，块级元素则会被渲染为完整的一个新行，除非另外指定，否则所有元素默认都是普通流定位，也可以说，普通流中元素的位置由该元素在 HTML 文档中的位置决定。</p>
+</blockquote>
+
+<ul>
+  <li>浮动 (float)</li>
+</ul>
+
+<blockquote>
+  <p>在浮动布局中，元素首先按照普通流的位置出现，然后根据浮动的方向尽可能的向左边或右边偏移，其效果与印刷排版中的文本环绕相似。</p>
+</blockquote>
+
+<ul>
+  <li>绝对定位 (absolute positioning)</li>
+</ul>
+
+<blockquote>
+  <p>在绝对定位布局中，元素会整体脱离普通流，因此绝对定位元素不会对其兄弟元素造成影响，而元素具体的位置由绝对定位的坐标决定。</p>
+</blockquote>
+
+<p>二、BFC 概念</p>
+
+<p>BFC 即 Block Formatting Contexts (块级格式化上下文)，它属于上述定位方案的普通流。</p>
+
+<p><strong>具有 BFC 特性的元素可以看作是隔离了的独立容器，容器里面的元素不会在布局上影响到外面的元素，并且 BFC 具有普通容器所没有的一些特性。</strong></p>
+
+<p>通俗一点来讲，可以把 BFC 理解为一个封闭的大箱子，箱子内部的元素无论如何翻江倒海，都不会影响到外部。</p>
+
+<p>三、触发 BFC</p>
+
+<p>只要元素满足下面任一条件即可触发 BFC 特性：</p>
+
+<ul>
+  <li>body 根元素</li>
+  <li>浮动元素：float 除 none 以外的值</li>
+  <li>position：absolute或fixed</li>
+  <li>display 为 inline-block、table-cells、flex</li>
+  <li>overflow 除了 visible 以外的值 (hidden、auto、scroll)</li>
+</ul>
+
+<p>应用:</p>
+
+<ul>
+  <li>防止垂直方向margin重叠</li>
+  <li>不和浮动元素重叠</li>
+  <li>清除元素内部浮动</li>
+</ul>
+
+<h3 id="三栏布局多种实现">三栏布局多种实现</h3>
+
+<p>三栏布局，顾名思义就是两边固定，中间自适应。</p>
+
+<p>七种方法：</p>
+
+<h4 id="1-流体布局">1. 流体布局</h4>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">"en"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;style&gt;</span>
+	<span class="nc">.left</span> <span class="p">{</span>
+	    <span class="nl">float</span><span class="p">:</span> <span class="nb">left</span><span class="p">;</span>
+	    <span class="nl">height</span><span class="p">:</span> <span class="m">200px</span><span class="p">;</span>
+	    <span class="nl">width</span><span class="p">:</span> <span class="m">100px</span><span class="p">;</span>
+	    <span class="nl">background-color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="nc">.right</span> <span class="p">{</span>
+	    <span class="nl">width</span><span class="p">:</span> <span class="m">200px</span><span class="p">;</span>
+	    <span class="nl">height</span><span class="p">:</span> <span class="m">200px</span><span class="p">;</span>
+	    <span class="nl">background-color</span><span class="p">:</span> <span class="no">blue</span><span class="p">;</span>
+	    <span class="nl">float</span><span class="p">:</span> <span class="nb">right</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="nc">.main</span> <span class="p">{</span>
+	    <span class="nl">margin-left</span><span class="p">:</span> <span class="m">120px</span><span class="p">;</span>
+	    <span class="nl">margin-right</span><span class="p">:</span> <span class="m">220px</span><span class="p">;</span>
+	    <span class="nl">height</span><span class="p">:</span> <span class="m">200px</span><span class="p">;</span>
+	    <span class="nl">background-color</span><span class="p">:</span> <span class="no">green</span><span class="p">;</span>
+	<span class="p">}</span>
+    <span class="nt">&lt;/style&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"left"</span><span class="nt">&gt;&lt;/div&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"right"</span><span class="nt">&gt;&lt;/div&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"main"</span><span class="nt">&gt;&lt;/div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div></div>
+
+<p>左右模块各自向左右浮动，并设置中间模块的 margin 值使中间模块宽度自适应。</p>
+
+<p>缺点就是主要内容无法最先加载，当页面内容较多时会影响用户体验。</p>
+
+<h4 id="2-bfc-三栏布局">2. BFC 三栏布局</h4>
+
+<p>BFC 规则有这样的描述：BFC 区域，不会与浮动元素重叠。因此我们可以利用这一点来实现 3 列布局。</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">"en"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;style&gt;</span>
+	<span class="nc">.left</span> <span class="p">{</span>
+	    <span class="nl">float</span><span class="p">:</span> <span class="nb">left</span><span class="p">;</span>
+	    <span class="nl">height</span><span class="p">:</span> <span class="m">200px</span><span class="p">;</span>
+	    <span class="nl">width</span><span class="p">:</span> <span class="m">100px</span><span class="p">;</span>
+	    <span class="nl">margin-right</span><span class="p">:</span> <span class="m">20px</span><span class="p">;</span>
+	    <span class="nl">background-color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="nc">.right</span> <span class="p">{</span>
+	    <span class="nl">width</span><span class="p">:</span> <span class="m">200px</span><span class="p">;</span>
+	    <span class="nl">height</span><span class="p">:</span> <span class="m">200px</span><span class="p">;</span>
+	    <span class="nl">float</span><span class="p">:</span> <span class="nb">right</span><span class="p">;</span>
+	    <span class="nl">margin-left</span><span class="p">:</span> <span class="m">20px</span><span class="p">;</span>
+	    <span class="nl">background-color</span><span class="p">:</span> <span class="no">blue</span><span class="p">;</span>
+	<span class="p">}</span>	
+	<span class="nc">.main</span> <span class="p">{</span>
+	    <span class="nl">height</span><span class="p">:</span> <span class="m">200px</span><span class="p">;</span>
+	    <span class="nl">overflow</span><span class="p">:</span> <span class="nb">hidden</span><span class="p">;</span>
+	    <span class="nl">background-color</span><span class="p">:</span> <span class="no">green</span><span class="p">;</span>
+	<span class="p">}</span>
+    <span class="nt">&lt;/style&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"left"</span><span class="nt">&gt;&lt;/div&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"right"</span><span class="nt">&gt;&lt;/div&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"main"</span><span class="nt">&gt;&lt;/div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div></div>
+
+<p>缺点跟方法一类似，主要内容模块无法最先加载，当页面中内容较多时会影响用户体验。因此为了解决这个问题，有了下面要介绍的布局方案双飞翼布局。</p>
+
+<h4 id="3-双飞翼布局">3. 双飞翼布局</h4>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">"en"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;style&gt;</span>
+        <span class="nc">.content</span> <span class="p">{</span>
+  	    <span class="nl">float</span><span class="p">:</span> <span class="nb">left</span><span class="p">;</span>
+  	    <span class="nl">width</span><span class="p">:</span> <span class="m">100%</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="nc">.main</span> <span class="p">{</span>
+  	    <span class="nl">height</span><span class="p">:</span> <span class="m">200px</span><span class="p">;</span>
+  	    <span class="nl">margin-left</span><span class="p">:</span> <span class="m">110px</span><span class="p">;</span>
+  	    <span class="nl">margin-right</span><span class="p">:</span> <span class="m">220px</span><span class="p">;</span>
+  	    <span class="nl">background-color</span><span class="p">:</span> <span class="no">green</span><span class="p">;</span>
+        <span class="p">}</span>
+	<span class="nc">.left</span> <span class="p">{</span>
+	    <span class="nl">float</span><span class="p">:</span> <span class="nb">left</span><span class="p">;</span>
+	    <span class="nl">height</span><span class="p">:</span> <span class="m">200px</span><span class="p">;</span>
+	    <span class="nl">width</span><span class="p">:</span> <span class="m">100px</span><span class="p">;</span>
+	    <span class="nl">margin-left</span><span class="p">:</span> <span class="m">-100%</span><span class="p">;</span>
+	    <span class="nl">background-color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="nc">.right</span> <span class="p">{</span>
+	    <span class="nl">width</span><span class="p">:</span> <span class="m">200px</span><span class="p">;</span>
+	    <span class="nl">height</span><span class="p">:</span> <span class="m">200px</span><span class="p">;</span>
+	    <span class="nl">float</span><span class="p">:</span> <span class="nb">right</span><span class="p">;</span>
+	    <span class="nl">margin-left</span><span class="p">:</span> <span class="m">-200px</span><span class="p">;</span>
+	    <span class="nl">background-color</span><span class="p">:</span> <span class="no">blue</span><span class="p">;</span>
+	<span class="p">}</span>	
+    <span class="nt">&lt;/style&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"content"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"main"</span><span class="nt">&gt;&lt;/div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"left"</span><span class="nt">&gt;&lt;/div&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"right"</span><span class="nt">&gt;&lt;/div&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div></div>
+
+<p>利用的是浮动元素 margin 负值的应用，感兴趣的同学可以上网搜搜原理。</p>
+
+<p>主体内容可以优先加载，HTML 代码结构稍微复杂点。</p>
+
+<h4 id="4-圣杯布局">4. 圣杯布局</h4>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">"en"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;style&gt;</span>
+	<span class="nc">.container</span> <span class="p">{</span>
+	    <span class="nl">margin-left</span><span class="p">:</span> <span class="m">120px</span><span class="p">;</span>
+	    <span class="nl">margin-right</span><span class="p">:</span> <span class="m">220px</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="nc">.main</span> <span class="p">{</span>
+	    <span class="nl">float</span><span class="p">:</span> <span class="nb">left</span><span class="p">;</span>
+	    <span class="nl">width</span><span class="p">:</span> <span class="m">100%</span><span class="p">;</span>
+	    <span class="nl">height</span><span class="p">:</span> <span class="m">300px</span><span class="p">;</span>
+	    <span class="nl">background-color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="nc">.left</span> <span class="p">{</span>
+	    <span class="nl">float</span><span class="p">:</span> <span class="nb">left</span><span class="p">;</span>
+	    <span class="nl">width</span><span class="p">:</span> <span class="m">100px</span><span class="p">;</span>
+	    <span class="nl">height</span><span class="p">:</span> <span class="m">300px</span><span class="p">;</span>
+	    <span class="nl">margin-left</span><span class="p">:</span> <span class="m">-100%</span><span class="p">;</span>
+	    <span class="nl">position</span><span class="p">:</span> <span class="nb">relative</span><span class="p">;</span>
+	    <span class="nl">left</span><span class="p">:</span> <span class="m">-120px</span><span class="p">;</span>
+	    <span class="nl">background-color</span><span class="p">:</span> <span class="no">blue</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="nc">.right</span> <span class="p">{</span>
+	    <span class="nl">float</span><span class="p">:</span> <span class="nb">left</span><span class="p">;</span>
+	    <span class="nl">width</span><span class="p">:</span> <span class="m">200px</span><span class="p">;</span>
+	    <span class="nl">height</span><span class="p">:</span> <span class="m">300px</span><span class="p">;</span>
+	    <span class="nl">margin-left</span><span class="p">:</span> <span class="m">-200px</span><span class="p">;</span>
+	    <span class="nl">position</span><span class="p">:</span> <span class="nb">relative</span><span class="p">;</span>
+	    <span class="nl">right</span><span class="p">:</span> <span class="m">-220px</span><span class="p">;</span>
+	    <span class="nl">background-color</span><span class="p">:</span> <span class="no">green</span><span class="p">;</span>
+	<span class="p">}</span>
+    <span class="nt">&lt;/style&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
+	<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"main"</span><span class="nt">&gt;&lt;/div&gt;</span>
+	<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"left"</span><span class="nt">&gt;&lt;/div&gt;</span>
+	<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"right"</span><span class="nt">&gt;&lt;/div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div></div>
+
+<p>跟双飞翼布局很像，有一些细节上的区别，相对于双飞翼布局来说，HTML 结构相对简单，但是样式定义就稍微复杂，也是优先加载内容主体。</p>
+
+<h4 id="5-flex-布局">5. Flex 布局</h4>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">"en"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;style&gt;</span>
+	<span class="nc">.container</span> <span class="p">{</span>
+            <span class="nl">display</span><span class="p">:</span> <span class="n">flex</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="nc">.main</span> <span class="p">{</span>
+            <span class="nl">flex-grow</span><span class="p">:</span> <span class="m">1</span><span class="p">;</span>
+	    <span class="nl">height</span><span class="p">:</span> <span class="m">300px</span><span class="p">;</span>
+	    <span class="nl">background-color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="nc">.left</span> <span class="p">{</span>
+	    <span class="nl">order</span><span class="p">:</span> <span class="m">-1</span><span class="p">;</span>
+	    <span class="nl">flex</span><span class="p">:</span> <span class="m">0</span> <span class="m">1</span> <span class="m">200px</span><span class="p">;</span>
+	    <span class="nl">margin-right</span><span class="p">:</span> <span class="m">20px</span><span class="p">;</span>
+	    <span class="nl">height</span><span class="p">:</span> <span class="m">300px</span><span class="p">;</span>
+	    <span class="nl">background-color</span><span class="p">:</span> <span class="no">blue</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="nc">.right</span> <span class="p">{</span>
+	    <span class="nl">flex</span><span class="p">:</span> <span class="m">0</span> <span class="m">1</span> <span class="m">100px</span><span class="p">;</span>
+            <span class="nl">margin-left</span><span class="p">:</span> <span class="m">20px</span><span class="p">;</span>
+	    <span class="nl">height</span><span class="p">:</span> <span class="m">300px</span><span class="p">;</span>
+	    <span class="nl">background-color</span><span class="p">:</span> <span class="no">green</span><span class="p">;</span>
+	<span class="p">}</span>
+    <span class="nt">&lt;/style&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
+	<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"main"</span><span class="nt">&gt;&lt;/div&gt;</span>
+	<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"left"</span><span class="nt">&gt;&lt;/div&gt;</span>
+	<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"right"</span><span class="nt">&gt;&lt;/div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div></div>
+
+<p>简单实用，未来的趋势，需要考虑浏览器的兼容性。</p>
+
+<h4 id="6-table-布局">6. Table 布局</h4>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">"en"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;style&gt;</span>
+        <span class="nc">.container</span> <span class="p">{</span>
+	    <span class="nl">display</span><span class="p">:</span> <span class="n">table</span><span class="p">;</span>
+	    <span class="nl">width</span><span class="p">:</span> <span class="m">100%</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="nc">.left</span><span class="o">,</span> <span class="nc">.main</span><span class="o">,</span> <span class="nc">.right</span> <span class="p">{</span>
+	    <span class="nl">display</span><span class="p">:</span> <span class="nb">table-cell</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="nc">.left</span> <span class="p">{</span>
+	    <span class="nl">width</span><span class="p">:</span> <span class="m">200px</span><span class="p">;</span>
+	    <span class="nl">height</span><span class="p">:</span> <span class="m">300px</span><span class="p">;</span>
+	    <span class="nl">background-color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="nc">.main</span> <span class="p">{</span>
+	    <span class="nl">background-color</span><span class="p">:</span> <span class="no">blue</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="nc">.right</span> <span class="p">{</span>
+	    <span class="nl">width</span><span class="p">:</span> <span class="m">100px</span><span class="p">;</span>
+	    <span class="nl">height</span><span class="p">:</span> <span class="m">300px</span><span class="p">;</span>
+	    <span class="nl">background-color</span><span class="p">:</span> <span class="no">green</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="nt">&lt;/style&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
+	<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"left"</span><span class="nt">&gt;&lt;/div&gt;</span>
+	<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"main"</span><span class="nt">&gt;&lt;/div&gt;</span>
+	<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"right"</span><span class="nt">&gt;&lt;/div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div></div>
+
+<p>缺点：无法设置栏间距</p>
+
+<h4 id="7-绝对定位布局">7. 绝对定位布局</h4>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">"en"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;style&gt;</span>
+	<span class="nc">.container</span> <span class="p">{</span>
+	    <span class="nl">position</span><span class="p">:</span> <span class="nb">relative</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="nc">.main</span> <span class="p">{</span>
+	    <span class="nl">height</span><span class="p">:</span> <span class="m">400px</span><span class="p">;</span>
+	    <span class="nl">margin</span><span class="p">:</span> <span class="m">0</span> <span class="m">120px</span><span class="p">;</span>
+	    <span class="nl">background-color</span><span class="p">:</span> <span class="no">green</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="nc">.left</span> <span class="p">{</span>
+	    <span class="nl">position</span><span class="p">:</span> <span class="nb">absolute</span><span class="p">;</span>
+	    <span class="nl">width</span><span class="p">:</span> <span class="m">100px</span><span class="p">;</span>
+	    <span class="nl">height</span><span class="p">:</span> <span class="m">300px</span><span class="p">;</span>
+	    <span class="nl">left</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+	    <span class="nl">top</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+	    <span class="nl">background-color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="nc">.right</span> <span class="p">{</span>
+	    <span class="nl">position</span><span class="p">:</span> <span class="nb">absolute</span><span class="p">;</span>
+	    <span class="nl">width</span><span class="p">:</span> <span class="m">100px</span><span class="p">;</span>
+	    <span class="nl">height</span><span class="p">:</span> <span class="m">300px</span><span class="p">;</span>
+	    <span class="nl">background-color</span><span class="p">:</span> <span class="no">blue</span><span class="p">;</span>
+            <span class="nl">right</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+	    <span class="nl">top</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+	<span class="p">}</span>
+    <span class="nt">&lt;/style&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"main"</span><span class="nt">&gt;&lt;/div&gt;</span>
+	<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"left"</span><span class="nt">&gt;&lt;/div&gt;</span>
+	<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"right"</span><span class="nt">&gt;&lt;/div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div></div>
+
+<h3 id="自适应布局rem原理如何兼容不同手机dpi">自适应布局rem原理(如何兼容不同手机dpi)</h3>
+
+<p>响应式设计与自适应设计的区别：</p>
+
+<p>响应式开发一套界面，通过检测视口分辨率，针对不同客户端在客户端做代码处理，来展现不同的布局和内容；</p>
+
+<p>自适应需要开发多套界面，通过检测视口分辨率，来判断当前访问的设备是pc端、平板、手机，从而请求服务层，返回不同的页面。</p>
+
+<p><strong>rem响应式的布局思想：</strong></p>
+
+<ul>
+  <li>一般不要给元素设置具体的宽度，但是对于一些小图标可以设定具体宽度值</li>
+  <li>高度值可以设置固定值，设计稿有多大，我们就严格有多大</li>
+  <li>所有设置的固定值都用<code class="language-plaintext highlighter-rouge">rem</code>做单位（首先在HTML总设置一个基准值：<code class="language-plaintext highlighter-rouge">px</code>和<code class="language-plaintext highlighter-rouge">rem</code>的对应比例，然后在效果图上获取<code class="language-plaintext highlighter-rouge">px</code>值，布局的时候转化为<code class="language-plaintext highlighter-rouge">rem</code>值)</li>
+  <li>js获取真实屏幕的宽度，让其除以设计稿的宽度，算出比例，把之前的基准值按照比例进行重新的设定，这样项目就可以在移动端自适应了</li>
+</ul>
+
+<p><a href="https://juejin.cn/post/6844903814332432397">前端响应式布局原理与方案（详细版）</a></p>
+
+<h3 id="input和textarea的区别"><a href="https://www.jianshu.com/p/a72bb81703b7">input和textarea的区别</a></h3>
+
+<p>一个是用input标签的单行文本框，一种是textarea标签多行文本框。那我们来看看他们的区别：</p>
+
+<h4 id="input标签">input标签</h4>
+
+<p>1、需要指定type属性，如text，password等。</p>
+
+<p>2、通过size属性指定显示字符的长度。</p>
+
+<p>3、value属性指定初始值</p>
+
+<p>4、Maxlength属性指定文本框可以输入的最长长度。</p>
+
+<p>5、焦点垂直居中文本框中，单行</p>
+
+<h4 id="textarea标签">textarea标签</h4>
+
+<p>1、需要&lt;/textarea&gt;来封闭标签</p>
+
+<p>2、内容写在标签对中</p>
+
+<p>3、使用row、col指定textarea大小</p>
+
+<p>4、焦点在左上角，多行</p>
+
+<h3 id="用一个div模拟textarea的实现"><a href="https://www.jianshu.com/p/a72bb81703b7">用一个div模拟textarea的实现</a></h3>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;style&gt;</span>
+    <span class="nf">#textarea</span> <span class="p">{</span>
+        <span class="nl">width</span><span class="p">:</span> <span class="m">300px</span><span class="p">;</span>
+        <span class="nl">min-height</span><span class="p">:</span> <span class="m">120px</span><span class="p">;</span>
+        <span class="nl">max-width</span><span class="p">:</span> <span class="m">300px</span><span class="p">;</span>
+        <span class="nl">border</span><span class="p">:</span> <span class="m">1px</span> <span class="nb">solid</span> <span class="m">#333</span><span class="p">;</span>
+        <span class="nl">overflow-y</span><span class="p">:</span> <span class="nb">auto</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="nt">&lt;/style&gt;</span>
+
+<span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">'textarea'</span> <span class="na">contenteditable=</span><span class="s">"true"</span><span class="nt">&gt;&lt;/div&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+</code></pre></div></div>
+
+<h3 id="html5css3有哪些新特性移除了那些元素">html5、CSS3有哪些新特性、移除了那些元素？</h3>
+
+<p>语义化标签、媒体元素、存储、表单</p>
+
+<ol>
+  <li>
+    <p>header、nav、artivale、section、aside、footer</p>
+  </li>
+  <li>
+    <p>audio和video</p>
+  </li>
+</ol>
+
+<p>Audio：</p>
+
+<ul>
+  <li>格式：Ogg、MP3、WAV</li>
+  <li>属性：autoplay、controls、loop、src</li>
+</ul>
+
+<p>video：</p>
+
+<ul>
+  <li>格式：Ogg、MPEG4、webm</li>
+  <li>属性：autoplay、controls、width、height、loop、preload、src、poster、muted</li>
+</ul>
+
+<ol>
+  <li>
+    <p>localStorage和sessionStorage</p>
+
+    <p>本地离线存储 localStorage 长期存储数据，浏览 器关闭后数据不丢失；</p>
+
+    <p>sessionStorage 的数据在浏览器关闭后自动删除</p>
+  </li>
+  <li>
+    <p>表单控件，calendar、date、time、email、url、 search</p>
+  </li>
+</ol>
+
+<p>CSS3 实现圆角，阴影，对文字加特效，增加了更 多的 CSS 选择器 多背景 rgba</p>
+
+<h3 id="html5的离线存储-cookiesesssionstoragelocalstorage">HTML5的离线存储 cookie,sesssionStorage,LocalStorage</h3>
+
+<p>localStorage 长期存储数据，浏览器关闭后数据不丢失；</p>
+
+<p>sessionStorage 数据在浏览器关闭后自动删除。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>特性</th>
+      <th>Cookie</th>
+      <th>localStorage</th>
+      <th>sessionStorage</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>数据的生命期</td>
+      <td>一般由服务器生成，可设置失效时间。如果在浏览器端生成Cookie，默认是关闭浏览器后失效</td>
+      <td>除非被清除，否则永久保存</td>
+      <td>仅在当前会话下有效，关闭页面或浏览器后被清除</td>
+    </tr>
+    <tr>
+      <td>存放数据大小</td>
+      <td>4K左右</td>
+      <td>一般为5MB</td>
+      <td>5MB左右</td>
+    </tr>
+    <tr>
+      <td>与服务器端通信</td>
+      <td>每次都会携带在HTTP头中，如果使用cookie保存过多数据会带来性能问题</td>
+      <td>仅在客户端（即浏览器）中保存，不参与和服务器的通信</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>易用性</td>
+      <td>需要程序员自己封装，源生的Cookie接口不友好</td>
+      <td>源生接口可以接受，亦可再次封装来对Object和Array有更好的支持</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="移动web开发之流式布局">移动web开发之流式布局</h3>
+
+<p>视口viewport、布局视口 layout viewport、视觉视口 visual viewport、理想视口 ideal viewport、meta标签</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;meta</span> <span class="na">name=</span><span class="s">"viewport"</span> <span class="na">content=</span><span class="s">"width=device-width, user-scalable=no, initial-scale=1.0, maxinum-scale=1.0, minimum-scale=1.0"</span><span class="nt">&gt;</span>
+</code></pre></div></div>
+
+<p>二倍图（物理像素和物理像素比，是因为屏幕大小和手机大小不一样）</p>
+
+<p>CSS初始化 normalize.css</p>
+
+<p>流式布局：</p>
+
+<p>流式布局，就是百分比布局，也称非固定像素布局。</p>
+
+<p>通过盒子的宽度设置成百分比来根据屏幕的宽度来进行伸缩，不受固定像素的限制，内容向两侧填充。</p>
+
+<p><strong>京东首页.html</strong></p>
+
+<h3 id="移动web开发之flex布局">移动web开发之flex布局</h3>
+
+<p>父项常见属性</p>
+
+<ul>
+  <li>flex-direction：设置主轴的方向 row、row-reverse、column、column-reverse</li>
+  <li>justify-content：设置主轴上的子元素排列方式 flex-start、flex-end、center、space-around、space-between</li>
+  <li>flex-wrap：设置子元素是否换行  nowrap、wrap</li>
+  <li>align-content：设置侧轴上的子元素的排列方式（多行）flex-start、flex-end、center、space-around、space-between、stretch</li>
+  <li>align-items：设置侧轴上的子元素排列方式（单行）flex-start、flex-end、center、stretch</li>
+  <li>flex-flow：复合属性，相当于同时设置了 flex-direction 和 flex-wrap</li>
+</ul>
+
+<p><strong>携程首页.html</strong></p>
+
+<h3 id="移动web开发之rem布局">移动web开发之rem布局</h3>
+
+<p><strong>rem：</strong></p>
+
+<p>rem (root em)是一个相对单位，类似于em，em是父元素字体大小。</p>
+
+<p>不同的是rem的基准是相对于html元素的字体大小。</p>
+
+<p>比如，根元素（html）设置font-size=12px; 非根元素设置width:2rem; 则换成px表示就是24px。</p>
+
+<p><strong>媒体查询：</strong></p>
+
+<p>媒体查询（Media Query）是CSS3新语法。</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">@media</span> <span class="n">mediatype</span> <span class="n">and</span><span class="err">|</span><span class="n">not</span><span class="err">|</span><span class="n">only</span> <span class="p">(</span><span class="n">media</span> <span class="n">feature</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nt">CSS-Code</span><span class="o">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>mediatype 查询类型：all、print、screen</li>
+  <li>关键字：and、not、only</li>
+  <li>媒体特性：width、min-width、max-width</li>
+</ul>
+
+<p><strong>less：</strong></p>
+
+<p>Less（LeanerStyle Sheets 的缩写）是一门 CSS扩展语言，也成为CSS预处理器。</p>
+
+<p>它在CSS 的语法基础之上，引入了变量，Mixin（混入），运算以及函数等功能，大大简化了 CSS 的编写，并且降低了 CSS的维护成本，就像它的名称所说的那样，Less可以让我们用更少的代码做更多的事情。</p>
+
+<p>常见的CSS预处理器：Sass、Less、Stylus</p>
+
+<p><strong>rem适配方案：</strong></p>
+
+<p>1.less+rem+媒体查询</p>
+
+<p>2.lflexible.js+rem</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>方案一：
+①假设设计稿是750px
+②假设我们把整个屏幕划分为15等份（划分标准不一可以是20份也可以是10等份）
+③每一份作为html字体大小，这里就是50px
+④那么在320px设备的时候，字体大小为320/15就是  21.33px
+⑤用我们页面元素的大小除以不同的 html字体大小会发现他们比例还是相同的
+⑥比如我们以750为标准设计稿
+⑦一个100*100像素的页面元素在  750屏幕下，  就是 100/ 50  转换为rem  是  2rem*2rem  比例是1比1
+⑧320屏幕下，  html字体大小为21.33   则 2rem=  42.66px  此时宽和高都是 42.66  但是宽和高的比例还是 1比1
+⑨但是已经能实现不同屏幕下  页面元素盒子等比例缩放的效果
+</code></pre></div></div>
+
+<p><strong>苏宁首页.html</strong></p>
+
+<h3 id="移动web开发之响应式布局">移动web开发之响应式布局</h3>
+
+<p>就是使用媒体查询针对不同宽度的设备进行布局和样式的设置，从而适配不同设备的目的。</p>
+
+<p>响应式需要一个父级做为布局容器，来配合子级元素来实现变化效果。</p>
+
+<p>原理就是在不同屏幕下，通过媒体查询来改变这个布局容器的大小，再改变里面子元素的排列方式和大小，从而实现不同屏幕下，看到不同的页面布局和样式变化。</p>
+
+<p>Bootstrap、bootstrap栅格系统</p>
+
+<p><strong>阿里百秀首页.html</strong></p>
+
+:ET

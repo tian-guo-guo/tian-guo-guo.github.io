@@ -1,0 +1,54 @@
+I"S<h1 id="剑指-offer-62-圆圈中最后剩下的数字"><a href="https://leetcode-cn.com/problems/yuan-quan-zhong-zui-hou-sheng-xia-de-shu-zi-lcof/">剑指 Offer 62. 圆圈中最后剩下的数字</a></h1>
+
+<p>tag: easy，数组</p>
+
+<p><strong>题目：</strong></p>
+
+<p>0,1,,n-1这n个数字排成一个圆圈，从数字0开始，每次从这个圆圈里删除第m个数字。求出这个圆圈里剩下的最后一个数字。</p>
+
+<p>例如，0、1、2、3、4这5个数字组成一个圆圈，从数字0开始每次删除第3个数字，则删除的前4个数字依次是2、0、4、1，因此最后剩下的数字是3。</p>
+
+<p><strong>示例1：</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>输入: n = 5, m = 3
+输出: 3
+</code></pre></div></div>
+
+<p><strong>示例1：</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>输入: n = 10, m = 17
+输出: 2
+</code></pre></div></div>
+
+<h1 id="方法一">方法一：</h1>
+
+<p><strong>解题思路</strong></p>
+
+<p>这个游戏里叫击鼓传花，西方也有叫热土豆。可通过严格的数学推导直接计算得出。但我们用程序来全真模拟才更真实。</p>
+
+<ol>
+  <li>生成一个0、1、…、n-1的列表，初始索引i=0</li>
+  <li>传递m次，意味着从i开始偏移m得到新索引i=i+m-1，考虑m可能大于当前列表长度，所以要对列表长度求模余</li>
+  <li>从列表中pop出一个值后，实际上下一次偏移的初始索引仍然是当前pop掉的那个（因为后边的值都前移了一位），所以继续用i=i+m-1迭代新的索引，当然也要用新的列表长度求模余</li>
+  <li>直至列表长度为1，返回最后剩下的数字。</li>
+</ol>
+
+<p>由于列表要执行pop操作 n-1次，而每次pop(i)是平均O(n)复杂度，所以总的时间复杂度是O(n^2)</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">lastRemaining</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
+        <span class="n">i</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="n">m</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+            <span class="n">a</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>执行用时：2200 ms, 在所有 Python3 提交中击败了14.03%的用户</p>
+
+  <p>内存消耗：16.7 MB, 在所有 Python3 提交中击败了55.65%的用户</p>
+</blockquote>
+
+<p><a href="https://leetcode-cn.com/problems/yuan-quan-zhong-zui-hou-sheng-xia-de-shu-zi-lcof/solution/pythonquan-zhen-mo-ni-by-luanz/">Link</a></p>
+:ET

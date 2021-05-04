@@ -1,0 +1,65 @@
+I"�-<h1 id="tensorflow-cannot-dlopen-some-gpu-libraries-skipping-registering-gpu-devices">Tensorflow: Cannot dlopen some GPU libraries. Skipping registering GPU devices…</h1>
+
+<p>可能的问题为：</p>
+
+<p>1，cuda和安装的tensorflow版本不对应</p>
+
+<p>可参考：<a href="https://tensorflow.google.cn/install/source">Tensorflow与cuda版本对应关系</a></p>
+
+<p>2， 未成功加载cuda的动态库，可通过代码如下测试</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="n">tf</span>
+<span class="n">tf</span><span class="p">.</span><span class="n">test</span><span class="p">.</span><span class="n">gpu_device_name</span><span class="p">()</span>
+<span class="mi">12</span>
+</code></pre></div></div>
+
+<p>如果出现如下错误：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="mi">2020</span><span class="o">-</span><span class="mi">05</span><span class="o">-</span><span class="mi">26</span> <span class="mi">13</span><span class="p">:</span><span class="mi">41</span><span class="p">:</span><span class="mf">11.299037</span><span class="p">:</span> <span class="n">I</span> <span class="n">tensorflow</span><span class="o">/</span><span class="n">stream_executor</span><span class="o">/</span><span class="n">platform</span><span class="o">/</span><span class="n">default</span><span class="o">/</span><span class="n">dso_loader</span><span class="p">.</span><span class="n">cc</span><span class="p">:</span><span class="mi">53</span><span class="p">]</span> <span class="n">Could</span> <span class="ow">not</span> <span class="n">dlopen</span> <span class="n">library</span> <span class="s">'libcudart.so.10.0'</span><span class="p">;</span> <span class="n">dlerror</span><span class="p">:</span> <span class="n">libcudart</span><span class="p">.</span><span class="n">so</span><span class="p">.</span><span class="mf">10.0</span><span class="p">:</span> <span class="n">cannot</span> <span class="nb">open</span> <span class="n">shared</span> <span class="nb">object</span> <span class="nb">file</span><span class="p">:</span> <span class="n">No</span> <span class="n">such</span> <span class="nb">file</span> <span class="ow">or</span> <span class="n">directory</span>
+<span class="mi">2020</span><span class="o">-</span><span class="mi">05</span><span class="o">-</span><span class="mi">26</span> <span class="mi">13</span><span class="p">:</span><span class="mi">41</span><span class="p">:</span><span class="mf">11.299176</span><span class="p">:</span> <span class="n">I</span> <span class="n">tensorflow</span><span class="o">/</span><span class="n">stream_executor</span><span class="o">/</span><span class="n">platform</span><span class="o">/</span><span class="n">default</span><span class="o">/</span><span class="n">dso_loader</span><span class="p">.</span><span class="n">cc</span><span class="p">:</span><span class="mi">53</span><span class="p">]</span> <span class="n">Could</span> <span class="ow">not</span> <span class="n">dlopen</span> <span class="n">library</span> <span class="s">'libcublas.so.10.0'</span><span class="p">;</span> <span class="n">dlerror</span><span class="p">:</span> <span class="n">libcublas</span><span class="p">.</span><span class="n">so</span><span class="p">.</span><span class="mf">10.0</span><span class="p">:</span> <span class="n">cannot</span> <span class="nb">open</span> <span class="n">shared</span> <span class="nb">object</span> <span class="nb">file</span><span class="p">:</span> <span class="n">No</span> <span class="n">such</span> <span class="nb">file</span> <span class="ow">or</span> <span class="n">directory</span>
+<span class="mi">2020</span><span class="o">-</span><span class="mi">05</span><span class="o">-</span><span class="mi">26</span> <span class="mi">13</span><span class="p">:</span><span class="mi">41</span><span class="p">:</span><span class="mf">11.299257</span><span class="p">:</span> <span class="n">I</span> <span class="n">tensorflow</span><span class="o">/</span><span class="n">stream_executor</span><span class="o">/</span><span class="n">platform</span><span class="o">/</span><span class="n">default</span><span class="o">/</span><span class="n">dso_loader</span><span class="p">.</span><span class="n">cc</span><span class="p">:</span><span class="mi">53</span><span class="p">]</span> <span class="n">Could</span> <span class="ow">not</span> <span class="n">dlopen</span> <span class="n">library</span> <span class="s">'libcufft.so.10.0'</span><span class="p">;</span> <span class="n">dlerror</span><span class="p">:</span> <span class="n">libcufft</span><span class="p">.</span><span class="n">so</span><span class="p">.</span><span class="mf">10.0</span><span class="p">:</span> <span class="n">cannot</span> <span class="nb">open</span> <span class="n">shared</span> <span class="nb">object</span> <span class="nb">file</span><span class="p">:</span> <span class="n">No</span> <span class="n">such</span> <span class="nb">file</span> <span class="ow">or</span> <span class="n">directory</span>
+<span class="mi">2020</span><span class="o">-</span><span class="mi">05</span><span class="o">-</span><span class="mi">26</span> <span class="mi">13</span><span class="p">:</span><span class="mi">41</span><span class="p">:</span><span class="mf">11.299336</span><span class="p">:</span> <span class="n">I</span> <span class="n">tensorflow</span><span class="o">/</span><span class="n">stream_executor</span><span class="o">/</span><span class="n">platform</span><span class="o">/</span><span class="n">default</span><span class="o">/</span><span class="n">dso_loader</span><span class="p">.</span><span class="n">cc</span><span class="p">:</span><span class="mi">53</span><span class="p">]</span> <span class="n">Could</span> <span class="ow">not</span> <span class="n">dlopen</span> <span class="n">library</span> <span class="s">'libcurand.so.10.0'</span><span class="p">;</span> <span class="n">dlerror</span><span class="p">:</span> <span class="n">libcurand</span><span class="p">.</span><span class="n">so</span><span class="p">.</span><span class="mf">10.0</span><span class="p">:</span> <span class="n">cannot</span> <span class="nb">open</span> <span class="n">shared</span> <span class="nb">object</span> <span class="nb">file</span><span class="p">:</span> <span class="n">No</span> <span class="n">such</span> <span class="nb">file</span> <span class="ow">or</span> <span class="n">directory</span>
+<span class="mi">2020</span><span class="o">-</span><span class="mi">05</span><span class="o">-</span><span class="mi">26</span> <span class="mi">13</span><span class="p">:</span><span class="mi">41</span><span class="p">:</span><span class="mf">11.299413</span><span class="p">:</span> <span class="n">I</span> <span class="n">tensorflow</span><span class="o">/</span><span class="n">stream_executor</span><span class="o">/</span><span class="n">platform</span><span class="o">/</span><span class="n">default</span><span class="o">/</span><span class="n">dso_loader</span><span class="p">.</span><span class="n">cc</span><span class="p">:</span><span class="mi">53</span><span class="p">]</span> <span class="n">Could</span> <span class="ow">not</span> <span class="n">dlopen</span> <span class="n">library</span> <span class="s">'libcusolver.so.10.0'</span><span class="p">;</span> <span class="n">dlerror</span><span class="p">:</span> <span class="n">libcusolver</span><span class="p">.</span><span class="n">so</span><span class="p">.</span><span class="mf">10.0</span><span class="p">:</span> <span class="n">cannot</span> <span class="nb">open</span> <span class="n">shared</span> <span class="nb">object</span> <span class="nb">file</span><span class="p">:</span> <span class="n">No</span> <span class="n">such</span> <span class="nb">file</span> <span class="ow">or</span> <span class="n">directory</span>
+<span class="mi">2020</span><span class="o">-</span><span class="mi">05</span><span class="o">-</span><span class="mi">26</span> <span class="mi">13</span><span class="p">:</span><span class="mi">41</span><span class="p">:</span><span class="mf">11.299490</span><span class="p">:</span> <span class="n">I</span> <span class="n">tensorflow</span><span class="o">/</span><span class="n">stream_executor</span><span class="o">/</span><span class="n">platform</span><span class="o">/</span><span class="n">default</span><span class="o">/</span><span class="n">dso_loader</span><span class="p">.</span><span class="n">cc</span><span class="p">:</span><span class="mi">53</span><span class="p">]</span> <span class="n">Could</span> <span class="ow">not</span> <span class="n">dlopen</span> <span class="n">library</span> <span class="s">'libcusparse.so.10.0'</span><span class="p">;</span> <span class="n">dlerror</span><span class="p">:</span> <span class="n">libcusparse</span><span class="p">.</span><span class="n">so</span><span class="p">.</span><span class="mf">10.0</span><span class="p">:</span> <span class="n">cannot</span> <span class="nb">open</span> <span class="n">shared</span> <span class="nb">object</span> <span class="nb">file</span><span class="p">:</span> <span class="n">No</span> <span class="n">such</span> <span class="nb">file</span> <span class="ow">or</span> <span class="n">directory</span>
+
+<span class="mi">1234567</span>
+</code></pre></div></div>
+
+<p>可能是未配置 LD_LIBRARY_PATH</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">vim</span><span class="w"> </span><span class="nx">~/.bashrc</span><span class="w">
+</span><span class="mi">1</span><span class="w">
+</span></code></pre></div></div>
+
+<p>打开 .bashrc 并在尾部添加如下代码（cuda版本改为你自己的，这里是9.2）</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">export</span><span class="w"> </span><span class="nx">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/usr/local/cuda-9.2/lib64:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span><span class="w"> 
+</span><span class="mi">1</span><span class="w">
+</span></code></pre></div></div>
+
+<p>然后使其生效</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">source</span><span class="w"> </span><span class="nx">~/.bashrc</span><span class="w">
+</span><span class="mi">1</span><span class="w">
+</span></code></pre></div></div>
+
+<p>3，其他可参考</p>
+
+<p><a href="https://blog.csdn.net/xinjieyuan/article/details/103752443">tensorflow运行使用CPU不使用GPU</a></p>
+
+<p>附：cudnn安装方法</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo cp </span>cuda/include/cudnn.h /usr/local/cuda/include/
+<span class="nb">sudo cp </span>cuda/lib64/libcudnn<span class="k">*</span> /usr/local/cuda/lib64/
+<span class="nb">sudo chmod </span>a+r /usr/local/cuda/include/cudnn.h
+<span class="nb">sudo chmod </span>a+r /usr/local/cuda/lib64/libcudnn<span class="k">*</span>
+<span class="nb">cd</span> /usr/local/cuda/lib64
+<span class="nb">sudo ln</span> <span class="nt">-sf</span> libcudnn.so.7.6.3 libcudnn.so.7
+<span class="nb">sudo ln</span> <span class="nt">-sf</span> libcudnn.so.7 libcudnn.so
+<span class="nb">sudo </span>ldconfig
+12345678
+</code></pre></div></div>
+
+<p>参考：<a href="https://www.jianshu.com/p/46faad964dc3">Ubuntu:安装cudnn10.1</a></p>
+
+:ET

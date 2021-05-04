@@ -1,0 +1,97 @@
+I".<h1 id="剑指-offer-32---ii-从上到下打印二叉树-ii-102-二叉树的层序遍历"><a href="https://leetcode-cn.com/problems/cong-shang-dao-xia-da-yin-er-cha-shu-ii-lcof/">剑指 Offer 32 - II. 从上到下打印二叉树 II</a> <a href="https://leetcode-cn.com/problems/binary-tree-level-order-traversal/">102. 二叉树的层序遍历</a></h1>
+
+<p>tag: easy，二叉树，广度优先搜索，队列</p>
+
+<p><strong>题目：</strong></p>
+
+<p>从上到下按层打印二叉树，同一层的节点按从左到右的顺序打印，每一层打印到一行。</p>
+
+<p>例如:
+给定二叉树: <code class="language-plaintext highlighter-rouge">[3,9,20,null,null,15,7]</code>,</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    3 
+   / \
+  9  20
+    /  \
+   15   7
+</code></pre></div></div>
+
+<p>返回其层次遍历结果：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[
+  [3],
+  [9,20],
+  [15,7]
+]
+</code></pre></div></div>
+
+<h1 id="方法一">方法一：</h1>
+
+<h4 id="解题思路">解题思路：</h4>
+
+<p>I. 按层打印： 题目要求的二叉树的 从上至下 打印（即按层打印），又称为二叉树的 广度优先搜索（BFS）。BFS 通常借助 队列 的先入先出特性来实现。</p>
+
+<p>II. 每层打印到一行： 将本层全部节点打印到一行，并将下一层全部节点加入队列，以此类推，即可分为多行打印。</p>
+
+<ul>
+  <li>算法流程：
+    <ol>
+      <li>特例处理： 当根节点为空，则返回空列表 [] ；</li>
+      <li>初始化： 打印结果列表 res = [] ，包含根节点的队列 queue = [root] ；</li>
+      <li>BFS 循环： 当队列 queue 为空时跳出；
+        <ol>
+          <li>新建一个临时列表 tmp ，用于存储当前层打印结果；</li>
+          <li>当前层打印循环： 循环次数为当前层节点数（即队列 queue 长度）；
+            <ol>
+              <li>出队： 队首元素出队，记为 node；</li>
+              <li>打印： 将 node.val 添加至 tmp 尾部；</li>
+              <li>添加子节点： 若 node 的左（右）子节点不为空，则将左（右）子节点加入队列 queue ；</li>
+            </ol>
+          </li>
+          <li>将当前层结果 tmp 添加入 res 。</li>
+        </ol>
+      </li>
+      <li>返回值： 返回打印结果列表 res 即可。</li>
+    </ol>
+  </li>
+  <li>复杂度分析：
+    <ul>
+      <li>时间复杂度 O(N) ： N 为二叉树的节点数量，即 BFS 需循环 N 次。</li>
+      <li>空间复杂度 O(N) ： 最差情况下，即当树为平衡二叉树时，最多有 N/2 个树节点同时在 queue 中，使用 O(N) 大小的额外空间。</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">TreeNode</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">val</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">left</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">right</span> <span class="o">=</span> <span class="bp">None</span>
+        
+<span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">levelOrder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">root</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="n">res</span><span class="p">,</span> <span class="n">queue</span> <span class="o">=</span> <span class="p">[],</span> <span class="n">collections</span><span class="p">.</span><span class="n">deque</span><span class="p">()</span>
+        <span class="n">queue</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">queue</span><span class="p">:</span>
+            <span class="n">tmp</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">queue</span><span class="p">)):</span>
+                <span class="n">node</span> <span class="o">=</span> <span class="n">queue</span><span class="p">.</span><span class="n">popleft</span><span class="p">()</span>
+                <span class="n">tmp</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="n">val</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">node</span><span class="p">.</span><span class="n">left</span><span class="p">:</span>
+                    <span class="n">queue</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="n">left</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">node</span><span class="p">.</span><span class="n">right</span><span class="p">:</span>
+                    <span class="n">queue</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="n">right</span><span class="p">)</span>
+            <span class="n">res</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>执行用时：44 ms, 在所有 Python3 提交中击败了63.13%的用户</p>
+
+  <p>内存消耗：13.7 MB, 在所有 Python3 提交中击败了37.81%的用户</p>
+</blockquote>
+
+<p><a href="https://leetcode-cn.com/problems/cong-shang-dao-xia-da-yin-er-cha-shu-ii-lcof/solution/mian-shi-ti-32-ii-cong-shang-dao-xia-da-yin-er-c-5/">Link</a></p>
+:ET

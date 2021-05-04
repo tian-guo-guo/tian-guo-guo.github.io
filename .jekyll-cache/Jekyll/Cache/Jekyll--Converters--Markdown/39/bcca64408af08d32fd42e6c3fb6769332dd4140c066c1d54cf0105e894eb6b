@@ -1,0 +1,23 @@
+I"v<h1 id="linux安装anaconda3-conda-command-not-found">linux安装anaconda3 conda: command not found</h1>
+
+<p>在终端输入conda info –envs检验anaconda是否安装成功，发现报错：conda: command not found</p>
+
+<p>原因是因为~/.bashrc文件没有配置好</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vim ~/.bashrc
+</code></pre></div></div>
+
+<p>在最后一行加上：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>export PATH=~/anaconda3/bin:$PATH
+</code></pre></div></div>
+
+<p>其中，将“~/anaconda3/bin”替换为你实际的安装路径。保存。</p>
+
+<p>刷新环境</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>source ~/.bashrc
+</code></pre></div></div>
+
+<p>成功。</p>
+:ET

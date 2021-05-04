@@ -1,0 +1,115 @@
+I"<h1 id="个人对异步的一些理解"><a href="https://blog.fundebug.com/2017/05/25/arrow-function-for-beginner/"><strong>个人对异步的一些理解</strong></a></h1>
+
+<h4 id="异步编程">异步编程</h4>
+
+<p>简单来理解就是：同步按你的代码顺序执行，异步不按照代码顺序执行，异步的执行效率更高。</p>
+
+<p>以上是关于异步的概念的解释，接下来我们通俗地解释一下异步：异步就是从主线程发射一个子线程来完成任务。</p>
+
+<p><strong>同步编程</strong></p>
+
+<p>严格按照从上往下顺序执行</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">Start</span><span class="dl">"</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">Show Data</span><span class="dl">"</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">End</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="cm">/*
+        这就是一个同步的代码
+        
+        按顺序执行
+*/</span>
+<span class="err">复制代码</span>
+</code></pre></div></div>
+
+<h5 id="回调函数">回调函数</h5>
+
+<p>在JS中 只要有异步的地方就会有回调函数的存在。</p>
+
+<p>回调函数就是一个函数，它是在我们启动一个异步任务的时候就告诉它：等你完成了这个任务之后要干什么。</p>
+
+<p>这样一来主线程几乎不用关心异步任务的状态了，他自己会善始善终。</p>
+
+<h5 id="异步案例">异步案例</h5>
+
+<p>假设我要做如下三件事</p>
+
+<p>用同步编程的方式来做的话就是先打扫卫生，然后洗衣服，这样效率非常低。</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20201018095618.image" alt="img" /></p>
+
+<p>如果用时器来模拟的话就是：</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">打扫卫生</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">},</span> <span class="mi">4000</span><span class="p">);</span>
+
+<span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">洗衣服</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">},</span> <span class="mi">3500</span><span class="p">);</span>
+
+<span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">做饭</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">},</span> <span class="mi">2000</span><span class="p">);</span>
+<span class="err">复制代码</span>
+</code></pre></div></div>
+
+<p>等一件事情做完再到下一件事情，这样用的时间非常的多，效率非常低。</p>
+
+<p>OK重点来了，我可以把打扫卫生交给扫地机器人、衣服交给洗衣机、用电饭锅来做饭。</p>
+
+<p>然后躺在沙发上打王者，任务结束了提示一下我去处理。</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 用扫地机器人来做这件事</span>
+<span class="kd">function</span> <span class="nx">clean</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="kd">let</span> <span class="nx">msg</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">叮，给您打扫干净了。。。</span><span class="dl">"</span><span class="p">;</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
+    <span class="p">},</span> <span class="mi">4000</span><span class="p">);</span>
+<span class="p">}</span>
+
+
+<span class="c1">// 衣服交给洗衣机</span>
+<span class="kd">function</span> <span class="nx">wash</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="kd">let</span> <span class="nx">msg</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">叮，衣服已经洗好了。。。。</span><span class="dl">"</span><span class="p">;</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
+    <span class="p">},</span> <span class="mi">3500</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// 做饭交给电饭锅</span>
+<span class="kd">function</span> <span class="nx">cook</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="kd">let</span> <span class="nx">msg</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">叮，饭已经熟了。。。。</span><span class="dl">"</span><span class="p">;</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
+    <span class="p">},</span> <span class="mi">2000</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// 回调函数 设备完成任务了通知一下你</span>
+<span class="kd">function</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+<span class="p">}</span>
+
+
+<span class="c1">// 开始干活</span>
+<span class="nx">clean</span><span class="p">(</span><span class="nx">callback</span><span class="p">);</span>
+<span class="nx">wash</span><span class="p">(</span><span class="nx">callback</span><span class="p">);</span>
+<span class="nx">cook</span><span class="p">(</span><span class="nx">callback</span><span class="p">);</span>
+
+
+<span class="cm">/*
+        &gt;&gt;&gt; 叮，饭已经熟了。。。。
+                叮，衣服已经洗好了。。。。
+                叮，给您打扫干净了。。。
+*/</span>
+<span class="err">复制代码</span>
+</code></pre></div></div>
+
+<p>总结：看吧，这么一个小小的案例，谁先完成任务就使用 callback() 回调函数通知一下我，放到真实的网页案例中也是这样。</p>
+
+<p>​			假如我打开一个网页，里面有很多张图片要加载。。。总不能等一张加载完了到下一张吧，谁先加载完就使用回调函数，回调函数</p>
+
+<p>把图片的路径信息返回出来</p>
+
+<p><a href="https://juejin.im/post/6884504295413121038">Link</a></p>
+:ET

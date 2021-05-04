@@ -1,0 +1,90 @@
+I"�<h1 id="机器翻译语料库汇总">机器翻译语料库汇总</h1>
+
+<h2 id="一翻译语料translation2019zh520万个中英文句子对">一、<a href="https://github.com/brightmart/nlp_chinese_corpus#5%E7%BF%BB%E8%AF%91%E8%AF%AD%E6%96%99translation2019zh520%E4%B8%87%E4%B8%AA%E4%B8%AD%E8%8B%B1%E6%96%87%E5%8F%A5%E5%AD%90%E5%AF%B9">翻译语料(translation2019zh)，520万个中英文句子对</a></h2>
+
+<h4 id="520万个中英文平行语料-原始数据11g压缩文件596m">520万个中英文平行语料( 原始数据1.1G，压缩文件596M)</h4>
+
+<p><a href="https://drive.google.com/open?id=1EX8eE5YWBxCaohBO8Fh4e2j3b9C2bTVQ">Google Drive下载</a></p>
+
+<h4 id="数据描述">数据描述</h4>
+
+<p>中英文平行语料520万对。每一个对，包含一个英文和对应的中文。中文或英文，多数情况是一句带标点符号的完整的话。</p>
+
+<p>对于一个平行的中英文对，中文平均有36个字，英文平均有19个单词(单词如“she”)</p>
+
+<p>数据集划分：数据去重并分成三个部分。训练集：516万；验证集：3.9万；测试集，数万，不提供下载。</p>
+
+<h4 id="可能的用途">可能的用途：</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>可以用于训练中英文翻译系统，从中文翻译到英文，或从英文翻译到中文；
+
+由于有上百万的中文句子，可以只抽取中文的句子，做为通用中文语料，训练词向量或做为预训练的语料。英文任务也可以类似操作；
+</code></pre></div></div>
+
+<h4 id="结构">结构：</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{"english": &lt;english&gt;, "chinese": &lt;chinese&gt;}
+
+其中，english是英文句子，chinese是中文句子，中英文一一对应。
+</code></pre></div></div>
+
+<h4 id="例子">例子：</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{"english": "In Italy, there is no real public pressure for a new, fairer tax system.", "chinese": "在意大利，公众不会真的向政府施压，要求实行新的、更公平的税收制度。"}
+</code></pre></div></div>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20200725174833.png" alt="image-20200725174833926" /></p>
+
+<h2 id="二aichallenger2018_english_chinese_corpus_12904599_口语">二、<a href="https://github.com/gzhcv/AIChallenger2018_English_Chinese_Machine_Translation">AIChallenger2018_English_Chinese_Corpus_12904599_口语</a></h2>
+
+<ol>
+  <li>
+    <p>下载原始数据(如有需要)<a href="https://pan.baidu.com/s/1zNVW2CQzuURIqq7YIU1WNw">提取码：6lpu</a></p>
+  </li>
+  <li>
+    <p>下载处理过的数据和模型。数据只是做了分词和bpe，未做其它筛选。<a href="https://pan.baidu.com/s/1sfx9z5UypDD93I1Z_0V4mQ">网盘密码dr83</a></p>
+
+    <p><a href="https://challenger.ai/dataset/ectd2018">AIChallenger2018 英中翻译数据集</a>
+		随着深度学习技术的不断发展，近年来机器翻译研究研究受到了越来越多的关注。主办方提供了一个英中机器翻译数据集，包含了 1000 万英中对照的句子对作为数据集合。数据主要来源于英语学习网站和电影字幕，领域为口语领域。另外，还提供 300 万带有上下文情景的英中双语口语数据。所有双语句对经过人工检查，数据集从规模、相关度、质量上都有保障。</p>
+
+    <blockquote>
+      <p>训练集：1300 万
+验证集：8000
+测试集 A：8000
+测试集 B：8000</p>
+    </blockquote>
+  </li>
+</ol>
+
+<h2 id="三multiun_162981_4000_4000">三、MultiUN_162981_4000_4000</h2>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20200725175744.png" alt="image-20200725175744121" /></p>
+
+<p>联合国领域的中英对照语料</p>
+
+<p>训练集：162981</p>
+
+<p>验证集：4000</p>
+
+<p>测试集：4000</p>
+
+<p>链接: https://pan.baidu.com/s/1jR-TgyArmCkRCWLcYYWdew 提取码: bejj</p>
+
+<h2 id="四opensubtitles_1242320">四、OpenSubtitles_1242320</h2>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20200725180058.png" alt="image-20200725180058472" /></p>
+
+<p>字幕口语语料</p>
+
+<p>一共是1242320句对</p>
+
+<p>链接: https://pan.baidu.com/s/1fOjnZSSc9q4sKfQDgFc72Q 提取码: 6pp6 复制这段内容后打开百度网盘手机App，操作更方便哦</p>
+
+<h2 id="五wikimatrixen-zh_786511">五、WikiMatrix.en-zh_786511</h2>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20200725180545.png" alt="image-20200725180412089" /></p>
+
+<p>一共是786511句对</p>
+
+<p>链接: https://pan.baidu.com/s/1UU4JPstHEUYYT6BUQVmmTw 提取码: esng</p>
+:ET

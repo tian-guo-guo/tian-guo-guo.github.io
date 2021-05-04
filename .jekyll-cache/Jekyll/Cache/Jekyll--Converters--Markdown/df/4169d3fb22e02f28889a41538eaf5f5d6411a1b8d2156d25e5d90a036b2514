@@ -1,0 +1,191 @@
+I"<Q<h1 id="你了解nodejs的原理和应用场景吗"><a href="https://blog.fundebug.com/2017/05/25/arrow-function-for-beginner/"><strong>你了解Node.js的原理和应用场景吗？</strong></a></h1>
+
+<h3 id="介绍"><strong>介绍</strong></h3>
+
+<p>JavaScript 的日益发展带来了很多变化，当今的 Web 开发面貌已经变得截然不同。在几年前是很难想象在服务器上运行 JavaScript 的。</p>
+
+<p>在深入研究Node.js之前，你可能想了解使用跨栈的 JavaScript 有什么好处，它统一了语言和数据格式（JSON），允许你以最佳的方式重用开发人员资源。将 Node.js 合并到技术栈中是一个关键优势。</p>
+
+<p>Node.js 是一个基于 Chrome 的名为 V8 的 JavaScript 引擎构建的 JavaScript 运行环境。值得注意的是，Node.js 的创建者 Ryan Dahl 的“受到 Gmail 等应用的启发”，目标是为了开发一个具有<strong>实时推送功能的网站</strong>。在 Node.js 中，他提供了一个用于处理非阻塞事件驱动的 I/O 工具。</p>
+
+<p>用一句话来概括：Node.js 在基于websockets 推送技术的实时 Web 应用中大放异彩。在过去的 20 多年来我们一直在使用基于无状态请求 - 响应模式的无状态 Web 应用，现在终于拥有了能够实时双向连接的 Web 应用，其中客户端和服务器都可以启动通信，并允许它们自由地交换数据。</p>
+
+<p>这与典型的总是由客户端发起通信的 Web 响应模式形了成鲜明的对比。此外它也同样基于在标准端口 80 上运行的开放 Web 技术栈（HTML，CSS和JS）。</p>
+
+<p>有人可能会争辩说，我们多年来一直以 Flash 和 Java Applet 的形式做到这一点 —— 但实际上，这些只是使用 Web 作为传输协议将数据传给客户端的沙盒环境。此外，它们是隔离运行的，通常在非标准端口上运行，这可能需要额外的权限。</p>
+
+<p>凭借其优势，Node.js 在依赖其独特优势的众多知名公司的技术堆栈中发挥着关键作用。 Node.js 基金会几乎已经整合了所有最好的想法，可以在 Node.js 基金会的案例研究页面(https://nodejs.org/en/foundation/case-studies/)上找到关于为什么企业应该考虑 Node.js 的简短PPT。</p>
+
+<p>在本文中，我将不仅要讨论如何使用这些优势，而且还要讨论 <em>为什么</em> 你可能想要使用 Node.js ，并用一些经典的 Web 应用程序模型作为示例。</p>
+
+<h3 id="它是如何工作的"><strong>它是如何工作的？</strong></h3>
+
+<p>Node.js 的主要思想是：在面向跨分布式设备运行的数据密集型的实时程序时，使用非阻塞、事件驱动的 I/O 来保证轻量和高效。</p>
+
+<p>这读起来很拗口。</p>
+
+<p>这意味着 Node.js <em>不是</em> 一个即将成为主宰 Web 开发界的能够解决一切的新平台。 <strong>相反，它是一个满足特定需求的平台。</strong>理解这一点绝对是有必要的。你绝不希望将 Node.js 用于 CPU 密集型的操作；实际上，将它用于进行大量繁重运算的场合将会消除它几乎所有的优点。 Node.js 真正发挥作用的地方在于构建快速、可扩展的网络应用，因为它能够以高吞吐量处理大量并发连接，这相当于具有高可扩展性。</p>
+
+<p>其底层的工作原理非常有趣。传统的 Web 服务技术每个连接（请求）都会产生一个新线程，占用系统内存并最终受限于可用的最大内存，而 Node.js 在单线程上运行，使用非阻塞 I/O 调用，允许它支持数以万计的并发连接（在 event loop 中维持）。</p>
+
+<p><img src="https://ask.qcloudimg.com/http-save/yehe-3713434/5z7qb85wk8.jpeg?imageView2/2/w/1620" alt="img" /></p>
+
+<p>快速计算：假设每个线程需要 2 MB 内存，那么在有 8 GB 内存的系统上运行的话，理论上最多有 4000 个并发连接<em>（计算来自 Michael Abernethy 的文章 “Just what is Node.js？“，2011年在 IBM developerWorks 上发布;不幸的是，这篇文章的链接现在已经失效了）</em>，这还没有算上线程之间的上下文切换的成本。这就是你通常在传统的 Web 服务器技术中处理的场景。通过避免所有这些问题，Node.js 实现了超过 1M 连接并发数的级别，以及 600k 的 websockets 并发连接数。</p>
+
+<p>当然，编写 Node.js 应用的潜在缺陷是存在客户端请求之间共享单个线程的问题。首先，繁重的计算可能会阻塞 Node 的单个线程并导致 <em>所有</em>  客户端出现问题（稍后会详细说明），因为传入的请求将被阻塞，直到计算完成为止。其次开发人员需要 <em>非常小心</em>，不要让异常冒泡到到核心（最顶层）Node.js 事件循环，这将导致 Node.js 实例终止（程序崩溃）。</p>
+
+<p>为了避免异常冒泡到顶层，常用技术是将错误作为回调参数传递回调用者（而不是像在其他环境中那样抛出它们）。即使一些未被处理的异常冒泡到顶层，也有一些工具来监视 Node.js 进程并执行必要的恢复崩溃(https://shapeshed.com/uncaught-exceptions-in-node/) （虽然可能无法恢复到用户会话的当前状态），最常见的是 Forever 模块(http://blog.nodejitsu.com/keep-a-nodejs-server-up-with-forever)。</p>
+
+<h4 id="npmnode-包管理器"><strong>npm：node 包管理器</strong></h4>
+
+<p>在讨论 Node.js 时，一件绝对不应该被忽略的事是支持使用内置的 npm 工具进行包管理，默认情况下每个 Node.js 环境都会安装。 npm 模块的概念非常类似于 <em>Ruby Gems</em>：一组可通过在线存储库轻松安装，具有版本和依赖关系管理的可重用组件，。</p>
+
+<p>可以在 npm 网站上找到已打包模块的完整列表，也可以使用自动与 Node.js 一起安装的 npm CLI 工具进行访问。模块生态系统对所有人开放，任何人都可以发布自己的模块，发布的模块将出现在 npm 存储库中。有关 npm 的简介，请参阅初学者指南(https://nodesource.com/blog/an-absolute-beginners-guide-to-using-npm)，以及 npm 发布教程(https://blog.risingstack.com/nodejs-at-scale-npm-publish-tutorial/)中关于发布模块的部分。</p>
+
+<p>一些很有用的 npm 模块是：</p>
+
+<ul>
+  <li><strong>express</strong> —— Express.js，一个受 Sinatra 启发的 Node.js Web 开发框架，当今大多数 Node.js 应用程序的事实标准。</li>
+  <li><strong>hapi</strong> —— 一个模块化的且非常易于使用的以配置为中心的框架，用于构建 Web 和服务应用</li>
+  <li><strong>connect</strong> —— Connect 是 Node.js 的可扩展 HTTP 服务器框架，提供了一系列称为中间件的高性能“插件”作为Express的基础。</li>
+  <li><strong>socket.io</strong> 和 <strong>sockjs</strong> —— 今天最常见的两个 websockets 服务器端组件。</li>
+  <li><strong>pug</strong>（以前叫 <strong>Jade</strong>）—— 受 HAML 启发的流行模板引擎之一，Express.js 中的默认选项。</li>
+  <li><a href="https://cloud.tencent.com/product/mongodb?from=10680"><strong>mongodb</strong></a> 和 <strong>mongojs</strong> —— MongoDB 包装器，为 Node.js 中的 MongoDB 对象数据库提供 API。</li>
+  <li><a href="https://cloud.tencent.com/product/crs?from=10680"><strong>redis</strong></a> —— Redis 客户端。</li>
+  <li><strong>forever</strong> —— 可能是确保给定 node 脚本连续运行的最常用实用程序。在遇到意外故障时，将 Node.js 的进程保持在生产状态。</li>
+  <li><strong>bluebird</strong> —— 功能齐全的 Promises/A+ 实现，性能非常出色</li>
+  <li><strong>moment</strong>  —— 用于解析、验证、操作和格式化日期的轻量级 JavaScript 日期库。</li>
+</ul>
+
+<p>列表还在不断增长。那里有很多有用的包，可供所有人使用。</p>
+
+<h3 id="哪些场合应该使用-nodejs"><strong>哪些场合应该使用 Node.js</strong></h3>
+
+<h4 id="在线聊天"><strong>在线聊天</strong></h4>
+
+<p>在线聊天是最典型的实时多用户应用，也是 Node.js 的最佳案例：它是一个轻量级、高流量、数据密集型（但是低处理和计算）的应用程序，可分布式跨设备运行。它也是一个很好的学习案例，因为它很简单，但涵盖了你在典型的 Node.js 程序中所使用的大部分范例。</p>
+
+<p>让我们试着描绘它是如何工作的。</p>
+
+<p>假设一个最简单的场景，在我们的网站上有一个聊天室，人们可以通过一对多（实际上是对所有人）的方式交换消息。</p>
+
+<p>在服务器端，我们有一个简单的 Express.js 程序，它实现了两件事：1) 一个GET 请求的处理程序，它提供了包含留言板和用于初始化新消息输入的“发送”按钮的功能，以及2) 用于侦听 websocket 客户端发出的新消息的w ebsockets 服务器。</p>
+
+<p>在客户端，我们有一个 HTML 页面，其中设置了几个处理程序，一个用于“发送”按钮的单击事件，它接收输入消息并将其发送到 websocket，另一个用于侦听新的传入消息并显示在 websockets 客户端上（即服务器希望客户端显示的其他用户发送的消息）。</p>
+
+<p>当其中一个客户发布消息时，会发生以下情况：</p>
+
+<ul>
+  <li>浏览器捕获单击“发送”按钮事件处理 JavaScript 程序，从输入字段（即消息文本）中获取值，并使用连接到我们服务器的 websocket 客户端发出 websocket 消息（在网页初始化时初始化） 。</li>
+  <li>websocket 连接的服务器端组件接收消息，并使用广播方式将其转发给所有其他的客户端。</li>
+  <li>所有客户端都通过在网页中运行的 websockets 客户端组件接收新消息。然后，他们通过将新消息添加页面上并更新。</li>
+</ul>
+
+<p><img src="https://ask.qcloudimg.com/http-save/yehe-3713434/w5r0af5ijb.jpeg?imageView2/2/w/1620" alt="img" /></p>
+
+<p>这是最简单的例子。对于更强大的解决方案，你可以使用基于 Redis 的简单缓存。或者在更高级的解决方案中，可以用消息队列作为消息路由，还可以实现更强大的传递机制，例如可以在连接丢失或在客户端脱机时存储消息。但无论你做出哪些改进，Node.js 仍将按照相同的基本原则运行：对事件做出反应，处理许多并发连接，并保持用户体验的流畅性。</p>
+
+<h4 id="对象数据库顶层的-api"><strong>对象数据库顶层的 API</strong></h4>
+
+<p>虽然 Node.js 的确很适合开发实时应用，但它也很适合从对象数据库（例如MongoDB）公开数据。 JSON 存储的数据允许 Node.js 在对象与存储数据一致和没有数据转换的情况下良好的运行。</p>
+
+<p>例如，如果你正在使用 Rails，那么你需要从 JSON 转换为二进制模型，然后通过 HTTP 再将它们转为 JSON 在 React.js 或 Angular.js 中使用 ，甚至可以用简单的 jQuery AJAX 进行调用。使用 Node.js，你可以通过 REST API 直接公开你的 JSON 对象来供客户端使用。此外，在从数据库读取或写入时（如果你使用的是MongoDB），你无需担心在 JSON 和其他任何内容之间进行转换的问题。总之在客户端、服务器和数据库中使用统一的数据序列化格式，可以避免多次转换的麻烦。</p>
+
+<h4 id="队列输入"><strong>队列输入</strong></h4>
+
+<p>如果你收到了大量并发数据，那么你的数据库可能会成为瓶颈。如上所述，Node.js 可以轻松地自己处理并发连接。但是因为数据库访问是一种阻塞操作（在这种情况下），所以我们遇到了麻烦。解决方案是在数据真正写入数据库之前先确认客户端的行为。</p>
+
+<p>通过这种方法，系统可以在高负载下保持其响应性，这在客户端不需要确认数据成功写入时尤其有用。典型的例子包括：记录或写入用户跟踪数据时进行分批处理；以及最终一致性（经常在NoSQL世界中使用）可以接受的不需要立即作出反映的操作（例如更新 Facebook 上的“Likes”计数）。</p>
+
+<p>数据通过某种缓存或消息队列（例如，RabbitMQ，ZeroMQ）排队，并通过单独的数据库批量写入过程，或者由计算密集型后端服务进行消化，再写入更好的能够执行此类任务的平台。类似的行为可以用其他语言或框架实现，但不能在相同的硬件上实现，以维持相同的高吞吐量。</p>
+
+<p><img src="https://ask.qcloudimg.com/http-save/yehe-3713434/hdirkl8nw8.jpeg?imageView2/2/w/1620" alt="img" /></p>
+
+<p>简而言之：使用 Node，你可以将数据库写先入到一个地方，稍后再去处理它们，就像它们已经被成功处理一样。</p>
+
+<h4 id="数据流"><strong>数据流</strong></h4>
+
+<p>在更传统的Web平台中，HTTP 请求和响应被看作是孤立事件，实际上他们是流。可以在 Node.js 中使用这个性质来构建一些很酷的功能。例如文件可以被一边上传一边处理，因为数据通过流进入，我们可以实时的去处理它。这可以用于实时音频\视频编码(https://transloadit.com/blog/2010/12/realtime-encoding-over-150x-faster)，以及在不同数据源的之间进行代理（参见下一部分）。</p>
+
+<h4 id="代理"><strong>代理</strong></h4>
+
+<p>把 Node.js 用作服务器端代理是很容易的，它能够以非阻塞方式处理大量的并发连接。这对于为代理不同响应时间的多个服务，或从多个源收集数据的场景特别有用。</p>
+
+<p>例如以下场景：当服务器端程序与第三方资源进行通信时，会从不同的来源提取数据，或者将图像和视频等资源存储到第三方云服务上。</p>
+
+<p>尽管有专用代理服务器，但是如果你没有基础的代理架构，或者你需要本地开发环境，那么 Node 可能会对你有所帮助。</p>
+
+<h4 id="股票交易商的数据界面"><strong>股票交易商的数据界面</strong></h4>
+
+<p>让我们回到应用程序。可以很容易地用实时网络解决方案取代的另一个例子是股票经纪人的交易软件，它用于跟踪股票价格、执行计算、技术分析以及创建图表。</p>
+
+<p>如果切换到基于 Web 的实时解决方案，经纪人将可以轻松切换工作站或工作场所。很快，我们可能会开始在佛罗里达州的海滩上看到它们……</p>
+
+<h4 id="应用监控仪表板"><strong>应用监控仪表板</strong></h4>
+
+<p>另一个常见的用例，其中 Node-with-web-socket 完全适合：跟踪网站访问者并对他们的交互进行实时的可视化。你可以从用户那里实时收集统计信息，甚至可以通过在访问渠道中特定的点来打开通信渠道，并与访问者进行有针对性的互动，这种方案可以在这里找到： CANDDi(http://canddi.com/)。</p>
+
+<p>想象一下，如果你能够实时了解访问者所做的事情，你将如何改善你的业务呢？通过使用 Node.js 的实时双向套接字，现在就可以做到了。</p>
+
+<h4 id="系统监控仪表板"><strong>系统监控仪表板</strong></h4>
+
+<p>在基础设施方面，。比如想要为其用户提供服务监控页面的SaaS提供商（例如，GitHub状态页面）。通过 Node.js 事件循环，我们可以创建一个功能强大的基于 Web 的仪表板，以异步方式检查服务的状态，并使用 websockets 将数据推送到客户端。公司内部和公共服务的状态都可以使用该技术得到实时报告。</p>
+
+<p>注意：<em>不要尝试在 Node.js 中构建硬实时系统（即需要一致响应时间的系统）。对于那类应用程序，Erlang 可能是更好的选择(http://nodeguide.com/convincing_the_boss.html)。</em></p>
+
+<h3 id="哪些场合可以使用-nodejs"><strong>哪些场合可以使用 Node.js</strong></h3>
+
+<h4 id="服务器端-web-应用"><strong>服务器端 Web 应用</strong></h4>
+
+<p>配合 Express.js 的 Node.js 也可在服务器端创建经典 Web 应用。对于这种方法，有人支持也有人反对。以下是一些需要考虑的问题：</p>
+
+<p><strong>优点：</strong></p>
+
+<ul>
+  <li>如果你的程序没有任何 CPU 密集型计算，可以用 Javascript 和<a href="https://cloud.tencent.com/product/cos?from=10680">对象存储</a>数据库（如MongoDB）构建它，甚至可以在数据库级别进行构建。这显著的简化了开发工作。</li>
+  <li>爬虫会收到一个能够完全呈现的 HTML 响应，这比单页应用或在 Node.js 上运行的 websockets 应用程序更能进行 SEO 。</li>
+</ul>
+
+<p><strong>缺点：</strong></p>
+
+<ul>
+  <li>任何 CPU 密集型计算都会阻止 Node.js 响应，因此线程平台是一种更好的方法。</li>
+  <li>将 Node.js 与关系数据库放一起使用仍然非常困难（更多细节见下文）。如果你要对关系型数据库进行操作，请并选择 Rails、Django 或 ASP.Net MVC 等其他环境。</li>
+</ul>
+
+<p><em>CPU 密集型计算的一种替代方法是创建一个可高度扩展的 MQ 支持环境，该环境具有后端处理功能，以使 Node 成为一个前台“职员”，并以异步方式处理客户端请求。</em></p>
+
+<h3 id="什么时候不应使用-nodejs"><strong>什么时候不应使用 Node.js</strong></h3>
+
+<h4 id="带有关系型数据库的服务器端-web-应用"><strong>带有关系型数据库的服务器端 Web 应用</strong></h4>
+
+<p>例如，将 Node.js + Express.js 与 Ruby on Rails 进行比较，当涉及到关系数据访问时，显然后者更合适。</p>
+
+<p>与其竞争对手相比，Node.js 的关系型数据库工具仍然相当原始。另一方面，Rails 提供了开箱即用的数据访问设置以及数据库架构迁移支持工具，另外还有其他的 Gems。 Rails 及类似框架拥有成熟的且经过验证的 <em>Active Record</em> 或 <em>Data Mapper</em> 数据访问层实现，如果你想要尝试在纯 JavaScript 中复制这些功能的话，那么祝你好运。</p>
+
+<p>不过，如果你真的倾向于用 JS 实现一切，请查看 Sequelize(http://sequelizejs.com/) 和 Node ORM2(https://github.com/dresende/node-ORM2)。</p>
+
+<p><em>如果仅仅是把 Node.js 用作面向公众的界面，同时用 Rails 后端访问关系数据库，这是可以的，而且这种方式并不罕见。</em></p>
+
+<h4 id="繁重的服务器端计算与处理"><strong>繁重的服务器端计算与处理</strong></h4>
+
+<p>当涉及到繁重的计算时，Node.js 并不是最好的平台。你绝对不想用 Node.js 去构建一个 Fibonacci 计算服务器。通常，任何 CPU 密集型操作都会通过事件驱动的非阻塞 I/O 模型来抵消 Node 提供的所有吞吐量优势，因为当线程被数字运算占用时，任何传入请求都将被阻止。</p>
+
+<p>正如前面所说的，Node.js 是单线程的，只使用一个CPU核心。在多核服务器上添加并发性时，Node 核心团队以 cluster module 的形式完成一些工作。你也可以很容易地在反向代理 nginx 的后面运行几个 Node.js 服务器实例。</p>
+
+<p>如果使用群集，你仍然应该将所有繁重的计算放到在更合适的环境下编写的后台进程中，并使它们通过像 RabbitMQ 这样的消息队列服务器进行通信。</p>
+
+<p>即使你所有的后台处理最初可能在同一服务器上运行，这种方法也有可能实现非常高的可伸缩性。这些后台处理服务可以轻松地被分发到单独的工作服务器，而无需对前置 Web 服务器负载进行配置。</p>
+
+<p>当然，你也可以在其他平台上使用相同的方法，但是使用 Node.js，你可以获得我们所讨论的高 reqs/sec 吞吐量，因为每个请求都是一个非常快速有效的小任务。</p>
+
+<h3 id="结论"><strong>结论</strong></h3>
+
+<p>我们讨论了 Node.js 从理论到实践，从它的目标和抱负开始，并以其最佳点和陷阱结束。当人们遇到 Node 的问题时，它几乎总是呗归结为**阻塞操作是所有邪恶的根源 ——  ** 其中 99％ 的直接原因是对 Node 的误用。</p>
+
+<p>请记住：不要用 Node.js 来解决计算扩展问题。它是为了解决 I/O 扩展问题而设计的，它<em>做得确实很好。</em></p>
+
+<p>所以，如果你的应用不包含 CPU 密集型操作，也不访问任何阻塞资源的话，可以利用 Node.js 的优势，享受快速、可扩展的网络应用。</p>
+
+<p><a href="https://medium.com/the-node-js-collection/why-the-hell-would-you-use-node-js-4b053b94ab8e">原文</a></p>
+:ET
