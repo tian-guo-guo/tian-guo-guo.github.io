@@ -1,0 +1,35 @@
+I"M<h1 id="新能源领域专利机器翻译系统">新能源领域专利机器翻译系统</h1>
+
+<p>毕设系统，利用HTML+CSS+Django实现ne_MT~✌️</p>
+
+<h2 id="一首页展示">一、首页展示</h2>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20210513212812.png" alt="index1" /></p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20210513212826.png" alt="index2" /></p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20210513212840.png" alt="index3" /></p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20210513212854.png" alt="index4" /></p>
+
+<h2 id="二新能源领域语料库的搜索与展示">二、新能源领域语料库的搜索与展示</h2>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20210514091551.png" alt="corpus_search" /></p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20210514091609.png" alt="corpus_search_res" /></p>
+
+<h2 id="三新能源领域术语库的搜索与展示">三、新能源领域术语库的搜索与展示</h2>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20210514091629.png" alt="term_search" /></p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20210514091648.png" alt="term_search_res" /></p>
+
+<h2 id="四新能源领域术语抽取展示">四、新能源领域术语抽取展示</h2>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20210514091702.png" alt="term_extract" /></p>
+
+<h2 id="五新能源领域机器翻译展示">五、新能源领域机器翻译展示</h2>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20210514091712.png" alt="trans" /></p>
+
+:ET
