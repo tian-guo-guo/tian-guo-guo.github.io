@@ -1,0 +1,144 @@
+I"�%<h2 id="vs-code-插件之-vscode-debug-visualizer"><a href="https://www.cnblogs.com/fws407296762/p/13993640.html">VS Code 插件之 vscode-debug-visualizer</a></h2>
+
+<blockquote>
+  <p>最近在网上看到有人在推 vscode-debug-visualizer 这个神器，想了解一下做个对比</p>
+</blockquote>
+
+<h2 id="介绍">介绍</h2>
+
+<p>在我们写代码得时候，最麻烦的事是出现错误很难定位到问题，特别是代码特别长的时候，错误隐藏的很深的时候，不管是 <code class="language-plaintext highlighter-rouge">debugger</code> 还是 <code class="language-plaintext highlighter-rouge">console.log</code>，亦或用浏览器的调试工具打断点，都是需要慢慢一条一条的排错。</p>
+
+<p>这些调试方式都是需要我们大脑去思考、去排错，那有没有一种方式更方便，能将结果以图的形式展示给我们看，并且将过程展示给我们看呢？</p>
+
+<p>这里我们介绍一个神器：<a href="https://github.com/hediet/vscode-debug-visualizer">vscode-debug-visualizer</a></p>
+
+<p>它提供了一种以图表的形式展示数据结构形成程的过程，有树形、表格、曲线、图等。</p>
+
+<p>这种展示形式，不仅可以帮我们在代码调试的时候用到，而且在学习数据结构、算法、刷 Leecode 的时候也可以用到，它会让你很清晰的看到数据生成的过程。</p>
+
+<h2 id="使用方式">使用方式</h2>
+
+<h4 id="安装">安装</h4>
+
+<p>首先在 VS Code 的插件库中搜索 <code class="language-plaintext highlighter-rouge">debug-visualizer</code>, 然后安装。</p>
+
+<h4 id="使用步骤">使用步骤</h4>
+
+<ul>
+  <li>打开需要调试的代码文件</li>
+  <li>选择需要调试的地方打上断点</li>
+  <li>启动调试</li>
+  <li><code class="language-plaintext highlighter-rouge">Ctrl + Shift + P</code> 打开命令面板，输入 <code class="language-plaintext highlighter-rouge">Debug Visualizer: New View</code> 打开一个新的可视化窗口</li>
+  <li>在可视化窗口输入需要展示的数据表达式</li>
+  <li>按 <code class="language-plaintext highlighter-rouge">F10</code> 开始调试，在可视化窗口中就是展示出数据的图表</li>
+</ul>
+
+<p><img src="https://img2020.cnblogs.com/blog/517802/202011/517802-20201117125208127-187896530.gif" alt="img" /></p>
+
+<p>一个可视化窗口只能调试一个文件，可以打开多个窗口同时调试。如果按下 <code class="language-plaintext highlighter-rouge">Shift+ F1</code> 或者输入命令：<code class="language-plaintext highlighter-rouge">Debug Visualizer: Use Selection as Expression</code> 就是调试选中的文本</p>
+
+<p><img src="https://img2020.cnblogs.com/blog/517802/202011/517802-20201117131839791-1033928155.gif" alt="img" /></p>
+
+<h4 id="输入规则">输入规则</h4>
+
+<p>可能到这里大家对可视化窗口中输入框中输入的内容有点好奇，这里面到底能输入什么。图表展示是必须要用 <code class="language-plaintext highlighter-rouge">JSON</code> 数据才能展示，大家可以到 <a href="https://hediet.github.io/visualization/?darkTheme=1">Visualization Playground</a> 这里看看，可以有哪些 <code class="language-plaintext highlighter-rouge">JSON</code> 类型的数据</p>
+
+<p><img src="https://img2020.cnblogs.com/blog/517802/202011/517802-20201117142254931-1740075183.png" alt="img" />
+<img src="https://img2020.cnblogs.com/blog/517802/202011/517802-20201117142308793-1467164070.png" alt="img" />
+<img src="https://img2020.cnblogs.com/blog/517802/202011/517802-20201117142331281-1817196784.png" alt="img" />
+<img src="https://img2020.cnblogs.com/blog/517802/202011/517802-20201117142400789-1814768525.png" alt="img" />
+<img src="https://img2020.cnblogs.com/blog/517802/202011/517802-20201117142425945-72189142.png" alt="img" /></p>
+
+<p>而输入框里面，我们可以输入 <code class="language-plaintext highlighter-rouge">变量名</code>、<code class="language-plaintext highlighter-rouge">数组</code>、<code class="language-plaintext highlighter-rouge">函数</code>、<code class="language-plaintext highlighter-rouge">JSON</code> 三种类型的数据，然后插件内部会自动换换成对应的图表 <code class="language-plaintext highlighter-rouge">JSON</code> 数据，如果实在转换不了就会执行 <code class="language-plaintext highlighter-rouge">toString</code></p>
+
+<h3 id="api">API</h3>
+
+<p>我们有两种方式可以开始调试，一种方式是在输入框中输入调试规则代码，还有一种是在代码内部写调试规则代码。</p>
+
+<p>如果是在输入框中，我们可以使用插件暴露出来的 <code class="language-plaintext highlighter-rouge">hedietDbgVis</code> 全局对象。</p>
+
+<p><code class="language-plaintext highlighter-rouge">hedietDbgVis</code>对外提供了 7 个方法：<code class="language-plaintext highlighter-rouge">createGraph</code>、<code class="language-plaintext highlighter-rouge">createGraphFromPointers</code>、<code class="language-plaintext highlighter-rouge">tryEval</code>、<code class="language-plaintext highlighter-rouge">markedGrid</code>、<code class="language-plaintext highlighter-rouge">cache</code>、<code class="language-plaintext highlighter-rouge">asData</code>、<code class="language-plaintext highlighter-rouge">getApi</code>。这几个都是插件中的 <code class="language-plaintext highlighter-rouge">helper</code>。</p>
+
+<p>我们要注意一下，提供出来的几个 <code class="language-plaintext highlighter-rouge">helper</code> 都是针对复杂的数据类型，例如链表、双向链表、树、图之类的，如果是数据结构相对简单，出现的情况可能不是很理想。</p>
+
+<p>我想重点讲讲 <code class="language-plaintext highlighter-rouge">createGraphFromPointers</code>，因为其实在 <code class="language-plaintext highlighter-rouge">createGraphFromPointers</code> 中执行了 <code class="language-plaintext highlighter-rouge">createGraph</code>，两个函数是一样的，只是在 <code class="language-plaintext highlighter-rouge">createGraphFromPointers</code> 中做了一些数据处理</p>
+
+<h4 id="creategraphfrompointers">createGraphFromPointers</h4>
+
+<p>这个主要是用来画图表的，提供两个参数，一个是代码中的变量，如果你的代码结构如下</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class LinkedList {
+	constructor() {
+		this.head = null;
+	}
+}
+
+class Node {
+	constructor(data, next = null) {
+		(this.data = data), (this.next = next);
+	}
+}
+
+LinkedList.prototype.insertAtBeginning = function(data) {
+	let newNode = new Node(data);
+	newNode.next = this.head;
+	this.head = newNode;
+	return this.head;
+};
+
+const list = new LinkedList();
+
+list.insertAtBeginning("4");
+list.insertAtBeginning("3");
+list.insertAtBeginning("2");
+list.insertAtBeginning("1");
+</code></pre></div></div>
+
+<p>我们的调试代码的写法是：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hedietDbgVis.createGraphFromPointers(
+	hedietDbgVis.tryEval([
+		"list.head",
+		"newNode",
+		"node",
+		"previous",
+		this.constructor.name === "LinkedList" ? "this.head" : "err",
+	]),
+	n =&gt; ({
+		id: n.data,
+		color: "lightblue",
+		label: `${n.data}`,
+		edges: [{ to: n.next, label: "next" }].filter(i =&gt; !!i.to),
+	})
+)
+</code></pre></div></div>
+
+<p>大家可以看到 <code class="language-plaintext highlighter-rouge">createGraphFromPointers</code> 传入两个参数，第一个参数是需要将代码中的那些变量传递到图表中，第二个参数是获取第一个参数中的数据作为图表的配置。例如上面的意思：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>id: n.data  获取第一个参数中每一项中的 data
+color: "lightblue" 图表颜色
+label: `${n.data}` 图表上显示什么内容
+edges: [{ to: n.next, label: "next" }].filter(i =&gt; !!i.to)
+这个就是图表下一个节点显示什么内容，如果加了这个，这个数据中的每一项肯定是对象了
+</code></pre></div></div>
+
+<h4 id="getdataextractorapi">getDataExtractorApi</h4>
+
+<p>还有这个函数，主要是用来自定义数据提取的，因为 <code class="language-plaintext highlighter-rouge">createGraphFromPointers</code> 已经定死了用的是 <code class="language-plaintext highlighter-rouge">Graph</code> 类型的图表，如果我们不想用这个图表怎么弄？就可以用到 <code class="language-plaintext highlighter-rouge">getDataExtractorApi</code></p>
+
+<h2 id="结论">结论</h2>
+
+<p>使用了差不多两天的时间，实际上给我的感觉并不是很好：</p>
+
+<ul>
+  <li>API 文档不详细，很多都没说，要自己研究</li>
+  <li>提供出来展示的形式很少，大部分用的就是折线图和关系树图</li>
+  <li>由于提供的图较少，因此我们可以调试的类型不是很多，大部分就是数组，数组嵌套对象</li>
+</ul>
+
+<p>这个神器在用折线图表现数组的时候确实非常直观，非常推荐大家在做一些矩阵或者做一些三维计算的时候，还有一些动态规划算法的时候，可以用到，比较直观</p>
+
+<p>还有关系树图用来学习链表、双向链表、图、树的算法和数据结构的时候，完全就是神器，以前要自己大脑去画图，现在直接看就行了</p>
+
+<p>也可能是我才疏学浅，了解的不够多，如果大家有新的发现，可以给我留言</p>
+:ET
