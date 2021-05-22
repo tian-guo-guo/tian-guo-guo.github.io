@@ -1,0 +1,131 @@
+I"g9<h1 id="520表白代码">520表白代码</h1>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20210522183533.png" alt="image-20210522183533024" /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">turtle</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">speed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">Turtle</span><span class="p">().</span><span class="n">screen</span><span class="p">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">go_to</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="n">up</span><span class="p">()</span>
+    <span class="n">goto</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">down</span><span class="p">()</span>
+    
+<span class="k">def</span> <span class="nf">ring</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">d</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+        <span class="n">forward</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="s">'right'</span><span class="p">:</span>
+            <span class="n">right</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">left</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">heart</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+    <span class="n">go_to</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">left</span><span class="p">(</span><span class="mi">150</span><span class="p">)</span>
+    <span class="n">begin_fill</span><span class="p">()</span>
+    <span class="n">forward</span><span class="p">(</span><span class="mi">51</span><span class="o">*</span><span class="n">size</span><span class="p">)</span>
+    <span class="n">ring</span><span class="p">(</span><span class="mi">150</span><span class="p">,</span><span class="n">size</span><span class="p">,</span><span class="mf">0.3</span><span class="p">,</span><span class="s">'right'</span><span class="p">)</span>
+    <span class="n">ring</span><span class="p">(</span><span class="mi">210</span><span class="p">,</span><span class="n">size</span><span class="p">,</span><span class="mf">0.786</span><span class="p">,</span><span class="s">'right'</span><span class="p">)</span>
+    <span class="n">left</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span>
+    <span class="n">ring</span><span class="p">(</span><span class="mi">210</span><span class="p">,</span><span class="n">size</span><span class="p">,</span><span class="mf">0.786</span><span class="p">,</span><span class="s">'right'</span><span class="p">)</span>
+    <span class="n">ring</span><span class="p">(</span><span class="mi">150</span><span class="p">,</span><span class="n">size</span><span class="p">,</span><span class="mf">0.3</span><span class="p">,</span><span class="s">'right'</span><span class="p">)</span>
+    <span class="n">forward</span><span class="p">(</span><span class="mi">51</span><span class="o">*</span><span class="n">size</span><span class="p">)</span>
+    <span class="n">end_fill</span><span class="p">()</span>
+
+<span class="c1">#头部
+</span><span class="n">color</span><span class="p">(</span><span class="s">'black'</span><span class="p">)</span>
+<span class="n">go_to</span><span class="p">(</span><span class="o">-</span><span class="mi">228</span><span class="p">,</span> <span class="mi">72</span><span class="p">)</span>
+<span class="n">pensize</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">left</span><span class="p">(</span><span class="mi">150</span><span class="p">)</span>
+<span class="n">ring</span><span class="p">(</span><span class="mi">350</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.8</span><span class="p">,</span><span class="s">'right'</span><span class="p">)</span>
+
+<span class="c1">#手臂
+</span><span class="n">left</span><span class="p">(</span><span class="mi">150</span><span class="p">)</span>
+<span class="n">forward</span><span class="p">(</span><span class="mi">70</span><span class="p">)</span>
+<span class="n">left</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
+<span class="n">forward</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">ring</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.9</span><span class="p">,</span><span class="s">'right'</span><span class="p">)</span>
+<span class="n">forward</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">left</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
+<span class="n">forward</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">ring</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.9</span><span class="p">,</span><span class="s">'right'</span><span class="p">)</span>
+<span class="n">forward</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">left</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
+<span class="n">ring</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span><span class="mf">0.2</span><span class="p">,</span><span class="mf">0.9</span><span class="p">,</span><span class="s">'right'</span><span class="p">)</span>
+<span class="n">left</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">left</span>
+<span class="n">forward</span><span class="p">(</span><span class="mi">80</span><span class="p">)</span>
+
+<span class="c1">#身体
+</span><span class="n">go_to</span><span class="p">(</span><span class="o">-</span><span class="mi">228</span><span class="p">,</span> <span class="mi">72</span><span class="p">)</span>
+<span class="n">left</span><span class="p">(</span><span class="mi">40</span><span class="p">)</span>
+<span class="n">forward</span><span class="p">(</span><span class="mi">40</span><span class="p">)</span>
+<span class="n">ring</span><span class="p">(</span><span class="mi">120</span><span class="p">,</span><span class="mf">0.2</span><span class="p">,</span><span class="mf">0.9</span><span class="p">,</span><span class="s">'left'</span><span class="p">)</span>
+
+<span class="n">go_to</span><span class="p">(</span><span class="o">-</span><span class="mi">219</span><span class="p">,</span><span class="mi">52</span><span class="p">)</span>
+<span class="n">right</span><span class="p">(</span><span class="mi">95</span><span class="p">)</span>
+<span class="n">forward</span><span class="p">(</span><span class="mi">80</span><span class="p">)</span>
+<span class="n">right</span><span class="p">(</span><span class="mi">85</span><span class="p">)</span>
+<span class="n">ring</span><span class="p">(</span><span class="mi">205</span><span class="p">,</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.9</span><span class="p">,</span><span class="s">'left'</span><span class="p">)</span>
+<span class="n">forward</span><span class="p">(</span><span class="mi">40</span><span class="p">)</span>
+<span class="n">left</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
+<span class="n">forward</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">ring</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.9</span><span class="p">,</span><span class="s">'right'</span><span class="p">)</span>
+<span class="n">forward</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">left</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
+<span class="n">forward</span><span class="p">(</span><span class="mi">40</span><span class="p">)</span>
+<span class="n">ring</span><span class="p">(</span><span class="mi">205</span><span class="p">,</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.9</span><span class="p">,</span><span class="s">'left'</span><span class="p">)</span>
+<span class="n">right</span><span class="p">(</span><span class="mi">92</span><span class="p">)</span>
+<span class="n">forward</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
+
+<span class="c1">#左眼
+</span><span class="n">go_to</span><span class="p">(</span><span class="o">-</span><span class="mi">217</span><span class="p">,</span><span class="mi">155</span><span class="p">)</span>
+<span class="n">fillcolor</span><span class="p">(</span><span class="s">'black'</span><span class="p">)</span>
+<span class="n">begin_fill</span><span class="p">()</span>
+<span class="n">circle</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">end_fill</span><span class="p">()</span>
+
+<span class="c1">#右眼
+</span><span class="n">go_to</span><span class="p">(</span><span class="o">-</span><span class="mi">169</span><span class="p">,</span><span class="mi">158</span><span class="p">)</span>
+<span class="n">fillcolor</span><span class="p">(</span><span class="s">'black'</span><span class="p">)</span>
+<span class="n">begin_fill</span><span class="p">()</span>
+<span class="n">circle</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">end_fill</span><span class="p">()</span>
+
+<span class="c1">#微笑
+</span><span class="n">go_to</span><span class="p">(</span><span class="o">-</span><span class="mi">210</span><span class="p">,</span><span class="mi">132</span><span class="p">)</span>
+<span class="n">right</span><span class="p">(</span><span class="mi">180</span><span class="p">)</span>
+<span class="n">ring</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span><span class="mf">0.2</span><span class="p">,</span><span class="mf">0.9</span><span class="p">,</span><span class="s">'left'</span><span class="p">)</span>
+
+<span class="c1">#腮红
+</span><span class="n">color</span><span class="p">(</span><span class="s">'#ffa0a0'</span><span class="p">)</span>
+<span class="n">pensize</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">left</span><span class="p">(</span><span class="mi">170</span><span class="p">)</span>
+
+<span class="n">go_to</span><span class="p">(</span><span class="o">-</span><span class="mi">235</span><span class="p">,</span> <span class="mi">135</span><span class="p">)</span>
+<span class="n">forward</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span>
+<span class="n">go_to</span><span class="p">(</span><span class="o">-</span><span class="mi">225</span><span class="p">,</span> <span class="mi">135</span><span class="p">)</span>
+<span class="n">forward</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span>
+<span class="n">go_to</span><span class="p">(</span><span class="o">-</span><span class="mi">155</span><span class="p">,</span> <span class="mi">140</span><span class="p">)</span>
+<span class="n">forward</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span>
+<span class="n">go_to</span><span class="p">(</span><span class="o">-</span><span class="mi">165</span><span class="p">,</span> <span class="mi">140</span><span class="p">)</span>
+<span class="n">forward</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span>
+
+<span class="c1">#比心
+</span><span class="n">setheading</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">heart</span><span class="p">(</span><span class="o">-</span><span class="mi">35</span><span class="p">,</span> <span class="mi">135</span><span class="p">,</span> <span class="mf">0.10</span><span class="p">)</span>
+<span class="n">setheading</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">heart</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="mf">0.13</span><span class="p">)</span>
+<span class="n">setheading</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">heart</span><span class="p">(</span><span class="mi">52</span><span class="p">,</span> <span class="mi">165</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">)</span>
+
+
+<span class="c1"># 写字
+</span><span class="n">go_to</span><span class="p">(</span><span class="o">-</span><span class="mi">39</span><span class="p">,</span> <span class="mi">69</span><span class="p">)</span>
+<span class="n">write</span><span class="p">(</span><span class="s">"NLP 520~"</span><span class="p">,</span>  <span class="n">align</span><span class="o">=</span><span class="s">"left"</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="p">(</span><span class="s">"黑体"</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="s">"normal"</span><span class="p">))</span>
+
+<span class="n">done</span><span class="p">()</span>
+</code></pre></div></div>
+
+:ET
