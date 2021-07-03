@@ -91,3 +91,9 @@ tar -cf all.tar *.jpg   这条命令是将所有.jpg的文件打成一个名为a
 tar -tf all.tar   这条命令是列出all.tar包中所有文件，-t是列出文件的意思
 
  tar -xf all.tar  这条命令是解出all.tar包中所有文件，-x是解开的意思  特别注意，在参数 f 之后的文件档名是自己取的，我们习惯上都用 .tar 来作为辨识。  如果加 z 参数，则以 .tar.gz 或 .tgz 来代表 gzip 压缩过的 tar file ～  如果加 j 参数，则以 .tar.bz2 来作为附档名啊～
+
+
+
+## 把文件转为 GBK
+
+iconv -f UTF-8 -t GB18030 test.csv > test2.csv

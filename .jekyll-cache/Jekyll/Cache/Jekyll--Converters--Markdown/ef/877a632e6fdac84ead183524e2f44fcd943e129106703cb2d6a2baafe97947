@@ -1,0 +1,575 @@
+I"�1<h1 id="基于bert-bilstm-crf模型的术语抽取实验">基于BERT-BiLSTM-CRF模型的术语抽取实验</h1>
+
+<h1 id="github地址及博客教程"><a href="https://blog.csdn.net/macanv/article/details/85684284">GitHub地址及博客教程</a></h1>
+
+<h1 id="论文原文">论文原文</h1>
+
+<p><a href="http://kns.cnki.net/kcms/detail/21.1106.TP.20210511.1556.002.html">新能源专利文本术语抽取研究</a>.小型微型计算机系统:1-10[2021-05-13].</p>
+
+<h1 id="一数据集">一、数据集</h1>
+
+<p>B-TERM I-TERM O 标签，句与句之间空格隔开。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>一 O
+种 O
+高 B-TERM
+效 I-TERM
+生 I-TERM
+物 I-TERM
+质 I-TERM
+能 I-TERM
+源 I-TERM
+制 I-TERM
+备 I-TERM
+装 I-TERM
+置 I-TERM
+使 O
+用 O
+方 O
+便 O
+
+所 O
+述 O
+地 B-TERM
+热 I-TERM
+能 I-TERM
+输 I-TERM
+送 I-TERM
+机 I-TERM
+构 I-TERM
+包 O
+括 O
+热 B-TERM
+水 I-TERM
+输 I-TERM
+送 I-TERM
+管 I-TERM
+</code></pre></div></div>
+
+<h1 id="二分词标注划分为训练集验证集和测试集">二、分词、标注、划分为训练集验证集和测试集</h1>
+
+<blockquote>
+  <p>所有的文件地址记得与自己的对应上。</p>
+</blockquote>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20210112122948.png" alt="image-20210112122948487" /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># -*- coding: utf-8 -*-
+</span><span class="kn">import</span> <span class="nn">codecs</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">jieba</span> 
+
+<span class="k">def</span> <span class="nf">cidian_quchong_paixu</span><span class="p">():</span>
+    <span class="n">terms</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">'terms_plus.txt'</span><span class="p">,</span> <span class="s">'r'</span><span class="p">).</span><span class="n">readlines</span><span class="p">()</span>
+    <span class="n">terms_ok</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">'terms.txt'</span><span class="p">,</span> <span class="s">'w'</span><span class="p">)</span>
+    <span class="n">terms</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">terms</span><span class="p">))</span>
+    <span class="n">terms</span><span class="p">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">terms</span><span class="p">:</span>
+        <span class="n">terms_ok</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">term</span><span class="p">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="n">terms_ok</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">fenci</span><span class="p">():</span>
+    <span class="n">jieba</span><span class="p">.</span><span class="n">load_userdict</span><span class="p">(</span><span class="s">"terms.txt"</span><span class="p">)</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">'weapon.txt'</span><span class="p">,</span> <span class="s">'r'</span><span class="p">).</span><span class="n">readlines</span><span class="p">()</span>
+    <span class="n">lines_jieba</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">'weapon_fenci.txt'</span><span class="p">,</span> <span class="s">'w'</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="s">' '</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">jieba</span><span class="p">.</span><span class="n">cut</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">cut_all</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
+        <span class="n">lines_jieba</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">char_tagging</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="n">output_file</span><span class="p">):</span>
+    <span class="n">terms</span> <span class="o">=</span> <span class="p">[</span><span class="n">word</span><span class="p">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="s">'weapon_terms.txt'</span><span class="p">,</span> <span class="s">'r'</span><span class="p">).</span><span class="n">readlines</span><span class="p">()]</span>
+    <span class="n">terms</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">terms</span><span class="p">))</span>
+    <span class="n">input_data</span> <span class="o">=</span> <span class="n">codecs</span><span class="p">.</span><span class="nb">open</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="s">'r'</span><span class="p">,</span> <span class="s">'utf-8'</span><span class="p">)</span>
+    <span class="n">output_data</span> <span class="o">=</span> <span class="n">codecs</span><span class="p">.</span><span class="nb">open</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="s">'w'</span><span class="p">,</span> <span class="s">'utf-8'</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">input_data</span><span class="p">.</span><span class="n">readlines</span><span class="p">():</span>
+        <span class="n">word_list</span> <span class="o">=</span> <span class="n">line</span><span class="p">.</span><span class="n">strip</span><span class="p">().</span><span class="n">split</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">word_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">terms</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">word</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">output_data</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">word</span> <span class="o">+</span> <span class="s">" O</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">output_data</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">word</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s">" B-TERM</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">word</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">word</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                        <span class="n">output_data</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">w</span> <span class="o">+</span> <span class="s">" I-TERM</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+                    <span class="n">output_data</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">word</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">word</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s">" I-TERM</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">word</span><span class="p">:</span>
+                    <span class="n">output_data</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">w</span> <span class="o">+</span> <span class="s">" O</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+        <span class="n">output_data</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+    <span class="n">input_data</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">output_data</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="n">base_destination</span> <span class="o">=</span> <span class="s">'BERT4'</span>
+<span class="k">def</span> <span class="nf">prepare_3_files_BERT</span><span class="p">():</span>
+    <span class="n">ne_zh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">'weapon_fenci_BERT.txt'</span><span class="p">,</span> <span class="s">'r'</span><span class="p">).</span><span class="n">readlines</span><span class="p">()</span>
+    <span class="n">line</span> <span class="o">=</span> <span class="s">''</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">ne_zh</span><span class="p">)</span>
+    <span class="n">ne_zh_list</span> <span class="o">=</span> <span class="n">line</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="s">'</span><span class="se">\n\n</span><span class="s">'</span><span class="p">)</span>
+    <span class="c1"># print(len(ne_zh_list))
+</span>    <span class="n">np_number</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ne_zh_list</span><span class="p">))]</span>
+    <span class="n">np_shuffle</span> <span class="o">=</span> <span class="n">random</span><span class="p">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">np_number</span><span class="p">)</span>
+    <span class="c1"># # 直接shuffle返回的是None，实际上不是返回，而是在原先的list上进行修改
+</span>    <span class="n">seven</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ne_zh_list</span><span class="p">)</span><span class="o">//</span><span class="mi">10</span><span class="o">*</span><span class="mi">7</span>
+    <span class="n">two</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ne_zh_list</span><span class="p">)</span><span class="o">//</span><span class="mi">10</span><span class="o">*</span><span class="mi">8</span>
+    <span class="c1"># # print(seven)
+</span>    <span class="c1"># # print(two)
+</span>    <span class="n">shuffle_train_num</span> <span class="o">=</span> <span class="n">np_number</span><span class="p">[:</span><span class="n">seven</span><span class="p">]</span> <span class="c1"># 23627
+</span>    <span class="n">shuffle_test_num</span> <span class="o">=</span> <span class="n">np_number</span><span class="p">[</span><span class="n">seven</span><span class="p">:</span><span class="n">two</span><span class="p">]</span>
+    <span class="n">shuffle_valid_num</span> <span class="o">=</span> <span class="n">np_number</span><span class="p">[</span><span class="n">two</span><span class="p">:]</span>
+    
+    <span class="n">train_zh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">base_destination</span> <span class="o">+</span> <span class="s">'/train.txt'</span><span class="p">,</span> <span class="s">'w'</span><span class="p">)</span>
+    <span class="n">test_zh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">base_destination</span> <span class="o">+</span> <span class="s">'/test.txt'</span><span class="p">,</span> <span class="s">'w'</span><span class="p">)</span>
+    <span class="n">valid_zh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">base_destination</span> <span class="o">+</span> <span class="s">'/dev.txt'</span><span class="p">,</span> <span class="s">'w'</span><span class="p">)</span>
+    
+    <span class="n">train_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">ne_zh_list</span><span class="p">[</span><span class="n">num</span><span class="p">]</span> <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">shuffle_train_num</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">train_data</span><span class="p">:</span>
+        <span class="n">word_list</span> <span class="o">=</span> <span class="n">line</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">word_list</span><span class="p">:</span>
+            <span class="n">train_zh</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">word</span><span class="p">.</span><span class="n">strip</span><span class="p">())</span>
+            <span class="n">train_zh</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)</span>
+        <span class="n">train_zh</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)</span>
+
+    <span class="n">test_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">ne_zh_list</span><span class="p">[</span><span class="n">num</span><span class="p">]</span> <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">shuffle_test_num</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">test_data</span><span class="p">:</span>
+        <span class="n">word_list</span> <span class="o">=</span> <span class="n">line</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">word_list</span><span class="p">:</span>
+            <span class="n">test_zh</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">word</span><span class="p">.</span><span class="n">strip</span><span class="p">())</span>
+            <span class="n">test_zh</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)</span>
+        <span class="n">test_zh</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)</span>
+
+    <span class="n">valid_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">ne_zh_list</span><span class="p">[</span><span class="n">num</span><span class="p">]</span> <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">shuffle_valid_num</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">valid_data</span><span class="p">:</span>
+        <span class="n">word_list</span> <span class="o">=</span> <span class="n">line</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">word_list</span><span class="p">:</span>
+            <span class="n">valid_zh</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">word</span><span class="p">.</span><span class="n">strip</span><span class="p">())</span>
+            <span class="n">valid_zh</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)</span>
+        <span class="n">valid_zh</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)</span>
+   
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">'__main__'</span><span class="p">:</span>
+    <span class="n">cidian_quchong_paixu</span><span class="p">()</span>
+    <span class="n">fenci</span><span class="p">()</span>
+    <span class="n">char_tagging</span><span class="p">(</span><span class="s">'weapon_fenci.txt'</span><span class="p">,</span> <span class="s">'weapon_fenci_BERT.txt'</span><span class="p">)</span>
+    <span class="n">prepare_3_files_BERT</span><span class="p">()</span>
+</code></pre></div></div>
+
+<h1 id="三改下载下来的代码">三、改下载下来的代码</h1>
+
+<p>teriminal_predict.py新建一个terminal_predict_term.py</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20210112123408.png" alt="image-20210112123408681" /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># encoding=utf-8
+# terminal_predict_term.py
+</span><span class="s">"""
+基于命令行的在线预测方法
+@Author: Macan (ma_cancan@163.com) 
+"""</span>
+
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="n">tf</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">import</span> <span class="nn">codecs</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="kn">from</span> <span class="nn">bert_base.train.models</span> <span class="kn">import</span> <span class="n">create_model</span><span class="p">,</span> <span class="n">InputFeatures</span>
+<span class="kn">from</span> <span class="nn">bert_base.bert</span> <span class="kn">import</span> <span class="n">tokenization</span><span class="p">,</span> <span class="n">modeling</span>
+<span class="kn">from</span> <span class="nn">bert_base.train.train_helper</span> <span class="kn">import</span> <span class="n">get_args_parser</span>
+<span class="n">args</span> <span class="o">=</span> <span class="n">get_args_parser</span><span class="p">()</span>
+
+<span class="c1"># import argparse 
+# import sys 
+</span>
+<span class="c1"># parser = argparse.ArgumentParser()
+# parser.add_argument('infile', type=argparse.FileType('r'), nargs='?', default=sys.stdin)
+# parser.add_argument('ofile', type=argparse.FileType('w'), nargs='?', default=sys.stdout)
+# args_self = parser.parse_args()
+</span>
+<span class="n">model_dir</span> <span class="o">=</span> <span class="s">'weapon/result/weapon_BERT4'</span>
+<span class="n">bert_dir</span> <span class="o">=</span> <span class="s">'chinese_L-12_H-768_A-12'</span>
+
+<span class="n">is_training</span><span class="o">=</span><span class="bp">False</span>
+<span class="n">use_one_hot_embeddings</span><span class="o">=</span><span class="bp">False</span>
+<span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span>
+
+<span class="n">gpu_config</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">ConfigProto</span><span class="p">()</span>
+<span class="n">gpu_config</span><span class="p">.</span><span class="n">gpu_options</span><span class="p">.</span><span class="n">allow_growth</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">sess</span><span class="o">=</span><span class="n">tf</span><span class="p">.</span><span class="n">Session</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">gpu_config</span><span class="p">)</span>
+<span class="n">model</span><span class="o">=</span><span class="bp">None</span>
+
+<span class="k">global</span> <span class="n">graph</span>
+<span class="n">input_ids_p</span><span class="p">,</span> <span class="n">input_mask_p</span><span class="p">,</span> <span class="n">label_ids_p</span><span class="p">,</span> <span class="n">segment_ids_p</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+
+
+<span class="k">print</span><span class="p">(</span><span class="s">'checkpoint path:{}'</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">model_dir</span><span class="p">,</span> <span class="s">"checkpoint"</span><span class="p">)))</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">model_dir</span><span class="p">,</span> <span class="s">"checkpoint"</span><span class="p">)):</span>
+    <span class="k">raise</span> <span class="nb">Exception</span><span class="p">(</span><span class="s">"failed to get checkpoint. going to return "</span><span class="p">)</span>
+
+<span class="c1"># 加载label-&gt;id的词典
+</span><span class="k">with</span> <span class="n">codecs</span><span class="p">.</span><span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">model_dir</span><span class="p">,</span> <span class="s">'label2id.pkl'</span><span class="p">),</span> <span class="s">'rb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">rf</span><span class="p">:</span>
+    <span class="n">label2id</span> <span class="o">=</span> <span class="n">pickle</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">rf</span><span class="p">)</span>
+    <span class="n">id2label</span> <span class="o">=</span> <span class="p">{</span><span class="n">value</span><span class="p">:</span> <span class="n">key</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">label2id</span><span class="p">.</span><span class="n">items</span><span class="p">()}</span>
+
+<span class="k">with</span> <span class="n">codecs</span><span class="p">.</span><span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">model_dir</span><span class="p">,</span> <span class="s">'label_list.pkl'</span><span class="p">),</span> <span class="s">'rb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">rf</span><span class="p">:</span>
+    <span class="n">label_list</span> <span class="o">=</span> <span class="n">pickle</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">rf</span><span class="p">)</span>
+<span class="n">num_labels</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">label_list</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">get_default_graph</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">graph</span><span class="p">.</span><span class="n">as_default</span><span class="p">():</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"going to restore checkpoint"</span><span class="p">)</span>
+    <span class="c1">#sess.run(tf.global_variables_initializer())
+</span>    <span class="n">input_ids_p</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">int32</span><span class="p">,</span> <span class="p">[</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">args</span><span class="p">.</span><span class="n">max_seq_length</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s">"input_ids"</span><span class="p">)</span>
+    <span class="n">input_mask_p</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">int32</span><span class="p">,</span> <span class="p">[</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">args</span><span class="p">.</span><span class="n">max_seq_length</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s">"input_mask"</span><span class="p">)</span>
+
+    <span class="n">bert_config</span> <span class="o">=</span> <span class="n">modeling</span><span class="p">.</span><span class="n">BertConfig</span><span class="p">.</span><span class="n">from_json_file</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">bert_dir</span><span class="p">,</span> <span class="s">'bert_config.json'</span><span class="p">))</span>
+    <span class="p">(</span><span class="n">total_loss</span><span class="p">,</span> <span class="n">logits</span><span class="p">,</span> <span class="n">trans</span><span class="p">,</span> <span class="n">pred_ids</span><span class="p">)</span> <span class="o">=</span> <span class="n">create_model</span><span class="p">(</span>
+        <span class="n">bert_config</span><span class="o">=</span><span class="n">bert_config</span><span class="p">,</span> <span class="n">is_training</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">input_ids</span><span class="o">=</span><span class="n">input_ids_p</span><span class="p">,</span> <span class="n">input_mask</span><span class="o">=</span><span class="n">input_mask_p</span><span class="p">,</span> <span class="n">segment_ids</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+        <span class="n">labels</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">num_labels</span><span class="o">=</span><span class="n">num_labels</span><span class="p">,</span> <span class="n">use_one_hot_embeddings</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">dropout_rate</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+
+    <span class="n">saver</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">train</span><span class="p">.</span><span class="n">Saver</span><span class="p">()</span>
+    <span class="n">saver</span><span class="p">.</span><span class="n">restore</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span> <span class="n">tf</span><span class="p">.</span><span class="n">train</span><span class="p">.</span><span class="n">latest_checkpoint</span><span class="p">(</span><span class="n">model_dir</span><span class="p">))</span>
+
+
+<span class="n">tokenizer</span> <span class="o">=</span> <span class="n">tokenization</span><span class="p">.</span><span class="n">FullTokenizer</span><span class="p">(</span>
+        <span class="n">vocab_file</span><span class="o">=</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">bert_dir</span><span class="p">,</span> <span class="s">'vocab.txt'</span><span class="p">),</span> <span class="n">do_lower_case</span><span class="o">=</span><span class="n">args</span><span class="p">.</span><span class="n">do_lower_case</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">predict_online</span><span class="p">():</span>
+    <span class="s">"""
+    do online prediction. each time make prediction for one instance.
+    you can change to a batch if you want.
+
+    :param line: a list. element is: [dummy_label,text_a,text_b]
+    :return:
+    """</span>
+    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+        <span class="c1"># line = ['本', '发', '明', '提', '供', '了', '一', '种', '风', '能', '混', '合', '动', '力', ...]
+</span>        <span class="n">feature</span> <span class="o">=</span> <span class="n">convert_single_example</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">label_list</span><span class="p">,</span> <span class="n">args</span><span class="p">.</span><span class="n">max_seq_length</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="s">'p'</span><span class="p">)</span>
+        <span class="n">input_ids</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">reshape</span><span class="p">([</span><span class="n">feature</span><span class="p">.</span><span class="n">input_ids</span><span class="p">],(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">args</span><span class="p">.</span><span class="n">max_seq_length</span><span class="p">))</span>
+        <span class="n">input_mask</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">reshape</span><span class="p">([</span><span class="n">feature</span><span class="p">.</span><span class="n">input_mask</span><span class="p">],(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">args</span><span class="p">.</span><span class="n">max_seq_length</span><span class="p">))</span>
+        <span class="n">segment_ids</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">reshape</span><span class="p">([</span><span class="n">feature</span><span class="p">.</span><span class="n">segment_ids</span><span class="p">],(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">args</span><span class="p">.</span><span class="n">max_seq_length</span><span class="p">))</span>
+        <span class="n">label_ids</span> <span class="o">=</span><span class="n">np</span><span class="p">.</span><span class="n">reshape</span><span class="p">([</span><span class="n">feature</span><span class="p">.</span><span class="n">label_ids</span><span class="p">],(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">args</span><span class="p">.</span><span class="n">max_seq_length</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">input_ids</span><span class="p">,</span> <span class="n">input_mask</span><span class="p">,</span> <span class="n">segment_ids</span><span class="p">,</span> <span class="n">label_ids</span>
+
+    <span class="k">global</span> <span class="n">graph</span>
+    <span class="k">with</span> <span class="n">graph</span><span class="p">.</span><span class="n">as_default</span><span class="p">():</span>
+        <span class="c1"># print(id2label)
+</span>        <span class="n">sentences</span> <span class="o">=</span> <span class="n">args</span><span class="p">.</span><span class="n">infile</span>
+        <span class="k">for</span> <span class="n">sentence</span> <span class="ow">in</span> <span class="n">sentences</span><span class="p">:</span>
+        <span class="c1"># while True:
+</span>            <span class="c1"># print('input the test sentence:')
+</span>            <span class="c1"># sentence = str(input())
+</span>            <span class="c1"># print(sentence)
+</span>            <span class="c1"># 本发明提供了一种风能混合动力车及代步装置，主要涉及节能环保混合驱动技术领域。
+</span>            <span class="n">start</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">.</span><span class="n">now</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="c1"># print(sentence)
+</span>                <span class="k">continue</span>
+            <span class="n">sentence</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span> 
+            <span class="c1"># ['本', '发', '明', '提', '供', '了', '一', '种', '风', '能', '混', '合', '动', '力', ...]
+</span>            <span class="c1"># print('your input is:{}'.format(sentence))
+</span>            <span class="n">input_ids</span><span class="p">,</span> <span class="n">input_mask</span><span class="p">,</span> <span class="n">segment_ids</span><span class="p">,</span> <span class="n">label_ids</span> <span class="o">=</span> <span class="n">convert</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span>
+
+            <span class="n">feed_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">input_ids_p</span><span class="p">:</span> <span class="n">input_ids</span><span class="p">,</span>
+                        <span class="n">input_mask_p</span><span class="p">:</span> <span class="n">input_mask</span><span class="p">}</span>
+            <span class="c1"># run session get current feed_dict result
+</span>            <span class="n">pred_ids_result</span> <span class="o">=</span> <span class="n">sess</span><span class="p">.</span><span class="n">run</span><span class="p">([</span><span class="n">pred_ids</span><span class="p">],</span> <span class="n">feed_dict</span><span class="p">)</span>
+            <span class="n">pred_label_result</span> <span class="o">=</span> <span class="n">convert_id_to_label</span><span class="p">(</span><span class="n">pred_ids_result</span><span class="p">,</span> <span class="n">id2label</span><span class="p">)</span>
+            <span class="c1"># print(pred_label_result)
+</span>            <span class="c1">#todo: 组合策略
+</span>            <span class="n">result</span> <span class="o">=</span> <span class="n">strage_combined_link_org_loc</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="n">pred_label_result</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="c1"># print('time used: {} sec'.format((datetime.now() - start).total_seconds()))
+</span>
+<span class="k">def</span> <span class="nf">convert_id_to_label</span><span class="p">(</span><span class="n">pred_ids_result</span><span class="p">,</span> <span class="n">idx2label</span><span class="p">):</span>
+    <span class="s">"""
+    将id形式的结果转化为真实序列结果
+    :param pred_ids_result:
+    :param idx2label:
+    :return:
+    """</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">batch_size</span><span class="p">):</span>
+        <span class="n">curr_seq</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ids</span> <span class="ow">in</span> <span class="n">pred_ids_result</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">ids</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">curr_label</span> <span class="o">=</span> <span class="n">idx2label</span><span class="p">[</span><span class="n">ids</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">curr_label</span> <span class="ow">in</span> <span class="p">[</span><span class="s">'[CLS]'</span><span class="p">,</span> <span class="s">'[SEP]'</span><span class="p">]:</span>
+                <span class="k">continue</span>
+            <span class="n">curr_seq</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">curr_label</span><span class="p">)</span>
+        <span class="n">result</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">curr_seq</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+<span class="k">def</span> <span class="nf">strage_combined_link_org_loc</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">tags</span><span class="p">):</span>
+    <span class="s">"""
+    组合策略
+    :param pred_label_result:
+    :param types:
+    :return:
+    """</span>
+    <span class="k">def</span> <span class="nf">print_output</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">line</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">line</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">word</span><span class="p">)</span>
+        <span class="c1"># print(', '.join(line))
+</span>
+    <span class="k">def</span> <span class="nf">write_terms_into_file</span><span class="p">(</span><span class="n">terms</span><span class="p">):</span>
+        <span class="n">terms_all</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">.</span><span class="n">word</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">terms</span><span class="p">]</span>
+        <span class="n">terms_only</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">terms_all</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">terms_only</span><span class="p">:</span>
+            <span class="n">args</span><span class="p">.</span><span class="n">ofile</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">term</span><span class="p">.</span><span class="n">strip</span><span class="p">())</span>
+            <span class="n">args</span><span class="p">.</span><span class="n">ofile</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)</span>
+
+    <span class="n">params</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="nb">eval</span> <span class="o">=</span> <span class="n">Result</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">tags</span><span class="p">):</span>
+        <span class="n">tokens</span> <span class="o">=</span> <span class="n">tokens</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">tags</span><span class="p">)]</span>
+    <span class="n">terms</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">.</span><span class="n">get_result</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">tags</span><span class="p">)</span>
+    <span class="n">write_terms_into_file</span><span class="p">(</span><span class="n">terms</span><span class="p">)</span>
+    <span class="c1"># print_output(terms, 'TERMS: ')
+</span>
+
+<span class="k">def</span> <span class="nf">convert_single_example</span><span class="p">(</span><span class="n">ex_index</span><span class="p">,</span> <span class="n">example</span><span class="p">,</span> <span class="n">label_list</span><span class="p">,</span> <span class="n">max_seq_length</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+    <span class="s">"""
+    将一个样本进行分析，然后将字转化为id, 标签转化为id,然后结构化到InputFeatures对象中
+    :param ex_index: index
+    :param example: 一个样本
+    :param label_list: 标签列表
+    :param max_seq_length:
+    :param tokenizer:
+    :param mode:
+    :return:
+    """</span>
+    <span class="n">label_map</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c1"># 1表示从1开始对label进行index化
+</span>    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">label_list</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">label_map</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+    <span class="c1"># 保存label-&gt;index 的map
+</span>    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">model_dir</span><span class="p">,</span> <span class="s">'label2id.pkl'</span><span class="p">)):</span>
+        <span class="k">with</span> <span class="n">codecs</span><span class="p">.</span><span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">model_dir</span><span class="p">,</span> <span class="s">'label2id.pkl'</span><span class="p">),</span> <span class="s">'wb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">w</span><span class="p">:</span>
+            <span class="n">pickle</span><span class="p">.</span><span class="n">dump</span><span class="p">(</span><span class="n">label_map</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+    <span class="n">tokens</span> <span class="o">=</span> <span class="n">example</span>
+    <span class="c1"># tokens = tokenizer.tokenize(example.text)
+</span>    <span class="c1"># 序列截断
+</span>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">max_seq_length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">tokens</span> <span class="o">=</span> <span class="n">tokens</span><span class="p">[</span><span class="mi">0</span><span class="p">:(</span><span class="n">max_seq_length</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)]</span>  <span class="c1"># -2 的原因是因为序列需要加一个句首和句尾标志
+</span>    <span class="n">ntokens</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">segment_ids</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">label_ids</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">ntokens</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="s">"[CLS]"</span><span class="p">)</span>  <span class="c1"># 句子开始设置CLS 标志
+</span>    <span class="n">segment_ids</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># append("O") or append("[CLS]") not sure!
+</span>    <span class="n">label_ids</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">label_map</span><span class="p">[</span><span class="s">"[CLS]"</span><span class="p">])</span>  <span class="c1"># O OR CLS 没有任何影响，不过我觉得O 会减少标签个数,不过拒收和句尾使用不同的标志来标注，使用LCS 也没毛病
+</span>    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">token</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tokens</span><span class="p">):</span>
+        <span class="n">ntokens</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+        <span class="n">segment_ids</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">label_ids</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">ntokens</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="s">"[SEP]"</span><span class="p">)</span>  <span class="c1"># 句尾添加[SEP] 标志
+</span>    <span class="n">segment_ids</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># append("O") or append("[SEP]") not sure!
+</span>    <span class="n">label_ids</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">label_map</span><span class="p">[</span><span class="s">"[SEP]"</span><span class="p">])</span>
+    <span class="n">input_ids</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">.</span><span class="n">convert_tokens_to_ids</span><span class="p">(</span><span class="n">ntokens</span><span class="p">)</span>  <span class="c1"># 将序列中的字(ntokens)转化为ID形式
+</span>    <span class="n">input_mask</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_ids</span><span class="p">)</span>
+
+    <span class="c1"># padding, 使用
+</span>    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_ids</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">max_seq_length</span><span class="p">:</span>
+        <span class="n">input_ids</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">input_mask</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">segment_ids</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># we don't concerned about it!
+</span>        <span class="n">label_ids</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">ntokens</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="s">"**NULL**"</span><span class="p">)</span>
+        <span class="c1"># label_mask.append(0)
+</span>    <span class="c1"># print(len(input_ids))
+</span>    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_ids</span><span class="p">)</span> <span class="o">==</span> <span class="n">max_seq_length</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_mask</span><span class="p">)</span> <span class="o">==</span> <span class="n">max_seq_length</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">segment_ids</span><span class="p">)</span> <span class="o">==</span> <span class="n">max_seq_length</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">label_ids</span><span class="p">)</span> <span class="o">==</span> <span class="n">max_seq_length</span>
+    <span class="c1"># assert len(label_mask) == max_seq_length
+</span>
+    <span class="c1"># 结构化为一个类
+</span>    <span class="n">feature</span> <span class="o">=</span> <span class="n">InputFeatures</span><span class="p">(</span>
+        <span class="n">input_ids</span><span class="o">=</span><span class="n">input_ids</span><span class="p">,</span>
+        <span class="n">input_mask</span><span class="o">=</span><span class="n">input_mask</span><span class="p">,</span>
+        <span class="n">segment_ids</span><span class="o">=</span><span class="n">segment_ids</span><span class="p">,</span>
+        <span class="n">label_ids</span><span class="o">=</span><span class="n">label_ids</span><span class="p">,</span>
+        <span class="c1"># label_mask = label_mask
+</span>    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">feature</span>
+
+
+<span class="k">class</span> <span class="nc">Pair</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">word</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">merge</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">__word</span> <span class="o">=</span> <span class="n">word</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">__start</span> <span class="o">=</span> <span class="n">start</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">__end</span> <span class="o">=</span> <span class="n">end</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">__merge</span> <span class="o">=</span> <span class="n">merge</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">__types</span> <span class="o">=</span> <span class="nb">type</span>
+
+    <span class="o">@</span><span class="nb">property</span>
+    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">__start</span>
+    <span class="o">@</span><span class="nb">property</span>
+    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">__end</span>
+    <span class="o">@</span><span class="nb">property</span>
+    <span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">__merge</span>
+    <span class="o">@</span><span class="nb">property</span>
+    <span class="k">def</span> <span class="nf">word</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">__word</span>
+
+    <span class="o">@</span><span class="nb">property</span>
+    <span class="k">def</span> <span class="nf">types</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">__types</span>
+    <span class="o">@</span><span class="n">word</span><span class="p">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">word</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">word</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">__word</span> <span class="o">=</span> <span class="n">word</span>
+    <span class="o">@</span><span class="n">start</span><span class="p">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">__start</span> <span class="o">=</span> <span class="n">start</span>
+    <span class="o">@</span><span class="n">end</span><span class="p">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">__end</span> <span class="o">=</span> <span class="n">end</span>
+    <span class="o">@</span><span class="n">merge</span><span class="p">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">merge</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">__merge</span> <span class="o">=</span> <span class="n">merge</span>
+
+    <span class="o">@</span><span class="n">types</span><span class="p">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">__types</span> <span class="o">=</span> <span class="nb">type</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">line</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="s">'entity:{}'</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">__word</span><span class="p">))</span>
+        <span class="n">line</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="s">'start:{}'</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">__start</span><span class="p">))</span>
+        <span class="n">line</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="s">'end:{}'</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">__end</span><span class="p">))</span>
+        <span class="n">line</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="s">'merge:{}'</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">__merge</span><span class="p">))</span>
+        <span class="n">line</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="s">'types:{}'</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">__types</span><span class="p">))</span>
+        <span class="k">return</span> <span class="s">'</span><span class="se">\t</span><span class="s">'</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Result</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">terms</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">get_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">,</span> <span class="n">tags</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="c1"># 先获取标注结果
+</span>        <span class="c1"># tokens = ['本', '实', '用', '新', '型', '还', '提', '供', '了', '该', '系', '统', '的', '控', ...]
+</span>        <span class="c1"># tags = ['O', 'B', 'M', 'M', 'E', 'O', 'O', 'O', 'O', 'O', 'B', 'E', 'O', 'B', ...]
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">result_to_json</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">tags</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">terms</span>
+
+    <span class="k">def</span> <span class="nf">result_to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">tags</span><span class="p">):</span>
+        <span class="s">"""
+        将模型标注序列和输入序列结合 转化为结果
+        :param string: 输入序列
+        :param tags: 标注结果
+        :return:
+        """</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="p">{</span><span class="s">"entities"</span><span class="p">:</span> <span class="p">[]}</span>
+        <span class="n">entity_name</span> <span class="o">=</span> <span class="s">""</span>
+        <span class="n">entity_start</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">last_tag</span> <span class="o">=</span> <span class="s">''</span>
+
+        <span class="c1"># string = ['本', '实', '用', '新', '型', '还', '提', '供', '了', '该', '系', '统', '的', '控', ...]
+</span>        <span class="c1"># tags = ['O', 'B', 'M', 'M', 'E', 'O', 'O', 'O', 'O', 'O', 'B', 'E', 'O', 'B', ...]
+</span>        <span class="c1"># BIO标记
+</span>        <span class="k">for</span> <span class="n">char</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">tags</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">tag</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">"S"</span><span class="p">:</span>
+                <span class="bp">self</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">char</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">tag</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+                <span class="n">item</span><span class="p">[</span><span class="s">"entities"</span><span class="p">].</span><span class="n">append</span><span class="p">({</span><span class="s">"word"</span><span class="p">:</span> <span class="n">char</span><span class="p">,</span> <span class="s">"start"</span><span class="p">:</span> <span class="n">idx</span><span class="p">,</span> <span class="s">"end"</span><span class="p">:</span> <span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="s">"type"</span><span class="p">:</span><span class="n">tag</span><span class="p">[</span><span class="mi">2</span><span class="p">:]})</span>
+            <span class="k">elif</span> <span class="n">tag</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">"B"</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">entity_name</span> <span class="o">!=</span> <span class="s">''</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">entity_name</span><span class="p">,</span> <span class="n">entity_start</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">last_tag</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+                    <span class="n">item</span><span class="p">[</span><span class="s">"entities"</span><span class="p">].</span><span class="n">append</span><span class="p">({</span><span class="s">"word"</span><span class="p">:</span> <span class="n">entity_name</span><span class="p">,</span> <span class="s">"start"</span><span class="p">:</span> <span class="n">entity_start</span><span class="p">,</span> <span class="s">"end"</span><span class="p">:</span> <span class="n">idx</span><span class="p">,</span> <span class="s">"type"</span><span class="p">:</span> <span class="n">last_tag</span><span class="p">[</span><span class="mi">2</span><span class="p">:]})</span>
+                    <span class="n">entity_name</span> <span class="o">=</span> <span class="s">""</span>
+                <span class="n">entity_name</span> <span class="o">+=</span> <span class="n">char</span>
+                <span class="n">entity_start</span> <span class="o">=</span> <span class="n">idx</span>
+            <span class="k">elif</span> <span class="n">tag</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">"I"</span><span class="p">:</span>
+                <span class="n">entity_name</span> <span class="o">+=</span> <span class="n">char</span>
+            <span class="k">elif</span> <span class="n">tag</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">"O"</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">entity_name</span> <span class="o">!=</span> <span class="s">''</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">entity_name</span><span class="p">,</span> <span class="n">entity_start</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">last_tag</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+                    <span class="n">item</span><span class="p">[</span><span class="s">"entities"</span><span class="p">].</span><span class="n">append</span><span class="p">({</span><span class="s">"word"</span><span class="p">:</span> <span class="n">entity_name</span><span class="p">,</span> <span class="s">"start"</span><span class="p">:</span> <span class="n">entity_start</span><span class="p">,</span> <span class="s">"end"</span><span class="p">:</span> <span class="n">idx</span><span class="p">,</span> <span class="s">"type"</span><span class="p">:</span> <span class="n">last_tag</span><span class="p">[</span><span class="mi">2</span><span class="p">:]})</span>
+                    <span class="n">entity_name</span> <span class="o">=</span> <span class="s">""</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">entity_name</span> <span class="o">=</span> <span class="s">""</span>
+                <span class="n">entity_start</span> <span class="o">=</span> <span class="n">idx</span>
+            <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">last_tag</span> <span class="o">=</span> <span class="n">tag</span>
+        <span class="k">if</span> <span class="n">entity_name</span> <span class="o">!=</span> <span class="s">''</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">entity_name</span><span class="p">,</span> <span class="n">entity_start</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">last_tag</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+            <span class="n">item</span><span class="p">[</span><span class="s">"entities"</span><span class="p">].</span><span class="n">append</span><span class="p">({</span><span class="s">"word"</span><span class="p">:</span> <span class="n">entity_name</span><span class="p">,</span> <span class="s">"start"</span><span class="p">:</span> <span class="n">entity_start</span><span class="p">,</span> <span class="s">"end"</span><span class="p">:</span> <span class="n">idx</span><span class="p">,</span> <span class="s">"type"</span><span class="p">:</span> <span class="n">last_tag</span><span class="p">[</span><span class="mi">2</span><span class="p">:]})</span>
+        <span class="k">return</span> <span class="n">item</span>
+
+    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">word</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">tag</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">tag</span> <span class="o">==</span> <span class="s">'TERM'</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">terms</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">Pair</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="s">'TERM'</span><span class="p">))</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="n">predict_online</span><span class="p">()</span>
+</code></pre></div></div>
+
+<ol>
+  <li>
+    <p>bert_base/train/train_helper.py</p>
+
+    <p>第12行添加<em>import</em> sys</p>
+
+    <p>然后末尾几行改成</p>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="c1"># add labels
+</span>    <span class="n">group2</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">'-label_list'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">'User define labels， can be a file with one label one line or a string using </span><span class="se">\'</span><span class="s">,</span><span class="se">\'</span><span class="s"> split'</span><span class="p">)</span>
+    
+    <span class="n">parser</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">'-verbose'</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">'store_true'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">'turn on tensorflow logging for debug'</span><span class="p">)</span>
+    <span class="n">parser</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">'-ner'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">'ner'</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">'which modle to train'</span><span class="p">)</span>
+    <span class="n">parser</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">'-version'</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">'version'</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s">'%(prog)s '</span> <span class="o">+</span> <span class="n">__version__</span><span class="p">)</span>
+    
+    <span class="n">parser</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">'-infile'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">argparse</span><span class="p">.</span><span class="n">FileType</span><span class="p">(</span><span class="s">'r'</span><span class="p">),</span> <span class="n">nargs</span><span class="o">=</span><span class="s">'?'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">stdin</span><span class="p">)</span>
+    <span class="n">parser</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">'-ofile'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">argparse</span><span class="p">.</span><span class="n">FileType</span><span class="p">(</span><span class="s">'w'</span><span class="p">),</span> <span class="n">nargs</span><span class="o">=</span><span class="s">'?'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">sys</span><span class="p">.</span><span class="n">stdout</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">parser</span><span class="p">.</span><span class="n">parse_args</span><span class="p">()</span>
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h1 id="四基于bert-bilstm-crf的中文术语抽取模型">四、基于BERT-BiLSTM-CRF的中文术语抽取模型</h1>
+
+<p>注意文件存放位置。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bert-base-ner-train <span class="se">\</span>
+	<span class="nt">-data_dir</span> weapon/data/BERT4 <span class="se">\</span>
+    <span class="nt">-output_dir</span> weapon/result/weapon_BERT4 <span class="se">\</span>
+    <span class="nt">-init_checkpoint</span> chinese_L-12_H-768_A-12/bert_model.ckpt <span class="se">\</span>
+    <span class="nt">-bert_config_file</span> chinese_L-12_H-768_A-12/bert_config.json <span class="se">\</span>
+    <span class="nt">-vocab_file</span> chinese_L-12_H-768_A-12/vocab.txt <span class="se">\</span>
+    <span class="nt">-save_summary_steps</span> 20 <span class="se">\</span>
+    <span class="nt">-batch_size</span> 32 <span class="se">\</span>
+    <span class="nt">-device_map</span> 2
+</code></pre></div></div>
+
+<p>应该会有这样的结果</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>processed 19960 tokens with 1519 phrases; found: 1528 phrases; correct: 1495.
+accuracy:  99.61%; precision:  97.84%; recall:  98.42%; FB1:  98.13
+             TERM: precision:  97.84%; recall:  98.42%; FB1:  98.13  1528
+             
+BERT4
+accuracy:  99.48%; precision:  99.04%; recall:  99.21%; FB1:  99.13
+             TERM: precision:  99.04%; recall:  99.21%; FB1:  99.13  6252
+</code></pre></div></div>
+
+<h1 id="五来一个新的句子识别里面的术语">五、来一个新的句子识别里面的术语</h1>
+
+<p>记得更改terminal_predict_term.py里加载的模型。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">CUDA_VISIBLE_DEVICES</span><span class="o">=</span>4 python3 BERT-BiLSTM-CRF-NER/terminal_predict_term_weapon.py <span class="nt">-infile</span> BERT-BiLSTM-CRF-NER/weapon/data/origin4/predict_test.txt <span class="nt">-ofile</span> BERT-BiLSTM-CRF-NER/weapon/data/origin4/predict_test_term.txt
+</code></pre></div></div>
+
+:ET
