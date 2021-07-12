@@ -71,6 +71,18 @@ you-get --playlist -o /Volumes/NETAC/教学视频/黑马前端就业班(pink老�
 注意，网址必须是av号开头的，可以[检查网页源代码](https://www.jianshu.com/p/ca964ee86ffc)找到。复制head中内容到sublime，control+F
 `https://www.bilibili.com/video/av`即可找到av号。
 
+### 使用PYTHON you-get下载bilibili视频
+
+```python
+import sys
+from you_get import common as you_get
+url= 'https://www.bilibili.com/video/BV145411K7K3'
+sys.argv=['you-get','-i',url]
+you_get.main()
+```
+
+
+
 ## 3. word
 
 ### word 一保存图片质量就下降怎么办

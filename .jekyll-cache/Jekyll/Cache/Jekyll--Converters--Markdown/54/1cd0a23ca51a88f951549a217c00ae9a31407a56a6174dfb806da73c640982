@@ -1,0 +1,266 @@
+I"�!<h1 id="小米在知识表示学习的探索与实践"><a href="https://mp.weixin.qq.com/s/TIlhazU_8DLpN-34K5taXQ">小米在知识表示学习的探索与实践</a></h1>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>资源整理了文本分类、实体识别&amp;词性标注、搜索匹配、推荐系统、指代消歧、百科数据、预训练词向量or模型、中文完形填空等大量数据集，中文数据集平台和NLP工具等。
+
+本文内容整理自：https://github.com/InsaneLife/ChineseNLPCorpus
+</code></pre></div></div>
+
+<p><strong>文本分类</strong></p>
+
+<p>**    新闻分类**</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>**今日头条中文新闻（短文本）分类数据集** ：https://github.com/fateleak/toutiao-text-classfication-dataset
+
+数据规模：共38万条，分布于15个分类中。
+
+采集时间：2018年05月。
+
+以0.7 0.15 0.15做分割 。
+
+  
+
+
+
+**清华新闻分类语料**：
+
+根据新浪新闻RSS订阅频道2005~2011年间的历史数据筛选过滤生成。
+
+数据量：74万篇新闻文档（2.19 GB）
+
+小数据实验可以筛选类别：体育, 财经, 房产, 家居, 教育, 科技, 时尚, 时政, 游戏, 娱乐
+
+http://thuctc.thunlp.org/#%E8%8E%B7%E5%8F%96%E9%93%BE%E6%8E%A5
+
+rnn和cnn实验：https://github.com/gaussic/text-classification-cnn-rnn
+
+  
+
+
+
+**中科大新闻分类语料库**：http://www.nlpir.org/?action-viewnews-itemid-145
+</code></pre></div></div>
+
+<p>** 情感/观点/评论 倾向性分析**</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20210711114957.png" alt="image-20210711114957614" /></p>
+
+<p><strong>实体识别&amp;词性标注</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>**微博实体识别**
+
+https://github.com/hltcoe/golden-horse
+</code></pre></div></div>
+
+<p>** boson数据**</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>包含6种实体类型。
+
+https://github.com/InsaneLife/ChineseNLPCorpus/tree/master/NER/boson
+
+  
+
+
+
+**人民日报数据集**
+
+人名、地名、组织名三种实体类型
+
+1998：https://github.com/InsaneLife/ChineseNLPCorpus/tree/master/NER/renMinRiBao
+
+2004：https://pan.baidu.com/s/1LDwQjoj7qc-HT9qwhJ3rcA password: 1fa3
+
+  
+
+
+
+**MSRA微软亚洲研究院数据集**
+
+5 万多条中文命名实体识别标注数据（包括地点、机构、人物）
+
+https://github.com/InsaneLife/ChineseNLPCorpus/tree/master/NER/MSRA
+
+  
+
+
+
+**SIGHAN Bakeoff 2005：**一共有四个数据集，包含繁体中文和简体中文，下面是简体中文分词数据。
+</code></pre></div></div>
+
+<p>​</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>MSR: http://sighan.cs.uchicago.edu/bakeoff2005/
+
+PKU ：http://sighan.cs.uchicago.edu/bakeoff2005/
+</code></pre></div></div>
+
+<p><strong>搜索匹配</strong></p>
+
+<p>** OPPO手机搜索排序**</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>OPPO手机搜索排序query-title语义匹配数据集。
+
+链接:https://pan.baidu.com/s/1Hg2Hubsn3GEuu4gubbHCzw 提取码:7p3n
+</code></pre></div></div>
+
+<p>​</p>
+
+<p>** 网页搜索结果评价(SogouE)**</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>用户查询及相关URL列表
+
+https://www.sogou.com/labs/resource/e.php
+</code></pre></div></div>
+
+<p>​</p>
+
+<p><strong>推荐系统</strong></p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/tian-guo-guo/cdn@master/assets/picgoimg/20210711115022.png" alt="image-20210711115021880" /></p>
+
+<p><strong>百科数据</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>**维基百科**
+
+维基百科会定时将语料库打包发布：
+
+数据处理博客
+
+https://dumps.wikimedia.org/zhwiki/
+
+  
+
+
+
+**百度百科**
+
+只能自己爬，爬取得链接：https://pan.baidu.com/share/init?surl=i3wvfil提取码 neqs 。
+</code></pre></div></div>
+
+<p>​</p>
+
+<p><strong>指代消歧</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>CoNLL 2012 ：http://conll.cemantix.org/2012/data.html
+</code></pre></div></div>
+
+<p>​</p>
+
+<p><strong>预训练：（词向量or模型）</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>**BERT**
+
+开源代码：https://github.com/google-research/bert
+
+模型下载：BERT-Base, Chinese: Chinese Simplified and Traditional, 12-layer, 768-hidden, 12-heads, 110M parameters
+</code></pre></div></div>
+
+<p>**  ELMO**</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>开源代码：https://github.com/allenai/bilm-tf
+
+预训练的模型：https://allennlp.org/elmo
+</code></pre></div></div>
+
+<p>**  腾讯词向量**</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>腾讯AI实验室公开的中文词向量数据集包含800多万中文词汇，其中每个词对应一个200维的向量。
+
+下载地址：https://ai.tencent.com/ailab/nlp/embedding.html
+
+  
+
+
+
+**上百种预训练中文词向量**
+
+https://github.com/Embedding/Chinese-Word-Vectors
+</code></pre></div></div>
+
+<p>​</p>
+
+<p><strong>中文完形填空数据集</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://github.com/ymcui/Chinese-RC-Dataset
+</code></pre></div></div>
+
+<p>​</p>
+
+<p><strong>中华古诗词数据库</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>最全中华古诗词数据集，唐宋两朝近一万四千古诗人, 接近5.5万首唐诗加26万宋诗. 两宋时期1564位词人，21050首词。
+
+https://github.com/chinese-poetry/chinese-poetry
+</code></pre></div></div>
+
+<p>​</p>
+
+<p><strong>保险行业语料库</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://github.com/Samurais/insuranceqa-corpus-zh
+</code></pre></div></div>
+
+<p>​</p>
+
+<p><strong>汉语拆字字典</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>英文可以做char embedding，中文不妨可以试试拆字
+
+https://github.com/kfcd/chaizi
+</code></pre></div></div>
+
+<p>​</p>
+
+<p><strong>中文数据集平台</strong></p>
+
+<p>** 搜狗实验室**</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>搜狗实验室提供了一些高质量的中文文本数据集，时间比较早，多为2012年以前的数据。
+
+https://www.sogou.com/labs/resource/list\_pingce.php
+</code></pre></div></div>
+
+<p>​</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>**中科大自然语言处理与信息检索共享平台**
+
+http://www.nlpir.org/?action-category-catid-28
+</code></pre></div></div>
+
+<p>​</p>
+
+<p>** 中文语料小数据**</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>包含了中文命名实体识别、中文关系识别、中文阅读理解等一些小量数据。
+
+https://github.com/crownpku/Small-Chinese-Corpus
+</code></pre></div></div>
+
+<p>** 维基百科数据集**</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://dumps.wikimedia.org/
+</code></pre></div></div>
+
+<p><strong>NLP工具</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>**THULAC**：https://github.com/thunlp/THULAC ：包括中文分词、词性标注功能。
+</code></pre></div></div>
+
+<p>​</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>**HanLP**：https://github.com/hankcs/HanLP
+</code></pre></div></div>
+
+<p>​</p>
+
+<p>** 哈工大LTP：** https://github.com/HIT-SCIR/ltp</p>
+
+<p>​</p>
+
+<p>**  NLPIR：** https://github.com/NLPIR-team/NLPIR</p>
+
+<p>​</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>**jieba分词：** https://github.com/yanyiwu/cppjieba
+</code></pre></div></div>
+
+:ET
